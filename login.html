@@ -56,11 +56,16 @@
 
     </style>
 
-    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="libs/jquery-1.7.2.min.js"></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-      <script src="js/jquery.placeholder.js"></script>
+      <script type="text/javascript">
+        (function(){if(e = ¡°abbr,article,aside,audio,canvas,datalist,details,dialog,
+        eventsource,figure,footer,header,hgroup,mark,menu,meter,nav,
+        output,progress,section,
+        time,video¡±.split(¡¯,'),i=e.length;while(i¨C){document.createElement_x(e[i])}})()
+      </script>
+      <script src="libs/jquery.placeholder.js"></script>
     <![endif]-->
   </head>
 
@@ -84,14 +89,14 @@
 
     <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
     <!--[if lte IE 6]>
-    <script type="text/javascript" src="js/bootstrap-ie.js"></script>
+    <script type="text/javascript" src="libs/bootstrap-ie.js"></script>
     <![endif]-->
     <script type="text/javascript">
       /*{type: "desc"}
       */
-      function show_alert(_opstring){
-        var _el = $("#login_alert")
+      function forcs_show_alert(_opstring){
         var _ops = eval ("(" + _opstring + ")")
+        var _el = $("#login_alert")
         var rhtml = '<button type="button" class="close" data-dismiss="alert">x</button>'
         for ( key in _ops ) {
           rhtml += "<p><strong>"+key+"</strong>"+_ops[key].desc+"</p>"

@@ -93,6 +93,7 @@ _ops:{
 util.set_hash
 */
 util.show_tab = function(_ops){
+  if ( !_ops.tid || !_ops.cid || !_ops.pages ) return;
     var that = this
     var _tel = $('#'+_ops.tid)
     var _cel = $('#'+_ops.cid)
@@ -198,40 +199,68 @@ util.Bind_tr_op.prototype.bind = function(){
 _ops:{
 	id:'',		//容器form
 	lists: [],	//内容
-    defaultv:{}  //默认值	
+  defaultv:{}  //默认值	
 }
 */
 util.show_search = function(_ops){
+  if ( !_ops.id || !_ops.lists.length ) return;
+  _ops.defaultv = _ops.defaultv || {} 
 	var rhtml = '';
-	//默认type为text，不为text另外说明，默认place=desc
+	//默认type为text，不为text另外说明，默认placeholder为desc
 	var inputs = {
 		CardNo: {
-			desc: '学员卡号'
+			 desc: '学员卡号'
 		},
-        StuName: {
-            desc: '学生姓名'
-        },
-        School: {
-            desc: '学校'
-        },
-        ClassId: {
-            desc: '课程编号'
-        },
-        ClassName: {
-            desc: '课程名'
-        }
-	}
-    var TeacherNames = [],   //C#获得教师id和name,状态值
-        Status = []
-    var select = {
-        TeacherName: {
-            desc: '教师姓名',
-            options: TeacherNames
-        },
-        Status: {
-            desc: '状态',
-            options: Status
-        }
+    StuName: {
+        desc: '学生姓名'
+    },
+    School: {
+        desc: '学校'
+    },
+    ClassId: {
+        desc: '课程编号'
+    },
+    ClassName: {
+        desc: '课程名'
     }
-
+	}
+  var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
+      Status = {0:"开始", 1:"结束" }
+  var selects = {
+    TeacherName: {
+        desc: '教师姓名',
+        options: TeacherNames
+    },
+    Status: {
+        desc: '状态',
+        options: Status
+    }
+  }
+  var tmp = ""
+  for (var k=0; k<_ops.lists.length; k++) {
+    tmp = _ops.lists[k]
+    if ( inputs[tmp] ) {
+      rhtml += '<div class="input-prepend">\
+                  <span class="add-on">' + inputs[tmp].desc + '</span>\
+                  <input class="span2" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                  '" placeholder="' + (_ops.defaultv[tmp]||inputs[tmp].desc) + '">\
+                </div>'
+      continue;
+    }    
+    if ( selects[tmp] ) {
+      rhtml += '<div class="input-prepend">\
+                  <span class="add-on">' + selects[tmp].desc + '</span>\
+                  <select name="' + tmp + '"><option>' + selects[tmp].desc + '</option>'
+      for ( key in selects[tmp]["options"] ) {
+        if ( _ops.defaultv[tmp] === key ) {
+          rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
+        }else{
+          rhtml += '<option value="' + key + '">' + selects[tmp]["options"][key] + '</option>'
+        }      
+      }
+      rhtml += '</select></div>'
+    }
+  }
+  rhtml += '<button data-type="search">搜索</button>'
+  $("#"+_ops.id).empty().html(rhtml)
 }
