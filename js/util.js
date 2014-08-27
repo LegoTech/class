@@ -1,4 +1,92 @@
-util = {};
+util = {
+    pages:{
+        info: {
+            title: "信息",
+            url: "info"
+        },
+        charging: {
+            title: "充值",
+            url: "account#charging"
+        },
+        consuming: {
+            title: "消费",
+            url: "account#consuming"
+        },
+        stat: {
+            title: "统计",
+            url: "stat"
+        },
+        admin: {
+            title: "管理",
+            url: "admin",
+            admin: true
+        }
+    },
+    user:{
+        name: "Username",
+        isadmin: false
+    }
+}
+
+util.get_user = function(){
+
+}
+
+/*
+_ops:{
+    id:'',          //容器
+    page:''         //页面
+}
+util.pages, util.user
+*/
+util.show_navbar = function(_ops){
+    var rhtml = ''
+    var that = this;
+    rhtml = '<div class="navbar-inner">\
+        <div class="container-fluid">\
+          <span class="brand">lego Tech</span>\
+          <div class="nav-collapse collapse">\
+            <ul class="nav pull-right">\
+            <li class="dropdown">'
+    rhtml += '<a href="javascript:void(0)" id="uLabel" class="dropdown-toggle" data-toggle="dropdown">'
+            + that.user.name +'<b class="caret"></b></a>\
+                <ul class="dropdown-menu" role="menu" aria-labelledby="uLabel">\
+                <li>\
+                  <a>注销！</a>\
+                </li>\
+              </ul>\
+            </li>\
+            </ul>\
+            <ul class="nav">'
+    for ( key in that.pages ) {
+        if ( that.pages[key].admin && !that.user.isadmin )  {continue;}
+        if ( key === _ops.page ) {
+            rhtml += '<li class="active">'
+        }else{
+            rhtml += '<li>'
+        }
+        rhtml += '<a href="'+that.pages[key].url+'.html">'+that.pages[key].title+'</a></li>'
+    }
+    rhtml += '</ul>\
+          </div><!--/.nav-collapse -->\
+        </div>\
+      </div>'
+    var _el = $('#'+_ops.id)
+    _el.addClass('navbar navbar-inverse navbar-fixed-top')
+    _el.html(rhtml)
+    $('.dropdown-toggle').dropdown()
+}
+
+/*
+_ops:{
+    tid:'',             //tab容器
+    cid:'',             //content容器
+    page:''             //页面
+}
+*/
+util.show_tab = function(_ops){
+
+}
 
 /*
 _ops:{
@@ -46,7 +134,7 @@ util.show_table = function(_ops){
     var _table = _el.find('.tablesort')
     _ops.sort && _table.tablesorter({sortList: _ops.sort})
 
-    if ( _ops.operate.length )}{
+    if ( _ops.operate.length ){
     	
     }
 
@@ -58,8 +146,7 @@ util.show_table = function(_ops){
 /*
 _ops:{
     id:'',          //容器
-    operate: [],    //操作
-    callback: function
+    operate: []     //操作
 }
 */
 util.Bind_tr_op = function(_ops){
@@ -80,8 +167,7 @@ Bind_tr_op.prototype.bind = function(){
 /*
 _ops:{
 	id:'',		//容器
-	lists: [],	//内容	
-	callback: function
+	lists: []	//内容	
 }
 */
 util.show_search = function(_ops){
