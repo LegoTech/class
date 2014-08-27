@@ -27,15 +27,14 @@ util = {
         centeradmin: [0],
         centers: [0]
     },
-    centers:{0: "xx店"}
+    center:{
+      current: 0,
+      desc: {0: "xx店"}
+    }
 }
 
-util.get_user = function(){
-  //C#获取user信息
-}
-
-util.get_center = function(){
-  //C#获取center信息
+util.get_user_center = function(){
+  //C#获取user信息,center信息
 }
 
 util.set_hash = function(e){
@@ -47,21 +46,17 @@ _ops:{
     id:'',          //容器
     page:''         //页面    
 }
-util.pages, util.user, util.centers
-return info._center
+util.pages, util.user, util.center
 */
 util.show_navbar = function(_ops){
     var rhtml = '', chtml=''
     var that = this
-    var k = 0, center = 0
+    var k = 0
     for ( key in that.centers ) {
-      if ( k===0 ) {
         chtml += '<li class="dropdown">\
                     <a href="javascript:void(0)" id="cLabel" class="dropdown-toggle" data-toggle="dropdown">'
                     + that.centers[key] +'<b class="caret"></b></a>\
                     <ul class="dropdown-menu" role="menu" aria-labelledby="cLabel">'
-        center = key
-      }
         chtml += '<li data-type="center" data-value="' + key + '">\
                     <a id="#">' + that.centers[key] + '</a>\
                   </li>'
@@ -108,7 +103,6 @@ util.show_navbar = function(_ops){
     $("#signout").on('click', function(e){
       //C#注销函数，由C#跳到login
     });
-    return center
 }
 
 /*

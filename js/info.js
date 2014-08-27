@@ -14,7 +14,6 @@ info.pages = {
     },
 }
 info._hash = ""
-info._center = 0
 info.hashchange = function(){
     var that = this
     if( 'onhashchange' in window ) {
@@ -64,10 +63,9 @@ $(function() {
 // Handler for .ready() called.
 
 
-util.get_user()
-util.get_center()
+util.get_user_center()
 info.hashchange()
-info._center = util.show_navbar({id:"navbar", page:"info"})
+util.show_navbar({id:"navbar", page:"info"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages, 
 			prename:'<i class="icon-chevron-right"></i>', dosethash:true})
 
