@@ -42,3 +42,11 @@ util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages,
 
 
 });
+
+$(document).on('click', function(e){
+    e = e || window.event;
+    var target = e.target || e.srcElement
+    var _ta = $(target)
+
+    
+});
