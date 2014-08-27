@@ -32,6 +32,10 @@ util.get_user = function(){
 
 }
 
+util.set_hash = function(e){
+    return location.hash = e||''
+}
+
 /*
 _ops:{
     id:'',          //容器
@@ -62,6 +66,7 @@ util.show_navbar = function(_ops){
         if ( that.pages[key].admin && !that.user.isadmin )  {continue;}
         if ( key === _ops.page ) {
             rhtml += '<li class="active">'
+            document.title = that.pages[key].title
         }else{
             rhtml += '<li>'
         }
@@ -81,23 +86,48 @@ util.show_navbar = function(_ops){
 _ops:{
     tid:'',             //tab容器
     cid:'',             //content容器
-    page:''             //页面
+    pages:{},           //页面
+    prename:"",         //a标签内容（可选）
+    dosethash:true      //是否触发sethash
 }
+util.set_hash
 */
 util.show_tab = function(_ops){
-
+    var that = this
+    var _tel = $('#'+_ops.tid)
+    var _cel = $('#'+_ops.cid)
+    _ops.prename = _ops.prename || ""
+    var thtml='', chtml=''
+    for ( key in _ops.pages ) {
+        thtml += '<li><a href="#' + key + '" data-toggle="tab">' + 
+                _ops.prename + _ops.pages[key].title + '</a></li>'
+        chtml += '<div class="tab-pane" id="' + key + '"></div>'
+    }
+    _tel.html(thtml)
+    _cel.addClass("tab-content").html(chtml)
+    _tel.find('a').click(function (e) {
+      $(this).tab('show')
+      if (_ops.dosethash ) {
+        util.set_hash(this.hash.substring(1))
+      }
+    });
+    var af = _tel.find('a:first')
+    af.tab('show')
+    if (_ops.dosethash ) {
+        util.set_hash(af[0].hash.substring(1))
+    }
 }
 
 /*
 _ops:{
-	id:'',			//容器
+	id:'',			          //容器
 	thead: [],
 	twidth: [],
-	tdata: [],		//行标志，字符串
-	tbody: [],		//数据
-	sort: [],
-	operate: [],	//操作
-	callback: function
+	tdata: [],		           //行标志，字符串
+	tbody: [],		           //数据
+	sort: [],                  //(可选)
+	operate: [],	          //操作（可选）
+	callback: function        //（可选）
 }
 */
 util.show_table = function(_ops){
@@ -153,13 +183,13 @@ util.Bind_tr_op = function(_ops){
     this._ops = _ops;
     this.hideop = {};
 }
-Bind_tr_op.prototype.mousein = function(){
+util.Bind_tr_op.prototype.mousein = function(){
 
 }
-Bind_tr_op.prototype.mouseout = function(){
+util.Bind_tr_op.prototype.mouseout = function(){
     
 }
-Bind_tr_op.prototype.bind = function(){
+util.Bind_tr_op.prototype.bind = function(){
     $('#'+this._ops.id).find('.tr-ops').hover(this.mousein, this.mouseout);
     
 }
