@@ -55,30 +55,22 @@
 
     </style>
 
-    <link href="../assets/css/bootstrap-responsive.css" rel="stylesheet">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="../assets/ico/favicon.png">
   </head>
 
 <body>
 
     <div class="container">
-
+      <div class="alert alert-error" id="login_alert" style="display:none;"></div>
       <form class="form-signin">
         <h2 class="form-signin-heading">Please sign in</h2>
-        <input type="text" class="input-block-level" placeholder="Email address">
-        <input type="password" class="input-block-level" placeholder="Password">
-        <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+        <input type="text" class="input-block-level" name="username" placeholder="用户名">
+        <input type="password" class="input-block-level" name="password" placeholder="密码">
+        <button class="btn btn-large btn-primary" id="signin">登陆</button>
       </form>
 
     </div> <!-- /container -->
@@ -94,7 +86,27 @@
     <script type="text/javascript" src="js/bootstrap-ie.js"></script>
     <![endif]-->
     <script type="text/javascript">
-
+      /*{type: "desc"}
+      */
+      function show_alert(_opstring){
+        var _el = $("#login_alert")
+        var _ops = eval ("(" + _opstring + ")")
+        var rhtml = '<button type="button" class="close" data-dismiss="alert">x</button>'
+        for ( key in _ops ) {
+          rhtml += "<p><strong>"+key+"</strong>"+_ops[key].desc+"</p>"
+        }
+        _el.html(rhtml).show()
+      }
+      $(document).on('click', function(e){
+        e = e || window.event;
+        var target = e.target || e.srcElement
+        var _ta = $(target).parents("#signin")
+        if (!_ta.length) return;
+        var username = $("input[name='username']").val()
+        var password = $("input[name='password']").val()
+        //调C#。如果验证通过，C#将页面跳到info.html，否则C#将错误信息返回show_alert()
+          
+      });
     </script>
 
 </body></html>
