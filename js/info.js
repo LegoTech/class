@@ -14,7 +14,7 @@ info.pages = {
     },
 }
 info._hash = ""
-info._center = ""
+info._center = 0
 info.hashchange = function(){
     var that = this
     if( 'onhashchange' in window ) {
@@ -28,7 +28,6 @@ info.hashchange = function(){
         }
     }
 }
-info.show = {}
 /*
 _ops:{
     hash: "",           //页面
@@ -68,7 +67,7 @@ $(function() {
 util.get_user()
 util.get_center()
 info.hashchange()
-util.show_navbar({id:"navbar", page:"info"})
+info._center = util.show_navbar({id:"navbar", page:"info"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages, 
 			prename:'<i class="icon-chevron-right"></i>', dosethash:true})
 

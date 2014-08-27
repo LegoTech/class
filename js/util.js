@@ -24,10 +24,10 @@ util = {
     },
     user:{
         name: "Username",
-        centeradmin: [],
-        centers: []
+        centeradmin: [0],
+        centers: [0]
     },
-    centers:{}
+    centers:{0: "xx店"}
 }
 
 util.get_user = function(){
@@ -45,13 +45,32 @@ util.set_hash = function(e){
 /*
 _ops:{
     id:'',          //容器
-    page:''         //页面
+    page:''         //页面    
 }
-util.pages, util.user
+util.pages, util.user, util.centers
+return info._center
 */
 util.show_navbar = function(_ops){
-    var rhtml = ''
-    var that = this;
+    var rhtml = '', chtml=''
+    var that = this
+    var k = 0, center = 0
+    for ( key in that.centers ) {
+      if ( k===0 ) {
+        chtml += '<li class="dropdown">\
+                    <a href="javascript:void(0)" id="cLabel" class="dropdown-toggle" data-toggle="dropdown">'
+                    + that.centers[key] +'<b class="caret"></b></a>\
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="cLabel">'
+        center = key
+      }
+        chtml += '<li data-type="center" data-value="' + key + '">\
+                    <a id="#">' + that.centers[key] + '</a>\
+                  </li>'
+      k++
+    }
+    if ( k>0 ) {
+        chtml += '</ul>\
+                </li>'
+    }
     rhtml = '<div class="navbar-inner">\
         <div class="container-fluid">\
           <span class="brand">lego Tech</span>\
@@ -62,12 +81,11 @@ util.show_navbar = function(_ops){
                 + that.user.name +'<b class="caret"></b></a>\
                 <ul class="dropdown-menu" role="menu" aria-labelledby="uLabel">\
                   <li>\
-                    <a>注销！</a>\
+                    <a id="#signout">注销！</a>\
                   </li>\
                 </ul>\
-              </li>\
-
-            </ul>\
+              </li>' + chtml +
+            '</ul>\
             <ul class="nav">'
     for ( key in that.pages ) {
         if ( that.pages[key].admin && !that.user.isadmin )  {continue;}
@@ -87,6 +105,10 @@ util.show_navbar = function(_ops){
     _el.addClass('navbar navbar-inverse navbar-fixed-top')
     _el.html(rhtml)
     $('.dropdown-toggle').dropdown()
+    $("#signout").on('click', function(e){
+      //C#注销函数，由C#跳到login
+    });
+    return center
 }
 
 /*
