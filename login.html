@@ -103,11 +103,7 @@
         }
         _el.html(rhtml).show()
       }
-      $(document).on('click', function(e){
-        e = e || window.event;
-        var target = e.target || e.srcElement
-        var _ta = $(target).parents("#signin")
-        if (!_ta.length) return;
+      $("#signin").on('click', function(e){
         var username = $("input[name='username']").val()
         var password = $("input[name='password']").val()
         //调C#。如果验证通过，C#将页面跳到info.html，否则C#将错误信息返回show_alert()

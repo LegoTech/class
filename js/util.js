@@ -24,12 +24,18 @@ util = {
     },
     user:{
         name: "Username",
-        isadmin: false
-    }
+        centeradmin: [],
+        centers: []
+    },
+    centers:{}
 }
 
 util.get_user = function(){
+  //C#获取user信息
+}
 
+util.get_center = function(){
+  //C#获取center信息
 }
 
 util.set_hash = function(e){
@@ -51,15 +57,16 @@ util.show_navbar = function(_ops){
           <span class="brand">lego Tech</span>\
           <div class="nav-collapse collapse">\
             <ul class="nav pull-right">\
-            <li class="dropdown">'
-    rhtml += '<a href="javascript:void(0)" id="uLabel" class="dropdown-toggle" data-toggle="dropdown">'
-            + that.user.name +'<b class="caret"></b></a>\
+              <li class="dropdown">\
+                <a href="javascript:void(0)" id="uLabel" class="dropdown-toggle" data-toggle="dropdown">'
+                + that.user.name +'<b class="caret"></b></a>\
                 <ul class="dropdown-menu" role="menu" aria-labelledby="uLabel">\
-                <li>\
-                  <a>注销！</a>\
-                </li>\
-              </ul>\
-            </li>\
+                  <li>\
+                    <a>注销！</a>\
+                  </li>\
+                </ul>\
+              </li>\
+
             </ul>\
             <ul class="nav">'
     for ( key in that.pages ) {
@@ -241,15 +248,15 @@ util.show_search = function(_ops){
     tmp = _ops.lists[k]
     if ( inputs[tmp] ) {
       rhtml += '<div class="input-prepend">\
-                  <span class="add-on">' + inputs[tmp].desc + '</span>\
-                  <input class="span2" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                  <span class="add-on add-on-info">' + inputs[tmp].desc + '</span>\
+                  <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
                   '" placeholder="' + (_ops.defaultv[tmp]||inputs[tmp].desc) + '">\
                 </div>'
       continue;
     }    
     if ( selects[tmp] ) {
       rhtml += '<div class="input-prepend">\
-                  <span class="add-on">' + selects[tmp].desc + '</span>\
+                  <span class="add-on add-on-info">' + selects[tmp].desc + '</span>\
                   <select name="' + tmp + '"><option>' + selects[tmp].desc + '</option>'
       for ( key in selects[tmp]["options"] ) {
         if ( _ops.defaultv[tmp] === key ) {
@@ -261,6 +268,6 @@ util.show_search = function(_ops){
       rhtml += '</select></div>'
     }
   }
-  rhtml += '<button data-type="search">搜索</button>'
+  rhtml += '<button data-type="search" class="btn btn-success">搜索</button>'
   $("#"+_ops.id).empty().html(rhtml)
 }

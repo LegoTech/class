@@ -14,6 +14,7 @@ info.pages = {
     },
 }
 info._hash = ""
+info._center = ""
 info.hashchange = function(){
     var that = this
     if( 'onhashchange' in window ) {
@@ -44,7 +45,7 @@ info.show = function(_ops){
         charging: ["CardNo", "StuName"],
         attendence: ["CardNo", "StuName", "ClassId", "ClassName"]
   }
-  var rhtml = '<form id="'+_ops.hash+'_form"></form><div id="'+_ops.hash+'_result"></div>'
+  var rhtml = '<form id="'+_ops.hash+'_form" class="form-inline"></form><hr/><div id="'+_ops.hash+'_result"></div>'
   $('#'+_ops.hash).empty().html(rhtml)
 	util.show_search({id:_ops.hash+"_form", lists:lists[_ops.hash], defaultv:_ops.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
@@ -52,8 +53,12 @@ info.show = function(_ops){
 /*info._hash
 */
 function forcs_back(_opstring){
+  var that = info;
   var _ops = eval ("(" + _opstring + ")")
-	util.show_table()
+  if ( $.inArray(that._hash, ['students', 'classes', 'charging']) ) {
+    util.show_table()
+  }else{}
+	
 }
 
 $(function() {
@@ -61,6 +66,7 @@ $(function() {
 
 
 util.get_user()
+util.get_center()
 info.hashchange()
 util.show_navbar({id:"navbar", page:"info"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages, 
