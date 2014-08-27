@@ -196,16 +196,42 @@ util.Bind_tr_op.prototype.bind = function(){
 
 /*
 _ops:{
-	id:'',		//容器
-	lists: []	//内容	
+	id:'',		//容器form
+	lists: [],	//内容
+    defaultv:{}  //默认值	
 }
 */
 util.show_search = function(_ops){
 	var rhtml = '';
 	//默认type为text，不为text另外说明，默认place=desc
 	var inputs = {
-		cardid: {
-			desc: '卡号'
-		}
+		CardNo: {
+			desc: '学员卡号'
+		},
+        StuName: {
+            desc: '学生姓名'
+        },
+        School: {
+            desc: '学校'
+        },
+        ClassId: {
+            desc: '课程编号'
+        },
+        ClassName: {
+            desc: '课程名'
+        }
 	}
+    var TeacherNames = [],   //C#获得教师id和name,状态值
+        Status = []
+    var select = {
+        TeacherName: {
+            desc: '教师姓名',
+            options: TeacherNames
+        },
+        Status: {
+            desc: '状态',
+            options: Status
+        }
+    }
+
 }

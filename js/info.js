@@ -1,11 +1,17 @@
 info = {}
 info.pages = {
 	students: {
-		title: "学生信息"
+		title: "学员信息"
 	},
 	classes: {
 		title: "课程信息"
-	}
+	},
+    charging: {
+        title: "充值信息"
+    },
+    attendence: {
+        title: "上课情况"
+    },
 }
 info._hash = ""
 info.hashchange = function(){
@@ -21,9 +27,22 @@ info.hashchange = function(){
     }
 }
 info.show = {}
-info.show.students = function(_ops){
-	var lists = []
-	util.show_search()
+/*
+_ops:{
+    hash: "",           //页面
+    defaultv: {}         //搜索值
+}
+*/
+info.show = function(_ops){
+	var lists = {
+        students: ["CardNo", "StuName", "School", "TeacherName"],
+        classes: ["ClassId", "ClassName", "CardNo", "StuName", "TeacherName", "Status"],
+        charging: ["CardNo", "StuName"],
+        attendence: ["CardNo", "StuName", "ClassId", "ClassName"]
+    }
+    var rhtml = '<form id="'+_ops.hash+'_form"></form><div id="'+_ops.hash+'_result"></div>'
+    $('#'+_ops.hash).empty().html(rhtml)
+	util.show_search({id:_ops.hash+"_form", lists:lists[_ops.hash], defaultv:defaultv})
 }
 info.show.studentsback = function(_ops){
 	util.show_table()
