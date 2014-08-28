@@ -27,13 +27,21 @@ util = {
         isadmin: true
     },
     center:{
-      cur: 0,
-      desc: {0: "xx店"}
+        cur: 0,
+        desc: {0: "xx店"}
+    },
+    autoarr:{
+        StuName: [],
+        ClassName: []
     }
 }
 
 util.get_user_center = function(){
   //C#获取user信息,center信息
+}
+
+util.get_autoarr = function(){
+  //C#获取autoarr数据
 }
 
 util.set_hash = function(e){
@@ -240,14 +248,16 @@ _ops:{
 util.show_search = function(_ops){
   if ( !_ops.id || !_ops.lists.length ) return;
   _ops.defaultv = _ops.defaultv || {} 
-	var rhtml = '';
+	var rhtml = ''
+  var that = util
 	//默认type为text，不为text另外说明，默认placeholder为desc
 	var inputs = {
 		CardNo: {
 			 desc: '学员卡号'
 		},
     StuName: {
-        desc: '学生姓名'
+        desc: '学生姓名',
+        autocomplete: true
     },
     School: {
         desc: '学校'
@@ -256,7 +266,8 @@ util.show_search = function(_ops){
         desc: '课程编号'
     },
     ClassName: {
-        desc: '课程名'
+        desc: '课程名',
+        autocomplete: true
     }
 	}
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
@@ -272,6 +283,7 @@ util.show_search = function(_ops){
     }
   }
   var tmp = ""
+  var autos = []
   for (var k=0; k<_ops.lists.length; k++) {
     tmp = _ops.lists[k]
     if ( inputs[tmp] ) {
@@ -280,6 +292,7 @@ util.show_search = function(_ops){
                   <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
                   '" placeholder="' + (_ops.defaultv[tmp]||inputs[tmp].desc) + '">\
                 </div>'
+      if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
       continue;
     }    
     if ( selects[tmp] ) {
@@ -298,4 +311,9 @@ util.show_search = function(_ops){
   }
   rhtml += '<button data-type="search" class="btn btn-success">搜索</button>'
   $("#"+_ops.id).empty().html(rhtml)
+  for ( var i=0; i<autos.length; i++ ) {
+    $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
+      source: that.autoarr[autos[i]]
+    });
+  }
 }

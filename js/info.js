@@ -44,8 +44,8 @@ info.show = function(_ops){
         attendence: ["CardNo", "StuName", "ClassId", "ClassName"]
   }
   var rhtml = '<form id="'+_ops.hash+'_form" class="form-inline"></form><hr/><div id="'+_ops.hash+'_result"></div>'
-  if ( $.inArray(_ops.hash, ['students', 'classes']) ) {
-    rhtml = '<p class="muted" style="margin-top: 5px;">\
+  if ( $.inArray(_ops.hash, ['students', 'classes'])>-1 ) {
+    rhtml = '<p style="margin-top: 5px;">\
                 <a href="add.html#' + _ops.hash + '"><i class="icon-plus-sign opacity-5"></i>\
                  添加' + that.pages[_ops.hash].title + '</a>\
             </p>' + rhtml
@@ -85,8 +85,7 @@ info.hashchange()
 util.show_navbar({id:"navbar", page:"info"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages, 
 			prename:'<i class="icon-chevron-right"></i>', dosethash:true})
-
-
+util.get_autoarr()
 
 });
 
