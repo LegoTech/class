@@ -24,11 +24,10 @@ util = {
     },
     user:{
         name: "Username",
-        centeradmin: [0],
-        centers: [0]
+        isadmin: true
     },
     center:{
-      current: 0,
+      cur: 0,
       desc: {0: "xx店"}
     }
 }
@@ -51,21 +50,24 @@ util.pages, util.user, util.center
 util.show_navbar = function(_ops){
     var rhtml = '', chtml=''
     var that = this
-    var k = 0
-    for ( key in that.centers ) {
-        chtml += '<li class="dropdown">\
-                    <a href="javascript:void(0)" id="cLabel" class="dropdown-toggle" data-toggle="dropdown">'
-                    + that.centers[key] +'<b class="caret"></b></a>\
-                    <ul class="dropdown-menu" role="menu" aria-labelledby="cLabel">'
-        chtml += '<li data-type="center" data-value="' + key + '">\
-                    <a id="#">' + that.centers[key] + '</a>\
+    var ct = that.center
+    chtml += '<li class="dropdown">\
+                <a href="javascript:void(0)" id="cLabel" class="dropdown-toggle" data-toggle="dropdown">'
+                + ct.desc[ct.cur] +'<b class="caret"></b></a>\
+                <ul class="dropdown-menu" role="menu" aria-labelledby="cLabel">'
+    for ( key in ct.desc ) {
+      if ( key === ct.cur ) {
+        chtml += '<li>\
+                    <a data-type="center" data-value="' + key + '">' + ct.desc[key] + '</a>\
                   </li>'
-      k++
+      }else{
+        chtml += '<li>\
+                    <a data-type="center" data-value="' + key + '">' + ct.desc[key] + '</a>\
+                  </li>'
+      }
     }
-    if ( k>0 ) {
-        chtml += '</ul>\
-                </li>'
-    }
+    chtml += '</ul>\
+            </li>'
     rhtml = '<div class="navbar-inner">\
         <div class="container-fluid">\
           <span class="brand">lego Tech</span>\
@@ -76,7 +78,7 @@ util.show_navbar = function(_ops){
                 + that.user.name +'<b class="caret"></b></a>\
                 <ul class="dropdown-menu" role="menu" aria-labelledby="uLabel">\
                   <li>\
-                    <a id="#signout">注销！</a>\
+                    <a data-type="signout">注销！</a>\
                   </li>\
                 </ul>\
               </li>' + chtml +
@@ -97,11 +99,21 @@ util.show_navbar = function(_ops){
         </div>\
       </div>'
     var _el = $('#'+_ops.id)
-    _el.addClass('navbar navbar-inverse navbar-fixed-top')
-    _el.html(rhtml)
+    _el.addClass('navbar navbar-inverse navbar-fixed-top').empty().html(rhtml)
     $('.dropdown-toggle').dropdown()
-    $("#signout").on('click', function(e){
-      //C#注销函数，由C#跳到login
+    _el.find('ul.pull-right').find('a').on('click', function(e){
+      var type = $(this).attr('data-type')
+      if ( !type ) return true;
+      switch ( type ){
+        case 'signout':
+          //C#注销函数，由C#跳到login
+        break; case 'center':
+          var value = $(this).attr('data-value')
+          if ( value === that.center.cur ) {return true;}
+          //C#修改center，刷新页面forcs_refresh
+          //要求每个页面都有forcs_refresh函数
+        break;
+      }
     });
 }
 
@@ -127,8 +139,8 @@ util.show_tab = function(_ops){
                 _ops.prename + _ops.pages[key].title + '</a></li>'
         chtml += '<div class="tab-pane" id="' + key + '"></div>'
     }
-    _tel.html(thtml)
-    _cel.addClass("tab-content").html(chtml)
+    _tel.empty().html(thtml)
+    _cel.addClass("tab-content").empty().html(chtml)
     _tel.find('a').click(function (e) {
       $(this).tab('show')
       if (_ops.dosethash ) {
@@ -183,7 +195,7 @@ util.show_table = function(_ops){
 
     var _el = $('#'+_ops.id)
 
-    _el.html('<table class="table table-striped table-bordered table-hover '+(_ops.operate?' tr-ops':'')+(_ops.sort?' tablesort':'')+'">'+r+'</table>')
+    _el.empty().html('<table class="table table-striped table-bordered table-hover '+(_ops.operate?' tr-ops':'')+(_ops.sort?' tablesort':'')+'">'+r+'</table>')
 
     var _table = _el.find('.tablesort')
     _ops.sort && _table.tablesorter({sortList: _ops.sort})

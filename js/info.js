@@ -48,6 +48,7 @@ info.show = function(_ops){
 	util.show_search({id:_ops.hash+"_form", lists:lists[_ops.hash], defaultv:_ops.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
 }
+
 /*info._hash
 */
 function forcs_back(_opstring){
@@ -58,6 +59,16 @@ function forcs_back(_opstring){
   }else{}
 	
 }
+
+/*info
+*/
+function forcs_refresh(){
+  var that = info
+  util.get_user_center()
+  util.show_navbar({id:"navbar", page:"info"})
+  that.show({hash:that._hash, defaultv:{}})  
+}
+
 
 $(function() {
 // Handler for .ready() called.
