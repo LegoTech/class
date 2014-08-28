@@ -36,6 +36,26 @@ util = {
     }
 }
 
+util.placeholder_hack = function(){
+  //Assign to those input elements that have 'placeholder' attribute
+  $('input[placeholder]').each(function(){  
+      var input = $(this);        
+      $(input).val(input.attr('placeholder'));
+                  
+      $(input).focus(function(){
+          if (input.val() == input.attr('placeholder')) {
+             input.val('');
+          }
+      });
+          
+      $(input).blur(function(){
+         if (input.val() == '' || input.val() == input.attr('placeholder')) {
+             input.val(input.attr('placeholder'));
+         }
+      });
+  });
+}
+
 util.get_user_center = function(){
   //C#获取user信息,center信息
 }
@@ -166,11 +186,11 @@ util.show_tab = function(_ops){
 _ops:{
 	id:'',			          //容器
 	thead: [],
-	twidth: [],
+	twidth: [],              //（可选）
 	tdata: [],		           //行标志，字符串
 	tbody: [],		           //数据
 	sort: [],                  //(可选)
-	operate: [],	          //操作（可选）
+	operate: {},	          //操作（可选）
 	callback: function        //（可选）
 }
 */
@@ -220,7 +240,7 @@ util.show_table = function(_ops){
 /*
 _ops:{
     id:'',          //容器
-    operate: []     //操作
+    operate: {}     //操作
 }
 */
 util.Bind_tr_op = function(_ops){
@@ -311,9 +331,42 @@ util.show_search = function(_ops){
   }
   rhtml += '<button data-type="search" class="btn btn-success">搜索</button>'
   $("#"+_ops.id).empty().html(rhtml)
+  that.placeholder_hack()
   for ( var i=0; i<autos.length; i++ ) {
     $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
       source: that.autoarr[autos[i]]
     });
   }
+}
+
+/*
+_ops:{
+  id:"", 
+  cur:1,
+  count:12
+}
+*/
+util.show_pagination = function(_ops){
+  var rhtml = '<div class="pagination">\
+                <ul>'
+  if ( _ops.cur===1 ) {
+    rhtml += '<li class="disabled"><span>&laquo;</span></li>'
+  }else{
+    rhtml += '<li data-type="page" data-value="'+_ops.cur-1+'"><a href="#">&laquo;</a></li>'
+  }
+  for (var i=1; i<=_ops.count; i++) {
+    if ( _ops.cur===i ){
+      rhtml += '<li class="active"><span>'+i+'</span></li>'
+    }else{
+      rhtml += '<li data-type="page" data-value="'+i+'"><a href="#">'+i+'</a></li>'
+    }
+  }
+  if ( _ops.cur===_ops.count ) {
+    rhtml += '<li class="disabled"><span>&raquo;</span></li>'
+  }else{
+    rhtml += '<li data-type="page" data-value="'+_ops.cur+1+'"><a href="#">&raquo;</a></li>'
+  }
+  rhtml +=  '</ul>\
+          </div>'
+  $('#'+_ops.id).empty().html(rhtml)
 }
