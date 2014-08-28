@@ -75,3 +75,15 @@
 form.form-inline > *{
   margin: 5px 5px 0 0;
 }
+
+body{
+  font-size: 12px;
+}
+
+#navbar{
+  font-size: 14px;
+}
+
+.table th, .table td{
+  padding: 4px;
+}
