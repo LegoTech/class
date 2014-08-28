@@ -44,6 +44,17 @@ info.show = function(_ops){
         attendence: ["CardNo", "StuName", "ClassId", "ClassName"]
   }
   var rhtml = '<form id="'+_ops.hash+'_form" class="form-inline"></form><hr/><div id="'+_ops.hash+'_result"></div>'
+  if ( _ops.hash === 'students' ) {
+    rhtml = '<p class="muted" style="margin-top: 5px;">\
+                <a href="add.html#students"><i class="icon-plus-sign opacity-5"></i>\
+                 添加学生信息</a>\
+            </p>' + rhtml
+  }else if ( _ops.hash === 'classes' ) {
+    rhtml = '<p class="muted" style="margin-top: 5px;">\
+                <a href="add.html#classes"><i class="icon-plus-sign opacity-5"></i>\
+                 添加课程信息</a>\
+            </p>' + rhtml
+  }
   $('#'+_ops.hash).empty().html(rhtml)
 	util.show_search({id:_ops.hash+"_form", lists:lists[_ops.hash], defaultv:_ops.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作

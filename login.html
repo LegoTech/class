@@ -88,6 +88,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
 
     <script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+    <script src="libs/jquery-ui.min.js"></script>
     <!--[if lte IE 6]>
     <script type="text/javascript" src="libs/bootstrap-ie.js"></script>
     <![endif]-->
@@ -101,9 +102,10 @@
         for ( key in _ops ) {
           rhtml += "<p><strong>"+key+"</strong>"+_ops[key].desc+"</p>"
         }
-        _el.html(rhtml).show()
+        _el.html(rhtml).show('bounce', {}, 500)
       }
       $("#signin").on('click', function(e){
+        $("#login_alert").hide()
         var username = $("input[name='username']").val()
         var password = $("input[name='password']").val()
         //调C#。如果验证通过，C#将页面跳到info.html，否则C#将错误信息返回show_alert()
