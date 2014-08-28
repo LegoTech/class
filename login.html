@@ -94,7 +94,7 @@
         var _el = $("#login_alert")
         var rhtml = '<button type="button" class="close" data-dismiss="alert">x</button>'
         for ( key in _ops ) {
-          rhtml += "<p><strong>"+key+"</strong>"+_ops[key].desc+"</p>"
+          rhtml += "<p><strong>"+key+"</strong>"+_ops[key]+"</p>"
         }
         _el.html(rhtml).show('bounce', {}, 500)
       }
@@ -103,7 +103,7 @@
         var username = $("input[name='username']").val()
         var password = $("input[name='password']").val()
         //调C#。如果验证通过，C#将页面跳到info.html，否则C#将错误信息返回show_alert()
-          
+        var txt = window.external.CheckAuth(username+'@'+password);
       });
     </script>
 
