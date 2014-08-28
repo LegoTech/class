@@ -106,6 +106,9 @@ util.show_navbar = function(_ops){
                 + that.user.name +'<b class="caret"></b></a>\
                 <ul class="dropdown-menu" role="menu" aria-labelledby="uLabel">\
                   <li>\
+                    <a href="#user_modal">修改密码</a>\
+                  </li>\
+                  <li>\
                     <a data-type="signout">注销！</a>\
                   </li>\
                 </ul>\
