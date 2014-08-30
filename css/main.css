@@ -227,6 +227,14 @@ table th[class*="span"],
   margin-left: 0;
 }
 
+
+.opacity-5{
+ filter:alpha(opacity=50);  
+      -moz-opacity:0.5;  
+      -khtml-opacity: 0.5;  
+      opacity: 0.5;    
+}
+
 /*info*/
 .add-on-label{
   background-color: #3a87ad;

@@ -51,7 +51,7 @@ account.show = function(){
   var defaultv = {}, iclasses = [], haslastclass = false
   if ( !that._search && !that.infos ) {
     rhtml = '<h4>'+that.pages[that._hash].title+'请刷卡</h4>'
-  //}else if ( $.isEmptyObject(that.infos) ){
+  }else if ( $.isEmptyObject(that.infos) ){
     //调C#函数，将that._search内容传给后台，后台再调forcs_getinfo
   }else{
     switch ( that._hash ) {
@@ -109,7 +109,7 @@ account.show = function(){
     }
     
     var tmp = ''
-    var spinners = []
+    var spinners = ''
     var valuehtml = '', rhtml = ''
     rhtml = '<form class="form-horizontal" data-value="'+defaultv.StuId+'">'
     for (var k=0; k<lists.length; k++) {
@@ -127,7 +127,7 @@ account.show = function(){
                       '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disabled?' disabled':'') + '>\
                     </div>\
                   </div>'
-        if ( inputs[tmp].spinner ) {spinners.push(tmp)}
+        if ( inputs[tmp].spinner ) {spinners = tmp}
         continue;
       }    
       if ( selects[tmp] ) {
@@ -147,43 +147,69 @@ account.show = function(){
     }  
     rhtml += '<div class="control-group">\
                 <div class="controls">\
-                  <a class="btn btn-info submit">'+that.pages[that._hash].title+'</a>\
+                  <a class="btn btn-large btn-primary submit">'+that.pages[that._hash].title+'</a>\
               </div></div>'
     rhtml += '</form>'
   }
   var _el = $('#'+that._hash)
   _el.empty().html(rhtml)
-  for ( var i=0; i<spinners.length; i++ ) {
-    var spinneroption = {
-      min: 1,
-      step: 1,
-      change: setcount_change
-    }
-    _el.find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
-  }
-  (function(infos){
+    
+  !(function (infos){
     var iclasses = []
     $.extend(iclasses, infos.classes)
+
     _el.find('select').change(function(){
       var ClassId = parseInt($(this).val())
       var haslastclass = false
       for ( var j=0; j<iclasses.length; j++ ) {
-        if ( iclasses[j].ClassId==that.lastconsuming.ClassId ) {haslastclass=true; break;}
+        if ( iclasses[j].ClassId==ClassId ) {haslastclass=true; break;}
       } 
       _el.find('input[name="StartTime"]').val(iclasses[j].StartTime)
       _el.find('input[name="EndTime"]').val(iclasses[j].EndTime)
       _el.find('input[name="Hours"]').val(iclasses[j].Hours)
     });
+
+    function spinnerchange(){
+      var count = parseInt($(this).val())
+      _el.find('input[name="ChargingMoney"]').val((parseFloat(that.infos.ClassSet.Money)*count) + '元')
+      _el.find('input[name="ChargingHours"]').val((parseFloat(that.infos.ClassSet.Hours)*count) + '课时')
+    }
+    var spinneroption = {
+      min: 1,
+      step: 1,
+      change: spinnerchange,
+      stop: spinnerchange
+    }
+    spinners && _el.find('input[name="'+spinners+'"]').spinner(spinneroption);
+
+    _el.find('a.submit').on('click', function(e){
+      var that = account
+      var _el = $('#'+that._hash)
+      var StuId = parseInt($(this).siblings('form').attr('data-value'))
+      if ( account._hash === 'consuming' ) {
+        var ClassId = _el.find('select[name="ClassId"]').val()
+        if ( !ClassId ) {
+          util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
+          _el.find('form').effect('bounce', {}, 1000, function(){});
+          return;
+        }
+        that.lastconsuming.ClassId = ClassId
+        util.show_help({$th:_el.find('select[name="ClassId"]'), iserror:false})
+      }else{
+        var SetCount = _el.find('input[name="SetCount"]').val()
+        util.show_help({$th:_el.find('input[name="ClassId"]'), iserror:false})
+      }
+      //调C#函数提交
+      $(this).parents('form').effect('drop', {}, 1000, function(){
+        window.location.href = 'account.html#'+that._hash
+        that.infos = {}
+        that.show()
+      });
+    });
   })(that.infos);
 }
 
-function setcount_change(e){
-  var count = parseInt($(this).val())
-  _el.find('input[name="ChargingMoney"]').val((parseFloat(that.infos.ClassSet.Money)*count) + '元')
-  _el.find('input[name="ChargingHours"]').val((parseFloat(that.infos.ClassSet.Hours)*count) + '课时')
-}
-
-/*C#调该函数将信息传给前台
+/*C#调该函数将信息传给前台,两种infos见59行和91行
 */
 function forcs_getinfo(){
   account.infos = {}
@@ -207,25 +233,4 @@ $('#charging').hide()
 $('#consuming').hide()
 $('#'+that._hash).show()
 that.show()
-});
-
-$('a.submit').on('click', function(e){
-  var that = account
-  var _el = $('#'+that._hash)
-  var StuId = parseInt($(this).siblings('form').attr('data-value'))
-  if ( account._hash === 'consuming' ) {
-    var ClassId = _el.find('input[name="ClassId"]').val()
-    if ( !ClassId ) {
-      util.show_help({$th:_el.find('input[name="ClassId"]'), desc:'请选择课程', iserror:true})
-      $(this).siblings('form').effect('bounce', {}, 500, function(){});
-      return;
-    }
-    that.lastconsuming.ClassId = ClassId
-  }else{
-    var SetCount = _el.find('input[name="SetCount"]').val()
-  }
-  //调C#函数提交
-  $(this).siblings('form').effect('drop', {}, 500, function(){
-    window.location.href = 'account.html#'+that._hash
-  });
 });

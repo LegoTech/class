@@ -1,11 +1,11 @@
 admin = {}
 admin._hash = ""
 admin.pages = {
+  center: {
+    title: "中心信息"
+  },
 	authority: {
 		title: "用户权限"
-	},
-	center: {
-		title: "中心信息"
 	},
   set: {
     title: "套餐信息"
@@ -26,7 +26,28 @@ admin.hashchange = function(){
     }
 }
 
-admin.show = function(){}
+admin.show = function(){
+  var that = this
+  $('#'+that._hash).empty().html('<div class="span5" id="'+that._hash+'_table"></div><div class="span5" id="'+that._hash+'_table"></div>')
+  //C#读取当前权限可以看到的所有中心的信息
+  var _ops = {
+    thead: ['desc', 'name'],
+    tbody: [[1,'sss', 'dd'], [2,'ssss', '22']],
+    page:{            //（可选）
+      cur: 1,
+      count: 11
+    }
+  }
+  var trlength = _ops.tbody.length,
+      value
+  for (var i=0; i<trlength; i++) {
+    value = _ops.tbody[i].shift()
+    _ops.tbody[i].push('<a class="btn btn-primary" data-type="update" data-value="'+value+'" href="#"><i class="icon-wrench icon-white"></i>修改</a>')
+  }
+  _ops.thead.push('操作')
+  util.show_table({id:that._hash+'_table', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
+  $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i>添加'+that.pages[that._hash].title+'</a></p>')
+}
 
 $(function() {
 // Handler for .ready() called.
