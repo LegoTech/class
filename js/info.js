@@ -118,6 +118,8 @@ info.show = function(){
             </p>' + rhtml
   }
   $('#'+that._hash).empty().html(rhtml)
+  util.show_modal({id:'add_students_modal'})
+  util.show_modal({id:'add_classes_modal'})
 	info.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
   forcs_back()
@@ -260,7 +262,7 @@ $(document).on('click', function(e){
         op = _ta.attr('data-op')
         switch ( that._hash ) {
           case 'students': case 'charging':
-            defaultvkey = 'CardNo'
+            defaultvkey = 'StuId'
           break; case 'classes':
             defaultvkey = 'ClassId'
           break;
@@ -276,6 +278,7 @@ $(document).on('click', function(e){
         }else{
           switch ( op ) {
             case 'update':
+              util.show_modal({id:'update_'+op+'_modal', valueid:value})
               $('#update_'+that._hash+'_modal').modal('show')
             break;
           }

@@ -140,10 +140,10 @@ util.show_navbar = function(_ops){
           </div><!--/.nav-collapse -->\
         </div>\
       </div>'
-    console.log(rhtml)
     var _el = $('#'+_ops.id)
     _el.addClass('navbar navbar-inverse navbar-fixed-top').empty().html(rhtml)
     $('.dropdown-toggle').dropdown()
+    that.show_modal({id:'user_modal'})
     _el.find('ul.pull-right').find('a').on('click', function(e){
       var type = $(this).attr('data-type')
       if ( !type ) return true;
@@ -291,15 +291,17 @@ util.show_pagination = function(_ops){
 */
 util.show_modal = function(_ops){
   var _el = $('#'+_ops.id)
+  var that = this
   //inputs,默认type为text，不为text另外说明，默认placeholder为desc
   //autocomplete, date, spinner为bool
   var inputs = {
     CardNo:     {desc: '学员卡号'},
+    StuId:      {desc: '学生编号'},
     StuName:    {desc: '学生姓名',      autocomplete: true},
     School:     {desc: '学校'},
     ClassId:    {desc: '课程编号'},
     ClassName:  {desc: '课程名',        autocomplete: true},
-    Birth:      {desc: '年龄',          date:true},
+    Birth:      {desc: '生日',          date:true},
     Address:    {desc: '地址'},
     Parents:    {desc: '家长'},
     Phone:      {desc: '电话'},
@@ -309,7 +311,7 @@ util.show_modal = function(_ops){
     EndTime:    {desc: '结束时间',      date:true},
     OriPassword:{desc: '原始密码',      type:'password'},
     NewPassword:{desc: '新密码',        type:'password'},
-    RePassword: {desc: '确认密码'},     type:'password'}
+    RePassword: {desc: '确认密码',      type:'password'}
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
       Status = {0:"开始", 1:"结束" },
@@ -335,7 +337,7 @@ util.show_modal = function(_ops){
       lists = ['OriPassword', 'NewPassword', 'RePassword']
     break; case 'add_students_modal':
       title = '添加学员'
-      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
+      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId', 'CardNo']
     break; case 'add_classes_modal':
       title = '添加课程'
       lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
@@ -344,18 +346,19 @@ util.show_modal = function(_ops){
         defaultv = {}   //C#查数据
       }
       title = '修改学员信息'
-      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
-      disablelists = ['CardNo']
+      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId', 'CardNo', 'StuId']
+      disablelists = ['StuId']
     break; case 'update_classes_modal':
       if ( _ops.valueid ) {
         defaultv = {}   //C#查数据
       }
       title = '修改课程信息'
-      lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
       switch ( parseInt(defaultv.Status) ) {
         case 0:             //未进行
+          lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']
           disablelists = ['ClassId']
         break; case 1:      //进行中
+          lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']
           disablelists = ['ClassId', 'StartTime']
         break; case 2:      //已结束
           content = '课程已结束，不能修改课程信息'
@@ -367,270 +370,223 @@ util.show_modal = function(_ops){
       return;
     break;
   }
-  var rhtml = '<div class="modal-header">\
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
-                <h3 id="myModalLabel">' + title + '</h3>\
-              </div>\
-              <div class="modal-body">\
-                <form class="form-horizontal">'
-  var tmp = ""
-  var autos = []
-  var valuehtml = ""
-  for (var k=0; k<_ops.lists.length; k++) {
-    tmp = _ops.lists[k]
+  
+  var tmp = ''
+  var autos = [], dates = [], spinners = []
+  var valuehtml = '', rhtml = ''
+  for (var k=0; k<lists.length; k++) {
+    tmp = lists[k]
     if ( inputs[tmp] ) {
-      if ( _ops.defaultv[tmp] ) {
-        valuehtml = ' value="' + _ops.defaultv[tmp] + '"'
+      if ( defaultv[tmp] ) {
+        valuehtml = ' value="' + defaultv[tmp] + '"'
       }else{
         valuehtml = ""
       }
       rhtml += '<div class="control-group">\
-                  <label class="control-label" for="inputEmail">' + inputs[tmp].desc + '</label>\
-                  <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
-                  '" placeholder="' + inputs[tmp].desc + '"' + valuehtml +'>\
+                  <label class="control-label" for="' + _ops.id + '_' + tmp + '_input">' + inputs[tmp].desc + '</label>\
+                  <div class="controls">\
+                    <input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                    '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + ($.inArray(tmp, disablelists)>-1?' disabled':'') + '>\
+                    <span class="help-inline"></span>\
+                  </div>\
                 </div>'
       if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
+      if ( inputs[tmp].date ) {dates.push(tmp)}
+      if ( inputs[tmp].spinner ) {spinners.push(tmp)}
       continue;
     }    
     if ( selects[tmp] ) {
       rhtml += '<div class="control-group">\
-                  <span class="add-on add-on-info">' + selects[tmp].desc + '</span>\
-                  <select name="' + tmp + '"><option value="">' + selects[tmp].desc + '</option>'
+                  <label class="control-label" for="' + _ops.id + '_' + tmp + '_select">' + selects[tmp].desc + '</label>\
+                  <div class="controls">\
+                    <select name="' + tmp + '" id="' + _ops.id + '_' + tmp + '_select"><option value="">' + selects[tmp].desc + '</option>'
       for ( key in selects[tmp]["options"] ) {
-        if ( _ops.defaultv[tmp] === key ) {
+        if ( defaultv[tmp] === key ) {
           rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
         }else{
           rhtml += '<option value="' + key + '">' + selects[tmp]["options"][key] + '</option>'
         }      
       }
-      rhtml += '</select></div>'
+      rhtml += '</select><span class="help-inline"></span></div></div>'
     }
   }
-      rhtml += '</form>\
+  if ( content )  {rhtml = content}
+
+  var chtml = '<div class="modal-header">\
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+                <h3 id="myModalLabel">' + title + '</h3>\
+              </div>\
+              <div class="modal-body">\
+                <form class="form-horizontal">'+ rhtml +'</form>\
               </div>\
               <div class="modal-footer">\
-                <button class="btn" data-dismiss="modal">关闭</button>\
-                <button class="btn btn-primary modal_savechange">保存</button>\
+                <a class="btn" data-dismiss="modal">关闭</a>\
+                <a class="btn btn-primary modal_savechange">保存</a>\
               </div>\
             </div>'
+  _el.empty().html(chtml)
+  for ( var i=0; i<autos.length; i++ ) {
+    $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
+      source: that.autoarr[autos[i]]
+    });
+  }
+  for ( i=0; i<dates.length; i++ ) {
+    var dateoption = {
+      changeMonth: true,
+      changeYear: true,
+      dateFormat: 'yy-mm-dd',
+      showAnim: 'blind'
+    }
+    $("#"+_ops.id).find('input[name="'+dates[i]+'"]').datepicker(dateoption);
+  }
+  for ( i=0; i<spinners.length; i++ ) {
+    var spinneroption = {
+      min: 0,
+      step: 0.5
+    }
+    $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
+  }
+  _el.find('a.modal_savechange').click(function(){
+    var inputs = _el.find(':input')
+    var selects = _el.find('select')
+    if ( !inputs.length && !selects.length ) {
+      _el.modal('hide')
+      return ;
+    }
+    var noerror = that.valid({inputs:inputs, selects:selects})
+    var defaultv = {}
+    noerror && (defaultv = noerror)
+    var valuestring = JSON.stringify(defaultv)
+    var haserror = false
+    var inputtmp
+    noerror && ( haserror = eval("(" + "false" + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
+    if ( noerror && !haserror ) {
+      _el.find('form').effect('drop', {}, 500, function(){
+        _el.modal('hide')
+        setTimeout(function(){
+          util.show_modal(_ops)
+        },2000)
+      })     
+    }else{
+      for ( key in haserror ) {
+        inputtmp = $('#' + _ops.id + '_' + key + '_input')
+        if ( !inputtmp.length ) {
+          inputtmp = $('#' + _ops.id + '_' + key + '_select')
+        }
+        if ( !inputtmp.length ) {
+          continue;
+        }
+        that.show_help({$th:inputtmp, desc:haserror[key], iserror:true})
+      }
+      _el.find('form').effect('bounce', {}, 300)
+    }
+  });
 }
 
 /*_ops:{
-  id:''       //容器
+  $th: $(),
+  desc: '',
+  iserror: true
 }
-仅限有<span class="help-inline"></spam>使用
+仅限有<span class="help-inline"></span>使用
+*/
+util.show_help = function(_ops){
+  if ( _ops.iserror ) {
+    _ops.$th.siblings('span.help-inline').empty().append(_ops.desc + ' ')
+    _ops.$th.parents('.control-group').removeClass('success').addClass('error')
+  }else{
+    _ops.$th.siblings('span.help-inline').empty()
+    _ops.$th.parents('.control-group').removeClass('error').addClass('success')
+  }
+}
+
+/*_ops:{
+  inputs: [],
+  selects: []
+}
+仅限有<span class="help-inline"></span>使用
 */
 util.valid = function(_ops){
-      var error_num=0;
-      var sqlbad_pattern = new RegExp(/select|update|delete|exec|count|=|;|%/i);
-    
-    var title = undefined;
-    title=$("input[name='title']").val();
-    if(title!=undefined &&title.length<1){
-      $('#error_info').append("<p><strong>标题错误！</strong>标题不能为空</p>");
-      error_num++;
-    }
-    else if(title!=undefined){
-      if (title.length>50) {
-        $('#error_info').append("<p><strong>标题错误！</strong>标题超长</p>");
-        error_num++;
-      };
-      if (sqlbad_pattern.test(title)) {
-        $('#error_info').append("<p><strong>标题错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };    
-    }
-    
-    var content= undefined;
-    content=$("textarea[name='content']").val();
-    if(content!=undefined &&content.length<1){
-      $('#error_info').append("<p><strong>内容错误！</strong>内容不能为空</p>");
-      error_num++;
-    }
-    if(content!=undefined){
-      if (content.length>1000) {
-        $('#error_info').append("<p><strong>内容错误！</strong>内容超长</p>");
-        error_num++;
-      };
-      if (sqlbad_pattern.test(content)) {
-        $('#error_info').append("<p><strong>内容错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };      
-    }
-    
-    var username= undefined;
-    username=$("input[name='username']").val();
-    if(username!=undefined &&username.length<1){
-      $('#error_info').append("<p><strong>用户名错误！</strong>用户名不能为空</p>");
-      error_num++;
-    }
-    else if(username!=undefined){
-      var username_pattern = new RegExp(/^[\w-.\u4e00-\u9fa5]+$/); 
-      if(!username_pattern.test(username)){
-        $('#error_info').append("<p><strong>用户名错误！</strong>用户名只能由中文、字母、数字、下划线、连字符、半角句点组成</p>");
-        error_num++;
-      }
-      if (sqlbad_pattern.test(username)) {
-        $('#error_info').append("<p><strong>用户名错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };    
-    }
-    /*var repeatname=undefined;
-    repeatname= $('#repeat_name').html();
-    if (repeatname!=undefined){
-      $('#error_info').append("<p><strong>用户名错误！</strong>此用户名已被注册</p>");
-      error_num++;      
-    }*/
-    
-    var pwd= undefined;
-    pwd=$("input[name='pwd']").val();
-    if(pwd!=undefined &&pwd.length<1){
-      $('#error_info').append("<p><strong>密码错误！</strong>密码不能为空</p>");
-      error_num++;
-    }
-    else if(pwd!=undefined &&pwd.length<6){
-      $('#error_info').append("<p><strong>密码错误！</strong>密码至少为六位</p>");
-      error_num++;
-    }
-    else if(pwd!=undefined){
-      var pwd_pattern = new RegExp(/^[\w]+$/); 
-      if(!pwd_pattern.test(pwd)){
-        $('#error_info').append("<p><strong>密码错误！</strong>用户名只能由字母、数字、下划线组成</p>");
-        error_num++;
-      }
-      if (sqlbad_pattern.test(pwd)) {
-        $('#error_info').append("<p><strong>密码错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };  
-    }
-    
-    var pwd2= undefined;
-    pwd2=$("input[name='pwd2']").val();
-    if(pwd2!=undefined &&pwd2.length<1){
-      $('#error_info').append("<p><strong>确认密码错误！</strong>确认密码不能为空</p>");
-      error_num++;
-    }
-    else if(pwd2!=undefined &&pwd!=pwd2){
-      $('#error_info').append("<p><strong>确认密码错误！</strong>确认密码与密码不相同</p>");
-      error_num++;
-    }
-    
-    var email= undefined;
-    email=$("input[name='email']").val();
-    if(email!=undefined &&email.length<1){
-      $('#error_info').append("<p><strong>Email错误！</strong>Email不能为空</p>");
-      error_num++;
-    }
-    else if(email!=undefined){
-      var email_pattern = new RegExp(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]+$/); 
-      if(!email_pattern.test(email)){
-        $('#error_info').append("<p><strong>Email错误！</strong>您输入的Email错误，请重新输入</p>");
-        error_num++;
-      }
-      if (sqlbad_pattern.test(email)) {
-        $('#error_info').append("<p><strong>Email错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };  
-    }
-    
-    var tel= undefined;
-    tel=$("input[name='tel']").val();
-    if(tel!=undefined &&tel.length<1){
-      $('#error_info').append("<p><strong>联系电话错误！</strong>联系电话不能为空</p>");
-      error_num++;
-    }
-    else if(tel!=undefined){
-      var tel_pattern = new RegExp(/^[0-9+-]+$/); 
-      if(!tel_pattern.test(tel)){
-        $('#error_info').append("<p><strong>联系电话错误！</strong>您输入的号码错误，请重新输入</p>");
-        error_num++;
-      }
-    }
-    
-    var address= undefined;
-    address=$("input[name='address']").val();
-    if(address!=undefined &&address.length<1){
-      $('#error_info').append("<p><strong>联系地址错误！</strong>联系地址不能为空</p>");
-      error_num++;
-    }
-    else if(address!=undefined){
-      var address_pattern = new RegExp(/^[\w\u4e00-\u9fa5]+$/); 
-      if(!address_pattern.test(address)){
-        $('#error_info').append("<p><strong>联系地址错误！</strong>联系地址格式错误</p>");
-        error_num++;
-      }
-      if (sqlbad_pattern.test(address)) {
-        $('#error_info').append("<p><strong>联系地址错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };  
-    }
-    
-    var limit= undefined;
-    limit=$("input[name='limit']").val();
-    if(limit!=undefined &&limit.length<1){
-      $('#error_info').append("<p><strong>上限人数错误！</strong>上限人数不能为空</p>");
-      error_num++;
-    }
-    else if(limit!=undefined){
-      var limit_pattern = new RegExp(/^[\d]+$/); 
-      if(!limit_pattern.test(limit)){
-        $('#error_info').append("<p><strong>上限人数错误！</strong>上限人数只能为数字</p>");
-        error_num++;
-      }
-      if(limit>20){
-        $('#error_info').append("<p><strong>上限人数错误！</strong>上限人数不超过20</p>");
-        error_num++;
-      }
-    }
+    var error_num = 0, iserror = false 
+        that = this
+    var sqlbad_pattern = new RegExp(/select|update|delete|exec|count|=|;|%/i),
+        pwd_pattern = new RegExp(/^[\w]+$/),
+        tel_pattern = new RegExp(/^[0-9+-]+$/),
+        number_pattern = new RegExp(/^[\d]+$/),
+        dete_pattern = new RegExp(/\b\d{2}[\/-]\d{1,2}[\/-]\d{1,2}\b/);
 
-    var url= undefined;
-    url=$("input[name='url']").val();
-    if(url!=undefined &&url.length>0){
-      var url_pattern = new RegExp("(http[s]{0,1})://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&amp;*+?:_/=<>]*)?", "gi");
-      if(!url_pattern.test(url)){
-        $('#error_info').append("<p><strong>链接错误！</strong>链接地址有误</p>");
-        error_num++;
+    var defaultv = {}
+    var $th, val, 
+        npwd = _ops.inputs.filter('[name="NewPassword"]').val()
+    _ops.inputs.each(function(index, element){
+      iserror = false
+      $th = $(element)
+      val = $th.val()
+      if ( !val ) {
+        that.show_help({$th:$th, desc:'不能为空', iserror:true})
+        error_num++; iserror = true
+        return ;
       }
-      if (sqlbad_pattern.test(url)) {
-        $('#error_info').append("<p><strong>链接错误！</strong>请不要输入特殊字符和SQL关键字</p>");
-        error_num++;
-      };  
-    }   
-    
-    var deadline= undefined;
-    deadline=$("input[name='deadline']").val();
-    if(deadline!=undefined &&deadline.length<1){
-      $('#error_info').append("<p><strong>截止日期错误！</strong>截止日期不能为空</p>");
-      error_num++;
-    }
-    else if(deadline!=undefined){
-      var deadline_pattern = new RegExp(/\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/); 
-      if(!deadline_pattern.test(deadline)){
-        $('#error_info').append("<p><strong>截止日期错误！</strong>截止日期格式应为mm/dd/yyyy</p>");
-        error_num++;
+      if ( val.length>50 ) {
+        that.show_help({$th:$th, desc:'输入过长', iserror:true})
+        error_num++; iserror = true
       }
-    }
-
-
-    var verification= undefined;
-    verification=$("input[name='verification']").val();
-    if(verification!=undefined &&verification.length<1){
-      $('#error_info').append("<p><strong>验证码错误！</strong>验证码不能为空</p>");
-      error_num++;
-    }
-    else if(verification!=undefined){
-      val=$("#verify").html();
-      if(verification!=val){
-        $('#error_info').append("<p><strong>验证码错误！</strong>请输入正确的验证码</p>");
-        error_num++;
+      if ( sqlbad_pattern.test(val) ) {
+        that.show_help({$th:$th, desc:'请不要输入特殊字符和SQL关键字', iserror:true})
+        error_num++; iserror = true
       }
-    }
+      switch (element.name) {
+        case 'NewPassword':
+          if ( val.length<6 ) {
+            that.show_help({$th:$th, desc:'密码至少为六位', iserror:true})
+            error_num++; iserror = true
+          }
+          if(!pwd_pattern.test(val)){
+            that.show_help({$th:$th, desc:'密码只能由字母、数字、下划线组成', iserror:true})
+            error_num++; iserror = true
+          }
+        break; case 'RePassword':
+          if ( npwd!=undefined && npwd!=val ){
+            that.show_help({$th:$th, desc:'确认密码与新密码不相同', iserror:true})
+            error_num++; iserror = true
+          }
+        break; case 'Phone':
+          if(!tel_pattern.test(val)){
+            that.show_help({$th:$th, desc:'号码错误', iserror:true})
+            error_num++; iserror = true
+          }
+        break; case 'StuId': case 'CardNo': case 'ClassId':
+          if(!number_pattern.test(val)){
+            that.show_help({$th:$th, desc:'只能为数字', iserror:true})
+            error_num++; iserror = true
+          }
+        break; case 'Birth': case 'StartTime': case 'EndTime':
+          if(!date_pattern.test(val)){
+            that.show_help({$th:$th, desc:'日期格式应为yy-mm-dd', iserror:true})
+            error_num++; iserror = true
+          }
+        break; 
+      }
 
-    if(error_num!=0){
-      $('#error_info').show();
-      return false;
-    }
-    else{return true;}
+      if ( !iserror ) {
+        that.show_help({$th:$th, iserror:false})
+        defaultv[element.name] = val
+      }
+    });
+    _ops.selects.each(function(index, element){
+      $th = $(element)
+      val = $th.val()
+      if ( !val ) {
+        that.show_help({$th:$th, desc:'不能为空', iserror:true})
+        error_num++;
+        return;
+      }
+
+      that.show_help({$th:$th, iserror:false})
+      defaultv[element.name] = val
+    });
+    if ( error_num ) return false;
+    return defaultv
 }
 
 $(function() {
