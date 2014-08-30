@@ -281,6 +281,10 @@ $(document).on('click', function(e){
             case 'update':
               util.show_modal({id:'update_'+that._hash+'_modal', valueid:value})
               $('#update_'+that._hash+'_modal').modal('show')
+            break; case 'AccCharging':
+              window.location.href = 'account.html?' + defaultvkey + '=' + value + '#charging'
+            break; case 'AccConsuming':
+              window.location.href = 'account.html?' + defaultvkey + '=' + value + '#consuming'
             break;
           }
         }

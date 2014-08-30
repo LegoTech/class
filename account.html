@@ -4,7 +4,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8"/>
     <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
     <title>lego Tech</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
 
@@ -20,9 +20,8 @@
     <![endif]-->
 
     <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
+      html{
+        height: 100%;
       }
 
     </style>
@@ -35,16 +34,19 @@
     <link rel="stylesheet" type="text/css" href="css/main.css">
   </head>
 
-<body>
+<body id="account">
+  <div class="background">
     <div id="navbar"></div>
-    <div class="container-fluid" id="accountimg">
+    <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span7 offset1" id="accountContent">
+        <div class="span5 offset2" id="accountContent">
+          <div id="charging"></div>
+          <div id="consuming"></div>
         </div><!--/span-->
         <div id="user_modal" class="modal hide fade" tabindex="-1" role="dialog" aria-hidden="true"></div>
       </div><!--/row-->
     </div><!--/.fluid-container-->
-
+  </div>
   
     <!-- Le javascript
     ================================================== -->

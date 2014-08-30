@@ -247,9 +247,33 @@ body{
 
 /*account*/
 #accountContent{
-  background-color: #fff
-  filter:alpha(opacity=50);  
-      -moz-opacity:0.5;  
-      -khtml-opacity: 0.5;  
-      opacity: 0.5;  
+  height: 100%;
+  padding: 40px 0;
+  background-color: #fff;
+  filter:alpha(opacity=95);  
+      -moz-opacity:0.95;  
+      -khtml-opacity: 0.95;  
+      opacity: 0.95;  
+}
+
+body#account{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
+body#account div.background{
+  width: 100%;
+  height: 100%;
+  background: #fff url(../img/account.jpg) no-repeat fixed;
+  background-position:0px 10px;
+}
+
+body#account div.background div.container-fluid,
+body#account div.background div.container-fluid div.row-fluid{
+  height: 100%;
+}
+
+#charging, #consuming{
+  padding: 25% 0;
 }
