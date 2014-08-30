@@ -285,33 +285,35 @@ util.show_pagination = function(_ops){
 }
 
 /*_ops:{
-  id:''               //容器
+  id:'',               //容器
+  valueid: 1            //如果是更新，读取数据
 }
 */
 util.show_modal = function(_ops){
   var _el = $('#'+_ops.id)
   //inputs,默认type为text，不为text另外说明，默认placeholder为desc
+  //autocomplete, date, spinner为bool
   var inputs = {
-    CardNo: {
-       desc: '学员卡号'
-    },
-    StuName: {
-        desc: '学生姓名',
-        autocomplete: true
-    },
-    School: {
-        desc: '学校'
-    },
-    ClassId: {
-        desc: '课程编号'
-    },
-    ClassName: {
-        desc: '课程名',
-        autocomplete: true
-    }
+    CardNo:     {desc: '学员卡号'},
+    StuName:    {desc: '学生姓名',      autocomplete: true},
+    School:     {desc: '学校'},
+    ClassId:    {desc: '课程编号'},
+    ClassName:  {desc: '课程名',        autocomplete: true},
+    Birth:      {desc: '年龄',          date:true},
+    Address:    {desc: '地址'},
+    Parents:    {desc: '家长'},
+    Phone:      {desc: '电话'},
+    Time:       {desc: '时间'},
+    Hours:      {desc: '课时数',        spinner:true},
+    StartTime:  {desc: '开始时间',      date:true},
+    EndTime:    {desc: '结束时间',      date:true},
+    OriPassword:{desc: '原始密码',      type:'password'},
+    NewPassword:{desc: '新密码',        type:'password'},
+    RePassword: {desc: '确认密码'},     type:'password'}
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
-      Status = {0:"开始", 1:"结束" }
+      Status = {0:"开始", 1:"结束" },
+      ClassSetName = {0:"xx", 1:"yy"}
   var selects = {
     TeacherId: {
         desc: '教师姓名',
@@ -320,20 +322,47 @@ util.show_modal = function(_ops){
     Status: {
         desc: '状态',
         options: Status
+    },
+    ClassSetId: {
+        desc: '套餐',
+        options: ClassSetName
     }
-  var title = '', lists = []
+  }
+  var title = '', lists = [], disablelists = [], defaultv = {}, content = ''
   switch ( _ops.id ) {
     case 'user_modal':
       title = '修改密码'
-      lists = []
+      lists = ['OriPassword', 'NewPassword', 'RePassword']
     break; case 'add_students_modal':
       title = '添加学员'
+      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
     break; case 'add_classes_modal':
       title = '添加课程'
+      lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
     break; case 'update_students_modal':
+      if ( _ops.valueid ) {
+        defaultv = {}   //C#查数据
+      }
       title = '修改学员信息'
+      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
+      disablelists = ['CardNo']
     break; case 'update_classes_modal':
+      if ( _ops.valueid ) {
+        defaultv = {}   //C#查数据
+      }
       title = '修改课程信息'
+      lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
+      switch ( parseInt(defaultv.Status) ) {
+        case 0:             //未进行
+          disablelists = ['ClassId']
+        break; case 1:      //进行中
+          disablelists = ['ClassId', 'StartTime']
+        break; case 2:      //已结束
+          content = '课程已结束，不能修改课程信息'
+        break; default:
+          return;
+        break;
+      }
     break; default:
       return;
     break;

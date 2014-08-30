@@ -42,23 +42,11 @@ info.show_search = function(_ops){
   var rhtml = ''
   //默认type为text，不为text另外说明，默认placeholder为desc
   var inputs = {
-    CardNo: {
-       desc: '学员卡号'
-    },
-    StuName: {
-        desc: '学生姓名',
-        autocomplete: true
-    },
-    School: {
-        desc: '学校'
-    },
-    ClassId: {
-        desc: '课程编号'
-    },
-    ClassName: {
-        desc: '课程名',
-        autocomplete: true
-    }
+    CardNo: {desc: '学员卡号'},
+    StuName: {desc: '学生姓名',autocomplete: true},
+    School: {desc: '学校'},
+    ClassId: {desc: '课程编号'},
+    ClassName: {desc: '课程名',autocomplete: true}
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
       Status = {0:"开始", 1:"结束" }
@@ -288,6 +276,7 @@ $(document).on('click', function(e){
         }else{
           switch ( op ) {
             case 'update':
+              $('#update_'+that._hash+'_modal').modal('show')
             break;
           }
         }
