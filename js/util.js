@@ -2,23 +2,23 @@ util = {
     pages:{
         info: {
             title: "信息",
-            url: "info"
+            url: "info.html"
         },
         charging: {
             title: "充值",
-            url: "account#charging"
+            url: "account.html#charging"
         },
         consuming: {
-            title: "消费",
-            url: "account#consuming"
+            title: "签到",
+            url: "account.html#consuming"
         },
         stat: {
             title: "统计",
-            url: "stat"
+            url: "stat.html"
         },
         admin: {
             title: "管理",
-            url: "admin",
+            url: "admin.html",
             admin: true
         }
     },
@@ -134,7 +134,7 @@ util.show_navbar = function(_ops){
         }else{
             rhtml += '<li>'
         }
-        rhtml += '<a href="'+that.pages[key].url+'.html">'+that.pages[key].title+'</a></li>'
+        rhtml += '<a href="'+that.pages[key].url+'">'+that.pages[key].title+'</a></li>'
     }
     rhtml += '</ul>\
           </div><!--/.nav-collapse -->\
@@ -337,7 +337,7 @@ util.show_modal = function(_ops){
       lists = ['OriPassword', 'NewPassword', 'RePassword']
     break; case 'add_students_modal':
       title = '添加学员'
-      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId', 'CardNo']
+      lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
     break; case 'add_classes_modal':
       title = '添加课程'
       lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
@@ -346,7 +346,7 @@ util.show_modal = function(_ops){
         defaultv = {}   //C#查数据
       }
       title = '修改学员信息'
-      lists = ['StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId', 'CardNo', 'StuId']
+      lists = ['StuId', 'CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
       disablelists = ['StuId']
     break; case 'update_classes_modal':
       if ( _ops.valueid ) {
@@ -355,7 +355,7 @@ util.show_modal = function(_ops){
       title = '修改课程信息'
       switch ( parseInt(defaultv.Status) ) {
         case 0:             //未进行
-          lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']
+          lists = ['ClassId', 'ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
           disablelists = ['ClassId']
         break; case 1:      //进行中
           lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']

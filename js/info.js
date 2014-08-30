@@ -106,10 +106,10 @@ info.show_search = function(_ops){
 info.show = function(){
   var that = this
 	var lists = {
-        students: ["StuId", "CardNo", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
-        classes: ["StuId", "ClassId", "ClassName", "CardNo", "StuName", "TeacherId", "Status"],
-        charging: ["StuId", "CardNo", "StuName"],
-        attendence: ["StuId", "CardNo", "StuName", "ClassId", "ClassName"]
+        students: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
+        classes: ["ClassId", "ClassName", "CardNo", "StuId", "StuName", "TeacherId", "Status"],
+        charging: ["CardNo", "StuId", "StuName"],
+        attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassName"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
   if ( $.inArray(that._hash, ['students', 'classes'])>-1 ) {
@@ -184,7 +184,7 @@ function forcs_back(_opstring){
   }
   switch ( that._hash ) {
     case 'students':
-      operate = {classes: "查看参加课程", charging: "查看充值信息", attendence: "查看上课情况", AccCharging: "充值", AccConsuming: "消费",
+      operate = {classes: "查看参加课程", charging: "查看充值信息", attendence: "查看上课情况", AccCharging: "充值", AccConsuming: "签到",
                 update: "修改学员信息", Selecting: "学员选课"}
     break; case 'classes':
       operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", Selecting: "课程报名"}
@@ -279,7 +279,7 @@ $(document).on('click', function(e){
         }else{
           switch ( op ) {
             case 'update':
-              util.show_modal({id:'update_'+op+'_modal', valueid:value})
+              util.show_modal({id:'update_'+that._hash+'_modal', valueid:value})
               $('#update_'+that._hash+'_modal').modal('show')
             break;
           }
