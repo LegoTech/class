@@ -43,6 +43,7 @@ info.show_search = function(_ops){
   //默认type为text，不为text另外说明，默认placeholder为desc
   var inputs = {
     CardNo: {desc: '学员卡号'},
+    StuId: {desc: '学员编号'},
     StuName: {desc: '学生姓名',autocomplete: true},
     School: {desc: '学校'},
     ClassId: {desc: '课程编号'},
@@ -105,10 +106,10 @@ info.show_search = function(_ops){
 info.show = function(){
   var that = this
 	var lists = {
-        students: ["CardNo", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
-        classes: ["ClassId", "ClassName", "CardNo", "StuName", "TeacherId", "Status"],
-        charging: ["CardNo", "StuName"],
-        attendence: ["CardNo", "StuName", "ClassId", "ClassName"]
+        students: ["StuId", "CardNo", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
+        classes: ["StuId", "ClassId", "ClassName", "CardNo", "StuName", "TeacherId", "Status"],
+        charging: ["StuId", "CardNo", "StuName"],
+        attendence: ["StuId", "CardNo", "StuName", "ClassId", "ClassName"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
   if ( $.inArray(that._hash, ['students', 'classes'])>-1 ) {
