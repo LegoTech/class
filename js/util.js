@@ -91,17 +91,17 @@ util.show_navbar = function(_ops){
     var that = this
     var ct = that.center
     chtml += '<li class="dropdown">\
-                <a href="javascript:void(0)" id="cLabel" class="dropdown-toggle" data-toggle="dropdown">'
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">'
                 + ct.desc[ct.cur] +'<b class="caret"></b></a>\
-                <ul class="dropdown-menu" role="menu" aria-labelledby="cLabel">'
+                <ul class="dropdown-menu">'
     for ( key in ct.desc ) {
-      if ( key === ct.cur ) {
-        chtml += '<li>\
-                    <a data-type="center" data-value="' + key + '">' + ct.desc[key] + '</a>\
+      if ( parseInt(key) === ct.cur ) {
+        chtml += '<li class="active">\
+                    <a data-type="center" data-value="' + key + '" href="#">' + ct.desc[key] + '</a>\
                   </li>'
       }else{
         chtml += '<li>\
-                    <a data-type="center" data-value="' + key + '">' + ct.desc[key] + '</a>\
+                    <a data-type="center" data-value="' + key + '" href="#">' + ct.desc[key] + '</a>\
                   </li>'
       }
     }
@@ -113,11 +113,11 @@ util.show_navbar = function(_ops){
           <div class="nav-collapse collapse">\
             <ul class="nav pull-right">\
               <li class="dropdown">\
-                <a href="javascript:void(0)" id="uLabel" class="dropdown-toggle" data-toggle="dropdown">'
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">'
                 + that.user.name +'<b class="caret"></b></a>\
-                <ul class="dropdown-menu" role="menu" aria-labelledby="uLabel">\
+                <ul class="dropdown-menu">\
                   <li>\
-                    <a href="#user_modal">修改密码</a>\
+                    <a href="#user_modal" data-toggle="modal">修改密码</a>\
                   </li>\
                   <li>\
                     <a data-type="signout">注销！</a>\
@@ -140,6 +140,7 @@ util.show_navbar = function(_ops){
           </div><!--/.nav-collapse -->\
         </div>\
       </div>'
+    console.log(rhtml)
     var _el = $('#'+_ops.id)
     _el.addClass('navbar navbar-inverse navbar-fixed-top').empty().html(rhtml)
     $('.dropdown-toggle').dropdown()
@@ -282,3 +283,329 @@ util.show_pagination = function(_ops){
           </div>'
   $('#'+_ops.id).empty().html(rhtml)
 }
+
+/*_ops:{
+  id:''               //容器
+}
+*/
+util.show_modal = function(_ops){
+  var _el = $('#'+_ops.id)
+  //inputs,默认type为text，不为text另外说明，默认placeholder为desc
+  var inputs = {
+    CardNo: {
+       desc: '学员卡号'
+    },
+    StuName: {
+        desc: '学生姓名',
+        autocomplete: true
+    },
+    School: {
+        desc: '学校'
+    },
+    ClassId: {
+        desc: '课程编号'
+    },
+    ClassName: {
+        desc: '课程名',
+        autocomplete: true
+    }
+  }
+  var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
+      Status = {0:"开始", 1:"结束" }
+  var selects = {
+    TeacherId: {
+        desc: '教师姓名',
+        options: TeacherNames
+    },
+    Status: {
+        desc: '状态',
+        options: Status
+    }
+  var title = '', lists = []
+  switch ( _ops.id ) {
+    case 'user_modal':
+      title = '修改密码'
+      lists = []
+    break; case 'add_students_modal':
+      title = '添加学员'
+    break; case 'add_classes_modal':
+      title = '添加课程'
+    break; case 'update_students_modal':
+      title = '修改学员信息'
+    break; case 'update_classes_modal':
+      title = '修改课程信息'
+    break; default:
+      return;
+    break;
+  }
+  var rhtml = '<div class="modal-header">\
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>\
+                <h3 id="myModalLabel">' + title + '</h3>\
+              </div>\
+              <div class="modal-body">\
+                <form class="form-horizontal">'
+  var tmp = ""
+  var autos = []
+  var valuehtml = ""
+  for (var k=0; k<_ops.lists.length; k++) {
+    tmp = _ops.lists[k]
+    if ( inputs[tmp] ) {
+      if ( _ops.defaultv[tmp] ) {
+        valuehtml = ' value="' + _ops.defaultv[tmp] + '"'
+      }else{
+        valuehtml = ""
+      }
+      rhtml += '<div class="control-group">\
+                  <label class="control-label" for="inputEmail">' + inputs[tmp].desc + '</label>\
+                  <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                  '" placeholder="' + inputs[tmp].desc + '"' + valuehtml +'>\
+                </div>'
+      if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
+      continue;
+    }    
+    if ( selects[tmp] ) {
+      rhtml += '<div class="control-group">\
+                  <span class="add-on add-on-info">' + selects[tmp].desc + '</span>\
+                  <select name="' + tmp + '"><option value="">' + selects[tmp].desc + '</option>'
+      for ( key in selects[tmp]["options"] ) {
+        if ( _ops.defaultv[tmp] === key ) {
+          rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
+        }else{
+          rhtml += '<option value="' + key + '">' + selects[tmp]["options"][key] + '</option>'
+        }      
+      }
+      rhtml += '</select></div>'
+    }
+  }
+      rhtml += '</form>\
+              </div>\
+              <div class="modal-footer">\
+                <button class="btn" data-dismiss="modal">关闭</button>\
+                <button class="btn btn-primary modal_savechange">保存</button>\
+              </div>\
+            </div>'
+}
+
+/*_ops:{
+  id:''       //容器
+}
+仅限有<span class="help-inline"></spam>使用
+*/
+util.valid = function(_ops){
+      var error_num=0;
+      var sqlbad_pattern = new RegExp(/select|update|delete|exec|count|=|;|%/i);
+    
+    var title = undefined;
+    title=$("input[name='title']").val();
+    if(title!=undefined &&title.length<1){
+      $('#error_info').append("<p><strong>标题错误！</strong>标题不能为空</p>");
+      error_num++;
+    }
+    else if(title!=undefined){
+      if (title.length>50) {
+        $('#error_info').append("<p><strong>标题错误！</strong>标题超长</p>");
+        error_num++;
+      };
+      if (sqlbad_pattern.test(title)) {
+        $('#error_info').append("<p><strong>标题错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };    
+    }
+    
+    var content= undefined;
+    content=$("textarea[name='content']").val();
+    if(content!=undefined &&content.length<1){
+      $('#error_info').append("<p><strong>内容错误！</strong>内容不能为空</p>");
+      error_num++;
+    }
+    if(content!=undefined){
+      if (content.length>1000) {
+        $('#error_info').append("<p><strong>内容错误！</strong>内容超长</p>");
+        error_num++;
+      };
+      if (sqlbad_pattern.test(content)) {
+        $('#error_info').append("<p><strong>内容错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };      
+    }
+    
+    var username= undefined;
+    username=$("input[name='username']").val();
+    if(username!=undefined &&username.length<1){
+      $('#error_info').append("<p><strong>用户名错误！</strong>用户名不能为空</p>");
+      error_num++;
+    }
+    else if(username!=undefined){
+      var username_pattern = new RegExp(/^[\w-.\u4e00-\u9fa5]+$/); 
+      if(!username_pattern.test(username)){
+        $('#error_info').append("<p><strong>用户名错误！</strong>用户名只能由中文、字母、数字、下划线、连字符、半角句点组成</p>");
+        error_num++;
+      }
+      if (sqlbad_pattern.test(username)) {
+        $('#error_info').append("<p><strong>用户名错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };    
+    }
+    /*var repeatname=undefined;
+    repeatname= $('#repeat_name').html();
+    if (repeatname!=undefined){
+      $('#error_info').append("<p><strong>用户名错误！</strong>此用户名已被注册</p>");
+      error_num++;      
+    }*/
+    
+    var pwd= undefined;
+    pwd=$("input[name='pwd']").val();
+    if(pwd!=undefined &&pwd.length<1){
+      $('#error_info').append("<p><strong>密码错误！</strong>密码不能为空</p>");
+      error_num++;
+    }
+    else if(pwd!=undefined &&pwd.length<6){
+      $('#error_info').append("<p><strong>密码错误！</strong>密码至少为六位</p>");
+      error_num++;
+    }
+    else if(pwd!=undefined){
+      var pwd_pattern = new RegExp(/^[\w]+$/); 
+      if(!pwd_pattern.test(pwd)){
+        $('#error_info').append("<p><strong>密码错误！</strong>用户名只能由字母、数字、下划线组成</p>");
+        error_num++;
+      }
+      if (sqlbad_pattern.test(pwd)) {
+        $('#error_info').append("<p><strong>密码错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };  
+    }
+    
+    var pwd2= undefined;
+    pwd2=$("input[name='pwd2']").val();
+    if(pwd2!=undefined &&pwd2.length<1){
+      $('#error_info').append("<p><strong>确认密码错误！</strong>确认密码不能为空</p>");
+      error_num++;
+    }
+    else if(pwd2!=undefined &&pwd!=pwd2){
+      $('#error_info').append("<p><strong>确认密码错误！</strong>确认密码与密码不相同</p>");
+      error_num++;
+    }
+    
+    var email= undefined;
+    email=$("input[name='email']").val();
+    if(email!=undefined &&email.length<1){
+      $('#error_info').append("<p><strong>Email错误！</strong>Email不能为空</p>");
+      error_num++;
+    }
+    else if(email!=undefined){
+      var email_pattern = new RegExp(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]+$/); 
+      if(!email_pattern.test(email)){
+        $('#error_info').append("<p><strong>Email错误！</strong>您输入的Email错误，请重新输入</p>");
+        error_num++;
+      }
+      if (sqlbad_pattern.test(email)) {
+        $('#error_info').append("<p><strong>Email错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };  
+    }
+    
+    var tel= undefined;
+    tel=$("input[name='tel']").val();
+    if(tel!=undefined &&tel.length<1){
+      $('#error_info').append("<p><strong>联系电话错误！</strong>联系电话不能为空</p>");
+      error_num++;
+    }
+    else if(tel!=undefined){
+      var tel_pattern = new RegExp(/^[0-9+-]+$/); 
+      if(!tel_pattern.test(tel)){
+        $('#error_info').append("<p><strong>联系电话错误！</strong>您输入的号码错误，请重新输入</p>");
+        error_num++;
+      }
+    }
+    
+    var address= undefined;
+    address=$("input[name='address']").val();
+    if(address!=undefined &&address.length<1){
+      $('#error_info').append("<p><strong>联系地址错误！</strong>联系地址不能为空</p>");
+      error_num++;
+    }
+    else if(address!=undefined){
+      var address_pattern = new RegExp(/^[\w\u4e00-\u9fa5]+$/); 
+      if(!address_pattern.test(address)){
+        $('#error_info').append("<p><strong>联系地址错误！</strong>联系地址格式错误</p>");
+        error_num++;
+      }
+      if (sqlbad_pattern.test(address)) {
+        $('#error_info').append("<p><strong>联系地址错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };  
+    }
+    
+    var limit= undefined;
+    limit=$("input[name='limit']").val();
+    if(limit!=undefined &&limit.length<1){
+      $('#error_info').append("<p><strong>上限人数错误！</strong>上限人数不能为空</p>");
+      error_num++;
+    }
+    else if(limit!=undefined){
+      var limit_pattern = new RegExp(/^[\d]+$/); 
+      if(!limit_pattern.test(limit)){
+        $('#error_info').append("<p><strong>上限人数错误！</strong>上限人数只能为数字</p>");
+        error_num++;
+      }
+      if(limit>20){
+        $('#error_info').append("<p><strong>上限人数错误！</strong>上限人数不超过20</p>");
+        error_num++;
+      }
+    }
+
+    var url= undefined;
+    url=$("input[name='url']").val();
+    if(url!=undefined &&url.length>0){
+      var url_pattern = new RegExp("(http[s]{0,1})://[a-zA-Z0-9\\.\\-]+\\.([a-zA-Z]{2,4})(:\\d+)?(/[a-zA-Z0-9\\.\\-~!@#$%^&amp;*+?:_/=<>]*)?", "gi");
+      if(!url_pattern.test(url)){
+        $('#error_info').append("<p><strong>链接错误！</strong>链接地址有误</p>");
+        error_num++;
+      }
+      if (sqlbad_pattern.test(url)) {
+        $('#error_info').append("<p><strong>链接错误！</strong>请不要输入特殊字符和SQL关键字</p>");
+        error_num++;
+      };  
+    }   
+    
+    var deadline= undefined;
+    deadline=$("input[name='deadline']").val();
+    if(deadline!=undefined &&deadline.length<1){
+      $('#error_info').append("<p><strong>截止日期错误！</strong>截止日期不能为空</p>");
+      error_num++;
+    }
+    else if(deadline!=undefined){
+      var deadline_pattern = new RegExp(/\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/); 
+      if(!deadline_pattern.test(deadline)){
+        $('#error_info').append("<p><strong>截止日期错误！</strong>截止日期格式应为mm/dd/yyyy</p>");
+        error_num++;
+      }
+    }
+
+
+    var verification= undefined;
+    verification=$("input[name='verification']").val();
+    if(verification!=undefined &&verification.length<1){
+      $('#error_info').append("<p><strong>验证码错误！</strong>验证码不能为空</p>");
+      error_num++;
+    }
+    else if(verification!=undefined){
+      val=$("#verify").html();
+      if(verification!=val){
+        $('#error_info').append("<p><strong>验证码错误！</strong>请输入正确的验证码</p>");
+        error_num++;
+      }
+    }
+
+    if(error_num!=0){
+      $('#error_info').show();
+      return false;
+    }
+    else{return true;}
+}
+
+$(function() {
+// Handler for .ready() called.
+var options = {show:false}
+$('div.modal').modal(options)
+});
