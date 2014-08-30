@@ -164,7 +164,8 @@ _ops:{
     cid:'',             //content容器
     pages:{},           //页面
     prename:"",         //a标签内容（可选）
-    dosethash:true      //是否触发sethash
+    dosethash:true,      //是否触发sethash
+    clickback: function        //（可选）
 }
 util.set_hash
 */
@@ -186,6 +187,9 @@ util.show_tab = function(_ops){
       $(this).tab('show')
       if (_ops.dosethash ) {
         util.set_hash(this.hash.substring(1))
+      }
+      if ( _ops.clickback && (typeof _ops.clickback === 'function') ){
+        return _ops.clickback(_ops)
       }
     });
     var af = _tel.find('a:first')

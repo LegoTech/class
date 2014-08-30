@@ -74,13 +74,19 @@ info.show_search = function(_ops){
   }
   var tmp = ""
   var autos = []
+  var valuehtml = ""
   for (var k=0; k<_ops.lists.length; k++) {
     tmp = _ops.lists[k]
     if ( inputs[tmp] ) {
+      if ( _ops.defaultv[tmp] ) {
+        valuehtml = ' value="' + _ops.defaultv[tmp] + '"'
+      }else{
+        valuehtml = ""
+      }
       rhtml += '<div class="input-prepend">\
                   <span class="add-on add-on-info">' + inputs[tmp].desc + '</span>\
                   <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
-                  '" placeholder="' + (_ops.defaultv[tmp]||inputs[tmp].desc) + '">\
+                  '" placeholder="' + inputs[tmp].desc + '"' + valuehtml +'>\
                 </div>'
       if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
       continue;
@@ -88,7 +94,7 @@ info.show_search = function(_ops){
     if ( selects[tmp] ) {
       rhtml += '<div class="input-prepend">\
                   <span class="add-on add-on-info">' + selects[tmp].desc + '</span>\
-                  <select name="' + tmp + '"><option>' + selects[tmp].desc + '</option>'
+                  <select name="' + tmp + '"><option value="">' + selects[tmp].desc + '</option>'
       for ( key in selects[tmp]["options"] ) {
         if ( _ops.defaultv[tmp] === key ) {
           rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
@@ -101,7 +107,6 @@ info.show_search = function(_ops){
   }
   rhtml += '<a data-type="search" class="btn btn-success">搜索</a>'
   $("#"+_ops.id).empty().html(rhtml)
-  util.placeholder_hack()
   for ( var i=0; i<autos.length; i++ ) {
     $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
       source: util.autoarr[autos[i]]
@@ -137,12 +142,20 @@ info.show = function(){
 */
 info.show_menu = function(_ops){
   var _el = $('#'+_ops.id)
-  _el.find('.tr-ops tbody tr').mousedown(function(_e){
-    util.stopDefault(_e)
+  _el.find('.tr-ops tbody tr').mousedown(function(event){
+    util.stopDefault(event)
+    $('ul.rightmenu').remove()
     var $th = $(this)
     var value = $th.attr('data-value')
     if ( !value ) return;
-    var rhtml = '<ul class="op_menu">'
+    var rhtml = '<ul class="dropdown-menu rightmenu" style="positon:absolute;display:block;left:' +
+                event.pageX + 'px;top:' + event.pageY + 'px;">'
+    for ( key in _ops.operate ) {
+      rhtml += '<li data-type="opmenu" data-value="' + value + '" data-op="' + key + '">\
+                  <a>' + _ops.operate[key] + '</a></li>'
+    }
+    rhtml += '<ul/>'
+    _el.append(rhtml)
   });
 
 
@@ -195,8 +208,10 @@ function forcs_back(_opstring){
 	
 }
 
-/*info
-*/
+info.claer_defaultv = function(){
+  info.defaultv = {}  
+}
+
 function forcs_refresh(){
   window.location.href = "info.html"
 }
@@ -208,7 +223,7 @@ util.get_user_center()
 info.hashchange()
 util.show_navbar({id:"navbar", page:"info"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages, 
-			prename:'<i class="icon-chevron-right"></i>', dosethash:true})
+			prename:'<i class="icon-chevron-right"></i>', dosethash:true, clickback:info.claer_defaultv})
 util.get_autoarr()
 
 });
@@ -222,7 +237,10 @@ $(document).on('click', function(e){
       _ta = _ta.parents('[data-type]')
     }
     var type = _ta.attr('data-type')
-    var valuee = _ta.attr('data-value')
+    var value = _ta.attr('data-value')
+    if ( type !== 'opmenu' ) {
+      $('ul.rightmenu').remove()
+    }
     switch ( type ) {
       case 'search':
         that.defaultv = {}
