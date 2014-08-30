@@ -31,7 +31,7 @@ util = {
         desc: {0: "xx店"}
     },
     autoarr:{
-        StuName: [],
+        StuName: ["aa","ss"],
         ClassName: []
     }
 }
@@ -57,10 +57,15 @@ util.placeholder_hack = function(){
 }
 
 util.get_user_center = function(){
+  var that = this
+  this.center = eval("("++")")
+  this.user = eval("("++")")
   //C#获取user信息,center信息
 }
 
 util.get_autoarr = function(){
+  var that = this
+  this.autoarr = eval("("++")")
   //C#获取autoarr数据
 }
 
@@ -137,7 +142,8 @@ util.show_navbar = function(_ops){
       if ( !type ) return true;
       switch ( type ){
         case 'signout':
-          //C#注销函数，由C#跳到login
+          window.external.LogOut()
+          //已完成 C#注销函数，由C#跳到login
         break; case 'center':
           var value = $(this).attr('data-value')
           if ( value === that.center.cur ) {return true;}
@@ -293,8 +299,8 @@ util.show_search = function(_ops){
         autocomplete: true
     }
 	}
-  var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
-      Status = {0:"开始", 1:"结束" }
+  var TeacherNames = eval("("+window.external.GetAllClassTacher()+")"),   //已完成C#获得教师id和name,状态值
+      Status = eval("("+window.external.GetAllClassStatus()+")");
   var selects = {
     TeacherName: {
         desc: '教师姓名',
