@@ -29,8 +29,86 @@ info.hashchange = function(){
     }
 }
 
-/*defaultv
+/*
+_ops:{
+  id:'',    //容器form
+  lists: [],  //内容
+  defaultv:{}  //默认值  
+}
 */
+info.show_search = function(_ops){
+  if ( !_ops.id || !_ops.lists.length ) return;
+  _ops.defaultv = _ops.defaultv || {} 
+  var rhtml = ''
+  //默认type为text，不为text另外说明，默认placeholder为desc
+  var inputs = {
+    CardNo: {
+       desc: '学员卡号'
+    },
+    StuName: {
+        desc: '学生姓名',
+        autocomplete: true
+    },
+    School: {
+        desc: '学校'
+    },
+    ClassId: {
+        desc: '课程编号'
+    },
+    ClassName: {
+        desc: '课程名',
+        autocomplete: true
+    }
+  }
+  var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
+      Status = {0:"开始", 1:"结束" }
+  var selects = {
+    TeacherName: {
+        desc: '教师姓名',
+        options: TeacherNames
+    },
+    Status: {
+        desc: '状态',
+        options: Status
+    }
+  }
+  var tmp = ""
+  var autos = []
+  for (var k=0; k<_ops.lists.length; k++) {
+    tmp = _ops.lists[k]
+    if ( inputs[tmp] ) {
+      rhtml += '<div class="input-prepend">\
+                  <span class="add-on add-on-info">' + inputs[tmp].desc + '</span>\
+                  <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                  '" placeholder="' + (_ops.defaultv[tmp]||inputs[tmp].desc) + '">\
+                </div>'
+      if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
+      continue;
+    }    
+    if ( selects[tmp] ) {
+      rhtml += '<div class="input-prepend">\
+                  <span class="add-on add-on-info">' + selects[tmp].desc + '</span>\
+                  <select name="' + tmp + '"><option>' + selects[tmp].desc + '</option>'
+      for ( key in selects[tmp]["options"] ) {
+        if ( _ops.defaultv[tmp] === key ) {
+          rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
+        }else{
+          rhtml += '<option value="' + key + '">' + selects[tmp]["options"][key] + '</option>'
+        }      
+      }
+      rhtml += '</select></div>'
+    }
+  }
+  rhtml += '<a data-type="search" class="btn btn-success">搜索</a>'
+  $("#"+_ops.id).empty().html(rhtml)
+  util.placeholder_hack()
+  for ( var i=0; i<autos.length; i++ ) {
+    $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
+      source: util.autoarr[autos[i]]
+    });
+  }
+}
+
 info.show = function(){
   var that = this
 	var lists = {
@@ -47,14 +125,30 @@ info.show = function(){
             </p>' + rhtml
   }
   $('#'+that._hash).empty().html(rhtml)
-	util.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
+	info.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
   forcs_back()
-  return ;
 }
 
-/*info._hash
-_ops:{
+/*_ops:{
+  id:'',                //容器
+  operate: {},            //操作（可选）
+}
+*/
+info.show_menu = function(_ops){
+  var _el = $('#'+_ops.id)
+  _el.find('.tr-ops tbody tr').mousedown(function(_e){
+    util.stopDefault(_e)
+    var $th = $(this)
+    var value = $th.attr('data-value')
+    if ( !value ) return;
+    var rhtml = '<ul class="op_menu">'
+  });
+
+
+}
+
+/*_ops:{
   thead: [],
   tbody: [[], []],  //要求表每一行第一位必须是id。
   page:{            //（可选）
@@ -78,7 +172,7 @@ function forcs_back(_opstring){
       operate = {}
   var trlength = _ops.tbody.length
   for (var i=0; i<trlength; i++) {
-    tdata.push('data-value="'+_ops.tbody[i][0]+'"')
+    tdata.push(' data-value="'+_ops.tbody[i][0]+'"')
   }
   switch ( that._hash ) {
     case 'students':
@@ -91,7 +185,7 @@ function forcs_back(_opstring){
     break;
   }
   if ( $.inArray(that._hash, ['students', 'classes', 'charging'])>-1 ) {
-    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody: _ops.tbody, sort:[], operate:operate });
+    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
     if ( _ops.page ) {
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
@@ -104,17 +198,12 @@ function forcs_back(_opstring){
 /*info
 */
 function forcs_refresh(){
-  var that = info
-  util.get_user_center()
-  util.show_navbar({id:"navbar", page:"info"})
-  that.show({hash:that._hash, defaultv:{}})  
+  window.location.href = "info.html"
 }
 
 
 $(function() {
 // Handler for .ready() called.
-
-
 util.get_user_center()
 info.hashchange()
 util.show_navbar({id:"navbar", page:"info"})
@@ -128,6 +217,30 @@ $(document).on('click', function(e){
     e = e || window.event;
     var target = e.target || e.srcElement
     var _ta = $(target)
+    var that = info
+    if ( !_ta.attr('data-type') ) {
+      _ta = _ta.parents('[data-type]')
+    }
+    var type = _ta.attr('data-type')
+    var valuee = _ta.attr('data-value')
+    switch ( type ) {
+      case 'search':
+        that.defaultv = {}
+        _ta.parents('form').find(':input').each(function(index, element){
+          if ( $(element).val() ) {
+            that.defaultv[element.name] = $(element).val()
+          }
+        });
+        _ta.parents('form').find('select').each(function(index, element){
+          if ( $(element).val() ) {
+            that.defaultv[element.name] = $(element).val()
+          }
+        });
+        that.show()
+      break; case 'page':
+        //C#
+      break;
+    }
 
     
 });

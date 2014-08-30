@@ -56,6 +56,16 @@ util.placeholder_hack = function(){
   });
 }
 
+util.stopDefault = function(e){ 
+    //阻止默认浏览器动作(W3C) 
+    if ( e && e.preventDefault ) 
+        e.preventDefault(); 
+    //IE中阻止函数器默认动作的方式 
+    else
+        window.event.returnValue = false; 
+    return false; 
+}
+
 util.get_user_center = function(){
   //C#获取user信息,center信息
 }
@@ -231,115 +241,9 @@ util.show_table = function(_ops){
     var _table = _el.find('.tablesort')
     _ops.sort && _table.tablesorter({sortList: _ops.sort})
 
-    if ( _ops.operate.length ){
-    	
-    }
-
     if ( _ops.callback && (typeof _ops.callback === 'function') ){
-        return _ops.callback()
+        return _ops.callback(_ops)
     }
-}
-
-/*
-_ops:{
-    id:'',          //容器
-    operate: {}     //操作
-}
-*/
-util.Bind_tr_op = function(_ops){
-    this._ops = _ops;
-    this.hideop = {};
-}
-util.Bind_tr_op.prototype.mousein = function(){
-
-}
-util.Bind_tr_op.prototype.mouseout = function(){
-    
-}
-util.Bind_tr_op.prototype.bind = function(){
-    $('#'+this._ops.id).find('.tr-ops').hover(this.mousein, this.mouseout);
-    
-}
-
-/*
-_ops:{
-	id:'',		//容器form
-	lists: [],	//内容
-  defaultv:{}  //默认值	
-}
-*/
-util.show_search = function(_ops){
-  if ( !_ops.id || !_ops.lists.length ) return;
-  _ops.defaultv = _ops.defaultv || {} 
-	var rhtml = ''
-  var that = util
-	//默认type为text，不为text另外说明，默认placeholder为desc
-	var inputs = {
-		CardNo: {
-			 desc: '学员卡号'
-		},
-    StuName: {
-        desc: '学生姓名',
-        autocomplete: true
-    },
-    School: {
-        desc: '学校'
-    },
-    ClassId: {
-        desc: '课程编号'
-    },
-    ClassName: {
-        desc: '课程名',
-        autocomplete: true
-    }
-	}
-  var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
-      Status = {0:"开始", 1:"结束" }
-  var selects = {
-    TeacherName: {
-        desc: '教师姓名',
-        options: TeacherNames
-    },
-    Status: {
-        desc: '状态',
-        options: Status
-    }
-  }
-  var tmp = ""
-  var autos = []
-  for (var k=0; k<_ops.lists.length; k++) {
-    tmp = _ops.lists[k]
-    if ( inputs[tmp] ) {
-      rhtml += '<div class="input-prepend">\
-                  <span class="add-on add-on-info">' + inputs[tmp].desc + '</span>\
-                  <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
-                  '" placeholder="' + (_ops.defaultv[tmp]||inputs[tmp].desc) + '">\
-                </div>'
-      if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
-      continue;
-    }    
-    if ( selects[tmp] ) {
-      rhtml += '<div class="input-prepend">\
-                  <span class="add-on add-on-info">' + selects[tmp].desc + '</span>\
-                  <select name="' + tmp + '"><option>' + selects[tmp].desc + '</option>'
-      for ( key in selects[tmp]["options"] ) {
-        if ( _ops.defaultv[tmp] === key ) {
-          rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
-        }else{
-          rhtml += '<option value="' + key + '">' + selects[tmp]["options"][key] + '</option>'
-        }      
-      }
-      rhtml += '</select></div>'
-    }
-  }
-  rhtml += '<button data-type="search" class="btn btn-success">搜索</button>'
-  $("#"+_ops.id).empty().html(rhtml)
-  that.placeholder_hack()
-  for ( var i=0; i<autos.length; i++ ) {
-    $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
-      source: that.autoarr[autos[i]]
-    });
-  }
 }
 
 /*
@@ -355,7 +259,7 @@ util.show_pagination = function(_ops){
   if ( _ops.cur===1 ) {
     rhtml += '<li class="disabled"><span>&laquo;</span></li>'
   }else{
-    rhtml += '<li data-type="page" data-value="'+_ops.cur-1+'"><a href="#">&laquo;</a></li>'
+    rhtml += '<li data-type="page" data-value="'+(_ops.cur-1)+'"><a href="#">&laquo;</a></li>'
   }
   for (var i=1; i<=_ops.count; i++) {
     if ( _ops.cur===i ){
@@ -367,7 +271,7 @@ util.show_pagination = function(_ops){
   if ( _ops.cur===_ops.count ) {
     rhtml += '<li class="disabled"><span>&raquo;</span></li>'
   }else{
-    rhtml += '<li data-type="page" data-value="'+_ops.cur+1+'"><a href="#">&raquo;</a></li>'
+    rhtml += '<li data-type="page" data-value="'+(_ops.cur+1)+'"><a href="#">&raquo;</a></li>'
   }
   rhtml +=  '</ul>\
           </div>'
