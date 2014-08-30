@@ -142,23 +142,27 @@ info.show = function(){
 */
 info.show_menu = function(_ops){
   var _el = $('#'+_ops.id)
-  _el.find('.tr-ops tbody tr').mousedown(function(event){
-    util.stopDefault(event)
-    $('ul.rightmenu').remove()
-    var $th = $(this)
-    var value = $th.attr('data-value')
+  _el.find('.tr-ops tbody').mousedown(function(e){
+    e = e || window.event;
+    var target = e.target || e.srcElement
+    var _ta = $(target)
+    if ( !_ta.attr('data-type') ) {
+      _ta = _ta.parents('[data-type]')
+    }
+    util.stopDefault(e)
+    $('ul.rightmenu').remove()    
+    var that = info
+    var value = _ta.attr('data-value')
     if ( !value ) return;
     var rhtml = '<ul class="dropdown-menu rightmenu" style="positon:absolute;display:block;left:' +
-                event.pageX + 'px;top:' + event.pageY + 'px;">'
+                e.pageX + 'px;top:' + e.pageY + 'px;">'
     for ( key in _ops.operate ) {
       rhtml += '<li data-type="opmenu" data-value="' + value + '" data-op="' + key + '">\
-                  <a>' + _ops.operate[key] + '</a></li>'
+                  <a href="javascript(0);">' + _ops.operate[key] + '</a></li>'
     }
     rhtml += '<ul/>'
     _el.append(rhtml)
   });
-
-
 }
 
 /*_ops:{
@@ -185,7 +189,7 @@ function forcs_back(_opstring){
       operate = {}
   var trlength = _ops.tbody.length
   for (var i=0; i<trlength; i++) {
-    tdata.push(' data-value="'+_ops.tbody[i][0]+'"')
+    tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
   }
   switch ( that._hash ) {
     case 'students':
@@ -219,6 +223,7 @@ function forcs_refresh(){
 
 $(function() {
 // Handler for .ready() called.
+document.oncontextmenu=function(){return false;};
 util.get_user_center()
 info.hashchange()
 util.show_navbar({id:"navbar", page:"info"})
@@ -237,10 +242,13 @@ $(document).on('click', function(e){
       _ta = _ta.parents('[data-type]')
     }
     var type = _ta.attr('data-type')
-    var value = _ta.attr('data-value')
-    if ( type !== 'opmenu' ) {
+    if ( $.inArray(type, ['opmenu', 'trmenu'])==-1 ) {
       $('ul.rightmenu').remove()
     }
+    if ( !type ) { return; }
+    util.stopDefault(e)
+    var value = _ta.attr('data-value')
+    var op = ''         //opmenu
     switch ( type ) {
       case 'search':
         that.defaultv = {}
@@ -256,7 +264,12 @@ $(document).on('click', function(e){
         });
         that.show()
       break; case 'page':
-        //C#
+        //调C#函数获取值，C#调forcs_back进行下一步操作
+      break; case 'opmenu':
+        op = _ta.attr('data-op')
+        if ( $.inArray(op, ['students', 'classes'])>-1 ) {
+
+        }
       break;
     }
 

@@ -58,11 +58,12 @@ util.placeholder_hack = function(){
 
 util.stopDefault = function(e){ 
     //阻止默认浏览器动作(W3C) 
-    if ( e && e.preventDefault ) 
+    if ( e && e.preventDefault ) {
         e.preventDefault(); 
     //IE中阻止函数器默认动作的方式 
-    else
+    }else{
         window.event.returnValue = false; 
+    }
     return false; 
 }
 
