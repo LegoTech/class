@@ -447,7 +447,7 @@ util.show_modal = function(_ops){
     $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
   }
   _el.find('a.modal_savechange').click(function(){
-    var inputs = _el.find(':input')
+    var inputs = _el.find('input')
     var selects = _el.find('select')
     if ( !inputs.length && !selects.length ) {
       _el.modal('hide')
@@ -459,7 +459,7 @@ util.show_modal = function(_ops){
     var valuestring = JSON.stringify(defaultv)
     var haserror = false
     var inputtmp
-    noerror && ( haserror = eval("(" + "false" + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
+    noerror && ( haserror = eval("(" + test() + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
     if ( noerror && !haserror ) {
       _el.find('form').effect('drop', {}, 500, function(){
         _el.modal('hide')
@@ -481,6 +481,11 @@ util.show_modal = function(_ops){
       _el.find('form').effect('bounce', {}, 300)
     }
   });
+}
+
+function test(){
+  alert("Oh, please, I'm here...")
+  return "false"
 }
 
 /*_ops:{
@@ -513,7 +518,7 @@ util.valid = function(_ops){
         pwd_pattern = new RegExp(/^[\w]+$/),
         tel_pattern = new RegExp(/^[0-9+-]+$/),
         number_pattern = new RegExp(/^[\d]+$/),
-        dete_pattern = new RegExp(/\b\d{2}[\/-]\d{1,2}[\/-]\d{1,2}\b/);
+        date_pattern = new RegExp(/\b\d{4}[\/-]\d{1,2}[\/-]\d{1,2}\b/);
 
     var defaultv = {}
     var $th, val, 
@@ -562,7 +567,7 @@ util.valid = function(_ops){
           }
         break; case 'Birth': case 'StartTime': case 'EndTime':
           if(!date_pattern.test(val)){
-            that.show_help({$th:$th, desc:'日期格式应为yy-mm-dd', iserror:true})
+            that.show_help({$th:$th, desc:'日期格式应为yyyy-mm-dd', iserror:true})
             error_num++; iserror = true
           }
         break; 
