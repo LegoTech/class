@@ -129,7 +129,8 @@ info.show = function(){
             </p>' + rhtml
   }
   if ( that.pages[that._hash].hidden ) {
-    rhtml = '<h2>'+ that.pages[that._hash].title +'<small></small></h2>' + rhtml
+    //select-title加js，慎改
+    rhtml = '<h2 class="select-title">'+ that.pages[that._hash].title +'<small></small></h2>' + rhtml
   }
   $('#'+that._hash).empty().html(rhtml)
   util.show_modal({id:'add_students_modal', clickback:info.show})
@@ -182,16 +183,24 @@ function forcs_back(_opstring){
   var that = info;
   //var _ops = eval ("(" + _opstring + ")")
   _ops = {
-    thead: ['id', 'name', '操作'],
+    thead: ['是否选定', 'id', 'name', '操作'],
     tbody: [[1,'dd', 1], [2,'22', 0]],
     page:{            //（可选）
       cur: 1,
       count: 11
-    }
+    },
+    studentinfo:{
+      StuName: '小分',
+      CardNo: 11
+    },   //如果是selectclasses
+    classinfo:{
+      ClassName: '橡皮泥',
+      ClassId: 21
+    }      //如果是selectstudents
   }
   var tdata = [],
       operate = {}
-  var trlength = _ops.tbody.length
+  var trlength, selectop
   for (var i=0; i<trlength; i++) {
     tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
   }
@@ -206,13 +215,35 @@ function forcs_back(_opstring){
     break;
   }
   if ( $.inArray(that._hash, ['students', 'classes', 'charging'])>-1 ) {
+    trlength = _ops.tbody.length
+    for (var i=0; i<trlength; i++) {
+      tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
+    }
     util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
     if ( _ops.page ) {
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }   
   }else if ( $.inArray(that._hash, ['selectstudents', 'selectclasses'])>-1 ) {
-    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
+    if ( that._hash === 'selectclasses' ) {
+      $('#selectclasses .select-title small').html(_ops.studentinfo.CardNo + ' ' + _ops.studentinfo.StuName)
+    }else{
+      $('#selectstudents .select-title small').html(_ops.classinfo.ClassId + ' ' + _ops.classinfo.ClassName)
+    }
+    trlength = _ops.tbody.length
+    for (var i=0; i<trlength; i++) {
+      selectop = _ops.tbody[i].pop()
+      if ( parseInt(selectop)===1 ) {
+        _ops.tbody[i].push('<a href="#" class="btn btn-small" data-type="cancle" data-value="'+_ops.tbody[i][0]+
+                            '"><i class="icon-remove-sign"></i> 退出</a><span class="shelp"></span>')
+        _ops.tbody[i].unshift('<span class="label label-success">已选</span>')
+      }else{
+        _ops.tbody[i].push('<a href="#" class="btn btn-success btn-small" data-type="select" data-value="'+_ops.tbody[i][0]+
+                            '"><i class="icon-plus-sign icon-white"></i> 参与</a><span class="shelp"></span>')
+        _ops.tbody[i].unshift('<span class="label">未选</span>')
+      }   
+    }
+    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
     if ( _ops.page ) {
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
@@ -261,7 +292,8 @@ $(document).on('click', function(e){
     var value = _ta.attr('data-value')
     var op = '',          //opmenu
         doornot = false,  //opmenu
-        defaultvkey = ''  //opmenu
+        defaultvkey = '', //opmenu
+        error             //select, cancle
     switch ( type ) {
       case 'search':
         that.defaultv = {}
@@ -306,6 +338,29 @@ $(document).on('click', function(e){
               window.location.href = 'account.html?' + defaultvkey + '=' + value + '#consuming'
             break;
           }
+        }
+      break; case 'select':
+        //调C#函数选课, that._hash是selectclasses,selectstudents
+        //selectclasses: that.defaultv.StuId是学生, value是选定课程的id
+        //selectstudents: that.defaultv.ClassId是课程, value是选定学生的id
+        //如果出错返回"XXX操作失败",成功返回false
+        error = false;
+        if ( error ) {
+          _ta.siblings('span.shelp').html(error)
+        }else{
+          _ta.removeClass('btn-success').attr('data-type', 'cancle').html('<i class="icon-remove-sign"></i> 退出')
+          _ta.parents('td').siblings('td').find('span.label').addClass('label-success').html('已选')
+          _ta.parents('tr').find('td').effect('highlight', {}, 500)
+        }
+      break; case 'cancle':
+        //调C#函数退课
+        error = false;
+        if ( error ) {
+          _ta.siblings('span.shelp').html(error)
+        }else{
+          _ta.addClass('btn-success').attr('data-type', 'select').html('<i class="icon-plus-sign icon-white"></i> 参与')
+          _ta.parents('td').siblings('td').find('span.label').removeClass('label-success').html('未选')
+          _ta.parents('tr').find('td').effect('highlight', {}, 500)
         }
       break;
     }

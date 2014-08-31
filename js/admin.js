@@ -42,11 +42,11 @@ admin.show = function(){
       value
   for (var i=0; i<trlength; i++) {
     value = _ops.tbody[i].shift()
-    _ops.tbody[i].push('<a class="btn btn-primary" data-type="update" data-value="'+value+'" href="#"><i class="icon-wrench icon-white"></i>修改</a>')
+    _ops.tbody[i].push('<a class="btn btn-primary btn-small" data-type="update" data-value="'+value+'" href="#"><i class="icon-wrench icon-white"></i> 修改</a>')
   }
   _ops.thead.push('操作')
   util.show_table({id:that._hash+'_table', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
-  $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i>添加'+that.pages[that._hash].title+'</a></p>')
+  $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i> 添加'+that.pages[that._hash].title+'</a></p>')
 }
 
 admin.show_form = function(){

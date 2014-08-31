@@ -253,6 +253,11 @@ body{
   font-size: 14px;
 }
 
+#selectclasses span.shelp,
+#selectstudents span.shelp{
+  color: #b94a48;
+}
+
 /*account*/
 #accountContent{
   height: 100%;
