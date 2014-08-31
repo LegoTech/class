@@ -171,6 +171,24 @@ info.show_menu = function(_ops){
 }
 
 /*_ops:{
+  id:'',                //容器
+  type:'',              //classes or students
+  datas:[]            //数据
+}
+*/
+info.show_calender = function(_ops){
+  var _el = $('#'+_ops.id)
+  _el.empty().html('<div class="calender"></div>')
+  var dateoptions= {
+    changeMonth: true,
+    changeYear: true,
+    dateFormat: 'yy-mm-dd',
+    maxDate: 0
+  }
+  _el.find('.calender').datepicker(dateoptions);
+}
+
+/*_ops:{
   thead: [],
   tbody: [[], []],  //要求表每一行第一位必须是id。
   page:{            //（可选）
@@ -234,11 +252,11 @@ function forcs_back(_opstring){
     for (var i=0; i<trlength; i++) {
       selectop = _ops.tbody[i].pop()
       if ( parseInt(selectop)===1 ) {
-        _ops.tbody[i].push('<a href="#" class="btn btn-small" data-type="cancle" data-value="'+_ops.tbody[i][0]+
+        _ops.tbody[i].push('<a href="#" class="btn btn-mini" data-type="cancle" data-value="'+_ops.tbody[i][0]+
                             '"><i class="icon-remove-sign"></i> 退出</a><span class="shelp"></span>')
         _ops.tbody[i].unshift('<span class="label label-success">已选</span>')
       }else{
-        _ops.tbody[i].push('<a href="#" class="btn btn-success btn-small" data-type="select" data-value="'+_ops.tbody[i][0]+
+        _ops.tbody[i].push('<a href="#" class="btn btn-success btn-mini" data-type="select" data-value="'+_ops.tbody[i][0]+
                             '"><i class="icon-plus-sign icon-white"></i> 参与</a><span class="shelp"></span>')
         _ops.tbody[i].unshift('<span class="label">未选</span>')
       }   
@@ -248,9 +266,9 @@ function forcs_back(_opstring){
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }
-  }else{}
-
-	
+  }else if ( that._hash==='attendence' ) {
+    info.show_calender({id:that._hash+'_result'});
+  }
 }
 
 info.claer_defaultv = function(){

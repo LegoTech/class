@@ -258,6 +258,22 @@ body{
   color: #b94a48;
 }
 
+/*attendence calender*/
+#attendence_result .ui-datepicker{
+  width: 98%;
+}
+#attendence_result .ui-datepicker td a{
+  height: 20px
+}
+#attendence_result .ui-datepicker select.ui-datepicker-month, 
+#attendence_result .ui-datepicker select.ui-datepicker-year {
+  width: 20%;
+  min-width: 70px;
+}
+#attendence_result .ui-datepicker select.ui-datepicker-year {
+  margin-left: 10%;
+}
+
 /*account*/
 #accountContent{
   height: 100%;
@@ -295,3 +311,4 @@ body#account #charging, body#account #consuming{
 #accountContent h3{
   margin-left: 40px;
 }
+

@@ -42,7 +42,7 @@ admin.show = function(){
       value
   for (var i=0; i<trlength; i++) {
     value = _ops.tbody[i].shift()
-    _ops.tbody[i].push('<a class="btn btn-primary btn-small" data-type="update" data-value="'+value+'" href="#"><i class="icon-wrench icon-white"></i> 修改</a>')
+    _ops.tbody[i].push('<a class="btn btn-primary btn-mini" data-type="update" data-value="'+value+'" href="#"><i class="icon-wrench icon-white"></i> 修改</a>')
   }
   _ops.thead.push('操作')
   util.show_table({id:that._hash+'_table', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
