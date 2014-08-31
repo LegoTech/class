@@ -241,4 +241,18 @@ $('#charging').hide()
 $('#consuming').hide()
 $('#'+that._hash).show()
 that.show()
+
+    var width = document.width
+    var x = (width-1654)/2
+    var y = 3308/width/width - 2/width
+    var w = width/2
+  $(document).mousemove(function(e){
+    if ( e.pageX<w ) {
+      $('div.background').css('background-position', ( x + y*(e.pageX-w)*(e.pageX-w) )+'px 35px')
+    }else{
+      $('div.background').css('background-position', ( x - y*(e.pageX-w)*(e.pageX-w) )+'px 35px')
+    }
+  });
 });
+
+

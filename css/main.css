@@ -263,26 +263,33 @@ body{
   width: 98%;
 }
 #attendence_result .ui-datepicker td a{
-  height: 20px
+  height: 60px;
+  position: relative;
+}
+#attendence_result .ui-datepicker td{
+  width: 13%
 }
 #attendence_result .ui-datepicker select.ui-datepicker-month, 
 #attendence_result .ui-datepicker select.ui-datepicker-year {
   width: 20%;
   min-width: 70px;
+  padding: 3px 4px;
 }
 #attendence_result .ui-datepicker select.ui-datepicker-year {
   margin-left: 10%;
 }
 
+
 /*account*/
+#accountfilter{
+
+}
 #accountContent{
   height: 100%;
   padding: 40px 0;
-  background-color: #fff;
-  filter:alpha(opacity=95);  
-      -moz-opacity:0.95;  
-      -khtml-opacity: 0.95;  
-      opacity: 0.95;  
+  background:rgba(255,255,255,0.8) none repeat scroll !important; /*实现FF背景透明，文字不透明*/
+background:#fff; 
+filter:Alpha(opacity=80);/*实现IE背景透明*/ 
 }
 
 body#account{
@@ -305,6 +312,7 @@ body#account div.background div.container-fluid div.row-fluid{
 
 body#account #charging, body#account #consuming{
   padding: 25% 0;
+  position:relative;
 }
 
 #accountContent h4,
