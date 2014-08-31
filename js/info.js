@@ -119,8 +119,8 @@ info.show = function(){
             </p>' + rhtml
   }
   $('#'+that._hash).empty().html(rhtml)
-  util.show_modal({id:'add_students_modal'})
-  util.show_modal({id:'add_classes_modal'})
+  util.show_modal({id:'add_students_modal', clickback:info.show})
+  util.show_modal({id:'add_classes_modal', clickback:info.show})
 	info.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
   forcs_back()
@@ -279,7 +279,7 @@ $(document).on('click', function(e){
         }else{
           switch ( op ) {
             case 'update':
-              util.show_modal({id:'update_'+that._hash+'_modal', valueid:value})
+              util.show_modal({id:'update_'+that._hash+'_modal', valueid:value, clickback:info.show})
               $('#update_'+that._hash+'_modal').modal('show')
             break; case 'AccCharging':
               window.location.href = 'account.html?' + defaultvkey + '=' + value + '#charging'

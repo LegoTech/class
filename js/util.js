@@ -286,7 +286,8 @@ util.show_pagination = function(_ops){
 
 /*_ops:{
   id:'',               //容器
-  valueid: 1            //如果是更新，读取数据
+  valueid: 1,            //如果是更新，读取数据
+  clickback: function     //（可选）
 }
 */
 util.show_modal = function(_ops){
@@ -464,7 +465,9 @@ util.show_modal = function(_ops){
       _el.find('form').effect('drop', {}, 500, function(){
         _el.modal('hide')
         setTimeout(function(){
-          util.show_modal(_ops)
+          if ( _ops.clickback && (typeof _ops.clickback === 'function') ){
+            return _ops.clickback(_ops)
+          }
         },2000)
       })     
     }else{

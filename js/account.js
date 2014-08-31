@@ -53,6 +53,10 @@ account.show = function(){
     rhtml = '<h4>'+that.pages[that._hash].title+'请刷卡</h4>'
   }else if ( $.isEmptyObject(that.infos) ){
     //调C#函数，将that._search内容传给后台，后台再调forcs_getinfo
+    that._search = ''
+    return;
+  }else if ( that.infos.error ) {
+    rhtml = '<h4>'+that.infos.error+'请重新刷卡</h4>'
   }else{
     switch ( that._hash ) {
       case 'consuming':
@@ -209,11 +213,15 @@ account.show = function(){
   })(that.infos);
 }
 
-/*C#调该函数将信息传给前台,两种infos见59行和91行
+/*C#调该函数将信息传给前台,两种infos见63行和95行,如果查询出错或者无结果返回{error:"xxx出错"}
 */
 function forcs_getinfo(){
   account.infos = {}
   account.show()
+}
+
+function forcs_refresh(){
+  window.location.href = "account.html"
 }
 
 $(function() {

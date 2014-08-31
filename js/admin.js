@@ -49,6 +49,14 @@ admin.show = function(){
   $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i>添加'+that.pages[that._hash].title+'</a></p>')
 }
 
+admin.show_form = function(){
+  
+}
+
+function forcs_refresh(){
+  window.location.href = "admin.html"
+}
+
 $(function() {
 // Handler for .ready() called.
 
@@ -59,7 +67,25 @@ util.show_navbar({id:"navbar", page:"admin"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:that.pages, 
 			prename:'<i class="icon-chevron-right"></i>', dosethash:true})
 
+});
 
-
-
+$(document).on('click', function(e){
+    e = e || window.event;
+    var target = e.target || e.srcElement
+    var _ta = $(target)
+    var that = admin
+    if ( !_ta.attr('data-type') ) {
+      _ta = _ta.parents('[data-type]')
+    }
+    var type = _ta.attr('data-type')
+    if ( !type ) { return; }
+    util.stopDefault(e)
+    var value = _ta.attr('data-value')
+    switch ( type ) {
+      case 'add':
+        
+      break; case 'update':
+        //调C#函数获取值，C#调forcs_back进行下一步操作
+      break;
+    }
 });
