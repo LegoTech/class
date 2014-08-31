@@ -50,13 +50,13 @@ acc.show = function(){
   var lists = []
   var defaultv = {}, iclasses = [], haslastclass = false
   if ( !that._search && $.isEmptyObject(that.infos) ) {
-    rhtml = '<h4>'+that.pages[that._hash].title+'请刷卡</h4>'
+    rhtml = '<h3>'+that.pages[that._hash].title+'请刷卡</h3>'
   }else if ( $.isEmptyObject(that.infos) ){
     //调C#函数，将that._search内容传给后台，后台再调forcs_getinfo
     that._search = ''
     return;
   }else if ( that.infos.error ) {
-    rhtml = '<h4>'+that.infos.error+'请重新刷卡</h4>'
+    rhtml = '<h3>'+that.infos.error+'请重新刷卡</h3>'
   }else{
     switch ( that._hash ) {
       case 'consuming':

@@ -285,3 +285,8 @@ body#account div.background div.container-fluid div.row-fluid{
 body#account #charging, body#account #consuming{
   padding: 25% 0;
 }
+
+#accountContent h4,
+#accountContent h3{
+  margin-left: 40px;
+}
