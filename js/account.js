@@ -36,9 +36,9 @@ acc.show = function(){
     SetCount:   {desc: '选择套餐数',    spinner:true},
     ChargingHours:{desc: '充值金额',    disabled:true},
     ChargingMoney:{desc: '充值课时',    disabled:true},
-    Hours:      {desc: '课时数',        disabled:true},
-    StartTime:  {desc: '开始时间',      disabled:true},
-    EndTime:    {desc: '结束时间',      disabled:true},
+    Hours:      {desc: '课时数',        spinner:true},
+    StartTime:  {desc: '开始时间'},
+    EndTime:    {desc: '结束时间'},
   }
   var ClassNames = {0:"xx", 1:"yy"}   //C#获得教师id和name,状态值
   var selects = {
@@ -83,10 +83,7 @@ acc.show = function(){
           defaultv = {
             StuId: that.infos.StuId,
             StuName: that.infos.StuName,
-            ClassId: iclasses[j].ClassId,
-            StartTime: iclasses[j].StartTime,
-            EndTime: iclasses[j].EndTime,
-            Hours: iclasses[j].Hours
+            ClassId: iclasses[j].ClassId
           }
         }else{
           defaultv = {StuName: that.infos.StuName}
@@ -113,7 +110,6 @@ acc.show = function(){
     }
     
     var tmp = ''
-    var spinners = ''
     var valuehtml = '', rhtml = ''
     rhtml = '<form class="form-horizontal" data-value="'+defaultv.StuId+'">'
     for (var k=0; k<lists.length; k++) {
@@ -131,7 +127,6 @@ acc.show = function(){
                       '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disabled?' disabled':'') + '>\
                     </div>\
                   </div>'
-        if ( inputs[tmp].spinner ) {spinners = tmp}
         continue;
       }    
       if ( selects[tmp] ) {
@@ -184,20 +179,34 @@ acc.show = function(){
       change: spinnerchange,
       stop: spinnerchange
     }
-    spinners && _el.find('input[name="'+spinners+'"]').spinner(spinneroption);
+    _el.find('input[name="SetCount"]').spinner(spinneroption);
+
+    var Hoursoption = {
+      min: 0.5,
+      step: 0.5
+    }
+    _el.find('input[name="Hours"]').spinner(Hoursoption);
 
     _el.find('a.submit').on('click', function(e){
       var that = acc
       var _el = $('#'+that._hash)
       var StuId = parseInt($(this).siblings('form').attr('data-value'))
+      var sendvalues = {}
       if ( acc._hash === 'consuming' ) {
         var ClassId = _el.find('select[name="ClassId"]').val()
+        sendvalues.ClassId = ClassId
+        _ta.parents('form').find(':input').each(function(index, element){
+          if ( $(element).val() ) {
+            sendvalues[element.name] = $(element).val()
+          }
+        });
         if ( !ClassId ) {
           util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
+          util.show_help({$th:_el.find('input[name="Hours"]'), desc:'请选择课程', iserror:true})
           _el.find('form').effect('bounce', {}, 1000, function(){});
           return;
         }
-        that.lastconsuming.ClassId = ClassId
+        $.extend(that.lastconsuming, sendvalues)
         util.show_help({$th:_el.find('select[name="ClassId"]'), iserror:false})
       }else{
         var SetCount = _el.find('input[name="SetCount"]').val()

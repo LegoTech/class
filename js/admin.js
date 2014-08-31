@@ -2,7 +2,8 @@ admin = {}
 admin._hash = ""
 admin.pages = {
   center: {
-    title: "中心信息"
+    title: "中心信息",
+    bossadd: true
   },
 	authority: {
 		title: "用户权限"
@@ -46,7 +47,7 @@ admin.show = function(){
   }
   _ops.thead.push('操作')
   util.show_table({id:that._hash+'_table', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
-  $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i> 添加'+that.pages[that._hash].title+'</a></p>')
+  if ( !that.pages[that._hash].bossadd || util.user.isboss ) $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i> 添加'+that.pages[that._hash].title+'</a></p>')
 }
 
 admin.show_form = function(){
