@@ -118,7 +118,7 @@ info.show = function(){
         classes: ["ClassId", "ClassName", "CardNo", "StuId", "StuName", "TeacherId", "Status"],
         charging: ["CardNo", "StuId", "StuName"],
         attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassName"],
-        selectstudents: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
+        selectstudents: ["CardNo", "StuId", "StuName", "School"],
         selectclasses: ["ClassId", "ClassName", "TeacherId", "Status"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
@@ -127,6 +127,9 @@ info.show = function(){
                 <a href="#add_' + that._hash + '_modal" data-toggle="modal"><i class="icon-plus-sign opacity-5"></i>\
                  添加' + that.pages[that._hash].title + '</a>\
             </p>' + rhtml
+  }
+  if ( that.pages[that._hash].hidden ) {
+    rhtml = '<h2>'+ that.pages[that._hash].title +'<small></small></h2>' + rhtml
   }
   $('#'+that._hash).empty().html(rhtml)
   util.show_modal({id:'add_students_modal', clickback:info.show})
@@ -179,8 +182,8 @@ function forcs_back(_opstring){
   var that = info;
   //var _ops = eval ("(" + _opstring + ")")
   _ops = {
-    thead: ['id', 'name'],
-    tbody: [[1,'dd'], [2,'22']],
+    thead: ['id', 'name', '操作'],
+    tbody: [[1,'dd', 1], [2,'22', 0]],
     page:{            //（可选）
       cur: 1,
       count: 11
@@ -195,9 +198,9 @@ function forcs_back(_opstring){
   switch ( that._hash ) {
     case 'students':
       operate = {classes: "查看参加课程", charging: "查看充值信息", attendence: "查看上课情况", AccCharging: "充值", AccConsuming: "签到",
-                update: "修改学员信息", Selecting: "学员选课"}
+                update: "修改学员信息", selectclasses: "学员选课"}
     break; case 'classes':
-      operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", Selecting: "课程报名"}
+      operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", selectstudents: "课程报名"}
     break; case 'charging':
       operate = {students: "查看学员信息"}
     break;
@@ -208,6 +211,12 @@ function forcs_back(_opstring){
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }   
+  }else if ( $.inArray(that._hash, ['selectstudents', 'selectclasses'])>-1 ) {
+    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
+    if ( _ops.page ) {
+      $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
+      util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
+    }
   }else{}
 
 	
@@ -278,7 +287,7 @@ $(document).on('click', function(e){
             defaultvkey = 'ClassId'
           break;
         }
-        if ( $.inArray(op, ['students', 'classes', 'charging', 'attendence'])>-1 ) {
+        if ( $.inArray(op, ['students', 'classes', 'charging', 'attendence', 'selectclasses', 'selectstudents'])>-1 ) {
           that.defaultv = {}
           defaultvkey && (that.defaultv[defaultvkey] = value)
           $('#'+op).html() && (doornot = true)
@@ -298,9 +307,6 @@ $(document).on('click', function(e){
             break;
           }
         }
-
       break;
     }
-
-    
 });
