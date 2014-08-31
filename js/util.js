@@ -179,8 +179,13 @@ util.show_tab = function(_ops){
     _ops.prename = _ops.prename || ""
     var thtml='', chtml=''
     for ( key in _ops.pages ) {
-        thtml += '<li><a href="#' + key + '" data-toggle="tab">' + 
-                _ops.prename + _ops.pages[key].title + '</a></li>'
+        if ( _ops.pages[key].hidden ) {
+            thtml += '<li style="display:none;"><a href="#' + key + '" data-toggle="tab">' + 
+                    _ops.prename + _ops.pages[key].title + '</a></li>'
+        }else{
+            thtml += '<li><a href="#' + key + '" data-toggle="tab">' + 
+                    _ops.prename + _ops.pages[key].title + '</a></li>'
+        }
         chtml += '<div class="tab-pane" id="' + key + '"></div>'
     }
     _tel.empty().html(thtml)

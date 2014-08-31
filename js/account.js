@@ -1,9 +1,9 @@
-account = {}
-account._hash = ""
-account._search = ""
-account.lastconsuming = {}
-account.infos = {}
-account.pages = {
+acc = {}
+acc._hash = ""
+acc._search = ""
+acc.lastconsuming = {}
+acc.infos = {}
+acc.pages = {
   consuming: {
     title: "签到"
   },
@@ -11,7 +11,7 @@ account.pages = {
     title: "充值"
   }
 }
-account.hashchange = function(){
+acc.hashchange = function(){
     var that = this
     if( 'onhashchange' in window ) {
         window.onhashchange = function(){
@@ -27,7 +27,7 @@ account.hashchange = function(){
     }
 }
 
-account.show = function(){
+acc.show = function(){
   var that = this
   var rhtml = ''
   var inputs = {
@@ -187,10 +187,10 @@ account.show = function(){
     spinners && _el.find('input[name="'+spinners+'"]').spinner(spinneroption);
 
     _el.find('a.submit').on('click', function(e){
-      var that = account
+      var that = acc
       var _el = $('#'+that._hash)
       var StuId = parseInt($(this).siblings('form').attr('data-value'))
-      if ( account._hash === 'consuming' ) {
+      if ( acc._hash === 'consuming' ) {
         var ClassId = _el.find('select[name="ClassId"]').val()
         if ( !ClassId ) {
           util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
@@ -216,8 +216,8 @@ account.show = function(){
 /*C#调该函数将信息传给前台,两种infos见63行和95行,如果查询出错或者无结果返回{error:"xxx出错"}
 */
 function forcs_getinfo(){
-  account.infos = {}
-  account.show()
+  acc.infos = {}
+  acc.show()
 }
 
 function forcs_refresh(){
@@ -227,7 +227,7 @@ function forcs_refresh(){
 $(function() {
 // Handler for .ready() called.
 
-var that = account
+var that = acc
 that._hash = location.hash.replace(/\#|\!/g, '')
 that._search = location.search.replace(/\?/g, '')
 util.get_user_center()

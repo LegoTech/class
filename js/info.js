@@ -6,12 +6,20 @@ info.pages = {
 	classes: {
 		title: "课程信息"
 	},
-    charging: {
-        title: "充值信息"
-    },
-    attendence: {
-        title: "上课情况"
-    },
+  charging: {
+    title: "充值信息"
+  },
+  attendence: {
+    title: "上课情况"
+  },
+  selectclasses: {
+    title: "学生选课",
+    hidden: true
+  },
+  selectstudents: {
+    title: "课程报名",
+    hidden: true
+  },
 }
 info._hash = ""
 info.defaultv = {}
@@ -109,7 +117,9 @@ info.show = function(){
         students: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
         classes: ["ClassId", "ClassName", "CardNo", "StuId", "StuName", "TeacherId", "Status"],
         charging: ["CardNo", "StuId", "StuName"],
-        attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassName"]
+        attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassName"],
+        selectstudents: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
+        selectclasses: ["ClassId", "ClassName", "TeacherId", "Status"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
   if ( $.inArray(that._hash, ['students', 'classes'])>-1 ) {
