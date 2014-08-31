@@ -183,7 +183,8 @@ info.show_calender = function(_ops){
     changeMonth: true,
     changeYear: true,
     dateFormat: 'yy-mm-dd',
-    maxDate: 0
+    maxDate: 0/*,
+    beforeShowDay:*/ 
   }
   _el.find('.calender').datepicker(dateoptions);
 }
@@ -229,7 +230,7 @@ function forcs_back(_opstring){
     break; case 'classes':
       operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", selectstudents: "课程报名"}
     break; case 'charging':
-      operate = {students: "查看学员信息"}
+      operate = {students: "查看学员信息", AccCharging: "充值", AccConsuming: "签到"}
     break;
   }
   if ( $.inArray(that._hash, ['students', 'classes', 'charging'])>-1 ) {

@@ -259,25 +259,20 @@ body{
 }
 
 /*attendence calender*/
-#attendence_result .ui-datepicker{
+/*#attendence_result .ui-datepicker{
   width: 98%;
+}*/
+#attendence div.ui-datepicker-header{
+  display: none;
 }
+/*
 #attendence_result .ui-datepicker td a{
   height: 60px;
   position: relative;
 }
 #attendence_result .ui-datepicker td{
   width: 13%
-}
-#attendence_result .ui-datepicker select.ui-datepicker-month, 
-#attendence_result .ui-datepicker select.ui-datepicker-year {
-  width: 20%;
-  min-width: 70px;
-  padding: 3px 4px;
-}
-#attendence_result .ui-datepicker select.ui-datepicker-year {
-  margin-left: 10%;
-}
+}*/
 
 
 /*account*/
@@ -302,7 +297,7 @@ body#account div.background{
   width: 100%;
   height: 100%;
   background: #fff url(../img/account.jpg) no-repeat fixed;
-  background-position:0px 10px;
+  background-position:0px 35px;
 }
 
 body#account div.background div.container-fluid,
