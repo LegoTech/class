@@ -104,6 +104,8 @@ info.show_search = function(_ops){
   }
   rhtml += '<a data-type="search" class="btn btn-success">搜索</a>'
   $("#"+_ops.id).empty().html(rhtml)
+
+  $('input, textarea').placeholder();
   for ( var i=0; i<autos.length; i++ ) {
     $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
       source: util.autoarr[autos[i]]

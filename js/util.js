@@ -37,26 +37,6 @@ util = {
     }
 }
 
-util.placeholder_hack = function(){
-  //Assign to those input elements that have 'placeholder' attribute
-  $('input[placeholder]').each(function(){  
-      var input = $(this);        
-      $(input).val(input.attr('placeholder'));
-                  
-      $(input).focus(function(){
-          if (input.val() == input.attr('placeholder')) {
-             input.val('');
-          }
-      });
-          
-      $(input).blur(function(){
-         if (input.val() == '' || input.val() == input.attr('placeholder')) {
-             input.val(input.attr('placeholder'));
-         }
-      });
-  });
-}
-
 util.stopDefault = function(e){ 
     //阻止默认浏览器动作(W3C) 
     if ( e && e.preventDefault ) {
@@ -433,6 +413,8 @@ util.show_modal = function(_ops){
               </div>\
             </div>'
   _el.empty().html(chtml)
+
+  $('input, textarea').placeholder();
   for ( var i=0; i<autos.length; i++ ) {
     $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
       source: that.autoarr[autos[i]]

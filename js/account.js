@@ -152,7 +152,8 @@ acc.show = function(){
   }
   var _el = $('#'+that._hash)
   _el.empty().html(rhtml)
-    
+  $('input, textarea').placeholder();
+  
   !(function (infos){
     var iclasses = []
     $.extend(iclasses, infos.classes)
