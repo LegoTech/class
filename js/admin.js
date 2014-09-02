@@ -29,7 +29,7 @@ admin.hashchange = function(){
 
 admin.show = function(){
   var that = this
-  $('#'+that._hash).empty().html('<div class="span5" id="'+that._hash+'_table"></div><div class="span5" id="'+that._hash+'_table"></div>')
+  $('#'+that._hash).empty().html('<div class="span5" id="'+that._hash+'_table"></div><div class="span5" id="'+that._hash+'_form"></div>')
   //C#读取当前权限可以看到的所有中心的信息
   var _ops = {
     thead: ['desc', 'name'],
@@ -50,8 +50,177 @@ admin.show = function(){
   if ( !that.pages[that._hash].bossadd || util.user.isboss ) $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i> 添加'+that.pages[that._hash].title+'</a></p>')
 }
 
-admin.show_form = function(){
+/*_ops:{
+  id:'',               //容器
+  valueid: 1,            //如果是更新，读取数据
+  clickback: function     //（可选）
+}
+*/
+admin.show_form = function(_ops){
+  var _el = $('#'+_ops.id)
+  var that = this
+  //inputs,默认type为text，不为text另外说明，默认placeholder为desc
+  //autocomplete, date, spinner为bool
+  var inputs = {
+    cCenterId:  {desc: '中心编号',      disable:true},
+    Id:         {desc: '编号',          disable:true},
+    SetId:      {desc: '套餐编号',      disable:true},
+    Name:       {desc: '姓名'},
+    CenterName: {desc: '中心名'},
+    CenterAddress: {desc: '中心地址'},
+    SetHours:   {desc: '套餐课时数',    slider:true},
+    SetMoney:   {desc: '套餐金额',      slider:true}
+  }
+  var AuthNames = {0:"xx", 1:"yy"},   //C#获得AuthNames(参数：util.user.isBoss,util.user.isadmin)
+      CenterNames = util.center.desc
+  var selects = {
+    AuthId: {
+        desc: '权限类型',
+        options: AuthNames
+    },
+    CenterId: {
+        desc: '中心',
+        options: CenterNames
+    }
+  }
+  var title = '', lists = [], defaultv = {}
+  switch ( _ops.id ) {
+    case 'center_form':
+      if ( _ops.valueid ) {
+        title = '修改中心信息'
+        lists = ['cCenterId', 'CenterName', 'CenterAddress']
+        defaultv = {}   //C#查数据
+      }else{
+        title = '添加中心'
+        lists = ['CenterName', 'CenterAddress']
+      }
+    break;  case 'authority_form':
+      if ( _ops.valueid ) {
+        title = '修改用户信息'
+        lists = ['Id', 'Name', 'AuthId', 'CenterId']
+        defaultv = {}   //C#查数据
+      }else{
+        title = '添加用户'
+        lists = ['Name', 'AuthId', 'CenterId']
+      }
+    break;  case 'set_form':
+      if ( _ops.valueid ) {
+        title = '修改套餐信息'
+        lists = ['SetId', 'SetHours', 'SetMoney', 'CenterId']
+        defaultv = {}   //C#查数据
+      }else{
+        title = '添加套餐'
+        lists = ['SetHours', 'SetMoney', 'CenterId']
+      }
+    break; default:
+      return;
+    break;
+  }
   
+  var tmp = ''
+  var sliders = []
+  var valuehtml = '', rhtml = ''
+  for (var k=0; k<lists.length; k++) {
+    tmp = lists[k]
+    if ( inputs[tmp] ) {
+      if ( defaultv[tmp] ) {
+        valuehtml = ' value="' + defaultv[tmp] + '"'
+      }else{
+        valuehtml = ""
+      }
+      rhtml += '<div class="control-group">\
+                  <label class="control-label" for="' + _ops.id + '_' + tmp + '_input">' + inputs[tmp].desc + '</label>\
+                  <div class="controls">'\
+                    '<input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                    '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disable?' disabled':'') + '>\
+                    <span class="help-inline"></span>\
+                  </div>\
+                </div>'
+      if ( inputs[tmp].slider ) {sliders.push(tmp)}
+      continue;
+    }    
+    if ( selects[tmp] ) {
+      rhtml += '<div class="control-group">\
+                  <label class="control-label" for="' + _ops.id + '_' + tmp + '_select">' + selects[tmp].desc + '</label>\
+                  <div class="controls">\
+                    <select name="' + tmp + '" id="' + _ops.id + '_' + tmp + '_select"><option value="">' + selects[tmp].desc + '</option>'
+      for ( key in selects[tmp]["options"] ) {
+        if ( defaultv[tmp] === key ) {
+          rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
+        }else{
+          rhtml += '<option value="' + key + '">' + selects[tmp]["options"][key] + '</option>'
+        }      
+      }
+      rhtml += '</select><span class="help-inline"></span></div></div>'
+    }
+  }
+
+  var chtml = '<h3 id="myModalLabel">' + title + '</h3>\
+                <form class="form-horizontal">'+ rhtml +'</form>\
+                <a class="btn btn-primary savechange">保存</a>'
+  _el.empty().html(chtml)
+
+  $('input, textarea').placeholder();
+  for ( var i=0; i<autos.length; i++ ) {
+    $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
+      source: that.autoarr[autos[i]]
+    });
+  }
+  for ( i=0; i<dates.length; i++ ) {
+    var dateoption = {
+      changeMonth: true,
+      changeYear: true,
+      dateFormat: 'yy-mm-dd',
+      showAnim: 'blind'
+    }
+    $("#"+_ops.id).find('input[name="'+dates[i]+'"]').datepicker(dateoption);
+  }
+  for ( i=0; i<spinners.length; i++ ) {
+    var spinneroption = {
+      min: 0,
+      step: 0.5
+    }
+    $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
+  }
+  
+
+  _el.find('a.savechange').click(function(){
+    var inputs = _el.find('input')
+    var selects = _el.find('select')
+    if ( !inputs.length && !selects.length ) {
+      _el.modal('hide')
+      return ;
+    }
+    var noerror = that.valid({inputs:inputs, selects:selects})
+    var defaultv = {}
+    noerror && (defaultv = noerror)
+    var valuestring = JSON.stringify(defaultv)
+    var haserror = false
+    var inputtmp
+    noerror && ( haserror = eval("(" + test() + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
+    if ( noerror && !haserror ) {
+      _el.find('form').effect('drop', {}, 500, function(){
+        _el.modal('hide')
+        setTimeout(function(){
+          if ( _ops.clickback && (typeof _ops.clickback === 'function') ){
+            return _ops.clickback(_ops)
+          }
+        },2000)
+      })     
+    }else{
+      for ( key in haserror ) {
+        inputtmp = $('#' + _ops.id + '_' + key + '_input')
+        if ( !inputtmp.length ) {
+          inputtmp = $('#' + _ops.id + '_' + key + '_select')
+        }
+        if ( !inputtmp.length ) {
+          continue;
+        }
+        that.show_help({$th:inputtmp, desc:haserror[key], iserror:true})
+      }
+      _el.find('form').effect('bounce', {}, 300)
+    }
+  });
 }
 
 function forcs_refresh(){
@@ -84,9 +253,9 @@ $(document).on('click', function(e){
     var value = _ta.attr('data-value')
     switch ( type ) {
       case 'add':
-        
+        that.show_form({id:that._hash+'_form', clickback:that.show})     
       break; case 'update':
-        //调C#函数获取值，C#调forcs_back进行下一步操作
+        that.show_form({id:that._hash+'_form', valueid:value, clickback:that.show})
       break;
     }
 });
