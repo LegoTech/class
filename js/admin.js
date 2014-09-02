@@ -130,8 +130,8 @@ admin.show_form = function(_ops){
       }
       rhtml += '<div class="control-group">\
                   <label class="control-label" for="' + _ops.id + '_' + tmp + '_input">' + inputs[tmp].desc + '</label>\
-                  <div class="controls">'\
-                    '<input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                  <div class="controls">\
+                    <input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
                     '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disable?' disabled':'') + '>\
                     <span class="help-inline"></span>\
                   </div>\
@@ -161,28 +161,11 @@ admin.show_form = function(_ops){
   _el.empty().html(chtml)
 
   $('input, textarea').placeholder();
-  for ( var i=0; i<autos.length; i++ ) {
+  for ( var i=0; i<sliders.length; i++ ) {
     $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
       source: that.autoarr[autos[i]]
     });
   }
-  for ( i=0; i<dates.length; i++ ) {
-    var dateoption = {
-      changeMonth: true,
-      changeYear: true,
-      dateFormat: 'yy-mm-dd',
-      showAnim: 'blind'
-    }
-    $("#"+_ops.id).find('input[name="'+dates[i]+'"]').datepicker(dateoption);
-  }
-  for ( i=0; i<spinners.length; i++ ) {
-    var spinneroption = {
-      min: 0,
-      step: 0.5
-    }
-    $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
-  }
-  
 
   _el.find('a.savechange').click(function(){
     var inputs = _el.find('input')
