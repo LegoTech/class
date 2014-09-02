@@ -83,7 +83,10 @@ acc.show = function(){
           defaultv = {
             StuId: that.infos.StuId,
             StuName: that.infos.StuName,
-            ClassId: iclasses[j].ClassId
+            ClassId: iclasses[j].ClassId,
+            StartTime: iclasses[j].StartTime,
+            EndTime: iclasses[j].EndTime,
+            Hours: that.lastconsuming.Hours
           }
         }else{
           defaultv = {StuName: that.infos.StuName}
@@ -110,6 +113,7 @@ acc.show = function(){
     }
     
     var tmp = ''
+    var dates = []
     var valuehtml = '', rhtml = ''
     rhtml = '<form class="form-horizontal" data-value="'+defaultv.StuId+'">'
     for (var k=0; k<lists.length; k++) {
@@ -127,6 +131,7 @@ acc.show = function(){
                       '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disabled?' disabled':'') + '>\
                     </div>\
                   </div>'
+        if ( inputs[tmp].date ) {dates.push(tmp)}
         continue;
       }    
       if ( selects[tmp] ) {
@@ -179,10 +184,21 @@ acc.show = function(){
       stop: spinnerchange
     }
     _el.find('input[name="SetCount"]').spinner(spinneroption);
+    for ( i=0; i<dates.length; i++ ) {
+      var dateoption = {
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: 'yy-mm-dd',
+        showAnim: 'blind',
+        defaultDate: 0
+      }
+      $("#"+_ops.id).find('input[name="'+dates[i]+'"]').datepicker(dateoption);
+    }
 
     var Hoursoption = {
       min: 0.5,
-      step: 0.5
+      step: 0.5,
+      value: defaultv[Hours]
     }
     _el.find('input[name="Hours"]').spinner(Hoursoption);
 
@@ -194,7 +210,7 @@ acc.show = function(){
       if ( acc._hash === 'consuming' ) {
         var ClassId = _el.find('select[name="ClassId"]').val()
         sendvalues.ClassId = ClassId
-        _ta.parents('form').find(':input').each(function(index, element){
+        _ta.parents('form').find('input').each(function(index, element){
           if ( $(element).val() ) {
             sendvalues[element.name] = $(element).val()
           }
@@ -204,8 +220,14 @@ acc.show = function(){
           _el.find('form').effect('bounce', {}, 1000, function(){});
           return;
         }
+        if ( !Time ) {
+          util.show_help({$th:_el.find('input[name="Time"]'), desc:'请选择上课时间', iserror:true})
+          _el.find('form').effect('bounce', {}, 1000, function(){});
+          return;
+        }
         $.extend(that.lastconsuming, sendvalues)
         util.show_help({$th:_el.find('select[name="ClassId"]'), iserror:false})
+        util.show_help({$th:_el.find('input'), iserror:false})
       }else{
         var SetCount = _el.find('input[name="SetCount"]').val()
         util.show_help({$th:_el.find('input[name="ClassId"]'), iserror:false})
