@@ -292,8 +292,8 @@ util.show_modal = function(_ops){
     Address:    {desc: '地址'},
     Parents:    {desc: '家长'},
     Phone:      {desc: '电话'},
-    //WeekTime:       {desc: '每周上课'},
-    Time:       {desc: '上课时间'},
+    WeekTime:   {desc: '每周上课'},
+    Time:       {desc: '上课时间',      place: 'eg:16:00~18:00'},
     Hours:      {desc: '课时数',        spinner:true},
     StartTime:  {desc: '开始时间',      date:true},
     EndTime:    {desc: '结束时间',      date:true},
@@ -328,7 +328,7 @@ util.show_modal = function(_ops){
       lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
     break; case 'add_classes_modal':
       title = '添加课程'
-      lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
+      lists = ['ClassName', "TeacherId", 'WeekTime', 'Time', 'Hours', 'StartTime', 'EndTime']
     break; case 'update_students_modal':
       if ( _ops.valueid ) {
         defaultv = {}   //C#查数据
@@ -370,10 +370,21 @@ util.show_modal = function(_ops){
       }else{
         valuehtml = ""
       }
+      var checkboxhtml = ''
+      if ( tmp === 'WeekTime' ) {
+        var enumWeek = ['其他', '周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        for ( var q=0; q<enumWeek.length; q++) {
+          checkboxhtml += '<label class="checkbox inline">\
+                              <input type="checkbox" value="'+q+'"> ' +
+                          enumWeek[q] + '</label>'
+        }
+        checkboxhtml += '<br/>'
+      }
       rhtml += '<div class="control-group">\
                   <label class="control-label" for="' + _ops.id + '_' + tmp + '_input">' + inputs[tmp].desc + '</label>\
-                  <div class="controls">\
-                    <input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
+                  <div class="controls">'+
+                    checkboxhtml +
+                    '<input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
                     '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + ($.inArray(tmp, disablelists)>-1?' disabled':'') + '>\
                     <span class="help-inline"></span>\
                   </div>\
@@ -436,6 +447,8 @@ util.show_modal = function(_ops){
     }
     $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
   }
+  _el.find('input[]').click(function(){});
+
   _el.find('a.modal_savechange').click(function(){
     var inputs = _el.find('input')
     var selects = _el.find('select')

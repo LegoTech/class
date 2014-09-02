@@ -72,7 +72,7 @@ acc.show = function(){
             }
           ]
         }
-        lists = ['StuName', 'ClassId', 'StartTime', 'EndTime', 'Hours']
+        lists = ['StuName', 'ClassId', 'StartTime', 'EndTime', 'Time', 'Hours']
         iclasses = that.infos.classes
         if ( that.lastconsuming ) {
           for ( var j=0; j<iclasses.length; j++ ) {

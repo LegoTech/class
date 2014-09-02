@@ -314,10 +314,21 @@ $(document).on('click', function(e){
     var op = '',          //opmenu
         doornot = false,  //opmenu
         defaultvkey = '', //opmenu
-        error             //select, cancle
+        error,            //select, cancle
+        StuIdtmp, ClassIdtmp  //search
     switch ( type ) {
       case 'search':
-        that.defaultv = {}
+        if ( $.inArray(that._hash, ['selectstudents', 'selectclasses'])>-1 ) {
+          StuIdtmp = that.defaultv.StuId
+          ClassIdtmp = that.defaultv.ClassId
+        }else{
+          StuIdtmp = undefined
+          ClassIdtmp = undefined
+        }
+        that.defaultv = {
+          StuId: StuIdtmp,
+          ClassId: ClassIdtmp
+        }
         _ta.parents('form').find(':input').each(function(index, element){
           if ( $(element).val() ) {
             that.defaultv[element.name] = $(element).val()
