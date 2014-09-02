@@ -50,6 +50,7 @@ acc.show = function(){
   }
   var lists = []
   var defaultv = {}, iclasses = [], haslastclass = false
+  var dates = []
   if ( !that._search && $.isEmptyObject(that.infos) ) {
     rhtml = '<h3>'+that.pages[that._hash].title+'请刷卡</h3>'
   }else if ( $.isEmptyObject(that.infos) ){
@@ -113,7 +114,6 @@ acc.show = function(){
     }
     
     var tmp = ''
-    var dates = []
     var valuehtml = '', rhtml = ''
     rhtml = '<form class="form-horizontal" data-value="'+defaultv.StuId+'">'
     for (var k=0; k<lists.length; k++) {
@@ -198,7 +198,7 @@ acc.show = function(){
     var Hoursoption = {
       min: 0.5,
       step: 0.5,
-      value: defaultv[Hours]
+      value: defaultv.Hours
     }
     _el.find('input[name="Hours"]').spinner(Hoursoption);
 
@@ -271,10 +271,7 @@ $('#consuming').hide()
 $('#'+that._hash).show()
 that.show()
 
-    var width = document.body.clientWidth
-    if ( !width ) {
-      width = document.documentElement.clientWidth 
-    }
+    var width = document.width || document.body.clientWidth || document.documentElement.clientWidth 
     var x = (width-1654)/2
     var y = 3308/width/width - 2/width
     var w = width/2

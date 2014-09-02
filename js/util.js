@@ -375,7 +375,7 @@ util.show_modal = function(_ops){
         var enumWeek = ['其他', '周一', '周二', '周三', '周四', '周五', '周六', '周日']
         for ( var q=0; q<enumWeek.length; q++) {
           checkboxhtml += '<label class="checkbox inline">\
-                              <input type="checkbox" value="'+q+'"> ' +
+                              <input type="checkbox" value='+q+'> ' +
                           enumWeek[q] + '</label>'
         }
         checkboxhtml += '<br/>'
@@ -447,7 +447,21 @@ util.show_modal = function(_ops){
     }
     $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
   }
-  _el.find('input[]').click(function(){});
+  _el.find('input[name="WeekTime"]').hide()
+  _el.find(':checkbox').click(function(){
+    var _th = $(this)
+    if ( _th.val()==='0' && _th.attr("checked") ) {
+      _el.find(':checkbox').attr('checked', false)
+      _th.attr('checked', true)
+      _el.find('input[name="WeekTime"]').show()
+    }else if ( _th.val()==='0' && !_th.attr("checked") ) {
+      _el.find('input[name="WeekTime"]').hide()
+    }else if ( _th.val()>0 && _th.attr("checked") ) {
+      _el.find(':checkbox[value=0]').attr('checked', false)
+      _th.attr('checked', true)
+      _el.find('input[name="WeekTime"]').hide()
+    }
+  });
 
   _el.find('a.modal_savechange').click(function(){
     var inputs = _el.find('input')
@@ -527,15 +541,24 @@ util.valid = function(_ops){
 
     var defaultv = {}
     var $th, val, 
-        npwd = _ops.inputs.filter('[name="NewPassword"]').val()
+        npwd = _ops.inputs.filter('[name="NewPassword"]').val(),
+        weektime = ''
+    _ops.inputs.filter(':checked').each(function(){
+      weektime += $(this).val()
+    });
     _ops.inputs.each(function(index, element){
       iserror = false
       $th = $(element)
       val = $th.val()
+      if ( $th.attr('type')==='checkbox' ) {
+        return;
+      }else if ( $th.attr('name')==='WeekTime' ) {
+        if ( weektime!=='0' ) return;
+      }
       if ( !val ) {
-        that.show_help({$th:$th, desc:'不能为空', iserror:true})
-        error_num++; iserror = true
-        return ;
+          that.show_help({$th:$th, desc:'不能为空', iserror:true})
+          error_num++; iserror = true
+          return ;
       }
       if ( val.length>50 ) {
         that.show_help({$th:$th, desc:'输入过长', iserror:true})
@@ -581,6 +604,7 @@ util.valid = function(_ops){
       if ( !iserror ) {
         that.show_help({$th:$th, iserror:false})
         defaultv[element.name] = val
+        defaultv.WeekTime = defaultv.WeekTime || weektime
       }
     });
     _ops.selects.each(function(index, element){
