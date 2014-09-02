@@ -37,8 +37,9 @@ acc.show = function(){
     ChargingHours:{desc: '充值金额',    disabled:true},
     ChargingMoney:{desc: '充值课时',    disabled:true},
     Hours:      {desc: '课时数',        spinner:true},
-    StartTime:  {desc: '开始时间'},
-    EndTime:    {desc: '结束时间'},
+    StartTime:  {desc: '开始时间',      disabled:true},
+    EndTime:    {desc: '结束时间',      disabled:true},
+    Time:       {desc: '上课时间',      date:true} 
   }
   var ClassNames = {0:"xx", 1:"yy"}   //C#获得教师id和name,状态值
   var selects = {
@@ -67,8 +68,7 @@ acc.show = function(){
             {ClassId:1,
             ClassName:"算数",
             StartTime:"13-01-31",
-            EndTime:"13-02-21",
-            Hours:2
+            EndTime:"13-02-21"
             }
           ]
         }
@@ -160,13 +160,11 @@ acc.show = function(){
 
     _el.find('select').change(function(){
       var ClassId = parseInt($(this).val())
-      var haslastclass = false
       for ( var j=0; j<iclasses.length; j++ ) {
-        if ( iclasses[j].ClassId==ClassId ) {haslastclass=true; break;}
+        if ( iclasses[j].ClassId==ClassId ) {break;}
       } 
       _el.find('input[name="StartTime"]').val(iclasses[j].StartTime)
       _el.find('input[name="EndTime"]').val(iclasses[j].EndTime)
-      _el.find('input[name="Hours"]').val(iclasses[j].Hours)
     });
 
     function spinnerchange(){
@@ -203,7 +201,6 @@ acc.show = function(){
         });
         if ( !ClassId ) {
           util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
-          util.show_help({$th:_el.find('input[name="Hours"]'), desc:'请选择课程', iserror:true})
           _el.find('form').effect('bounce', {}, 1000, function(){});
           return;
         }
@@ -252,7 +249,10 @@ $('#consuming').hide()
 $('#'+that._hash).show()
 that.show()
 
-    var width = document.width
+    var width = document.body.clientWidth
+    if ( !width ) {
+      width = document.documentElement.clientWidth 
+    }
     var x = (width-1654)/2
     var y = 3308/width/width - 2/width
     var w = width/2
