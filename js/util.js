@@ -435,8 +435,7 @@ util.show_modal = function(_ops){
     var dateoption = {
       changeMonth: true,
       changeYear: true,
-      dateFormat: 'yy-mm-dd',
-      showAnim: 'blind'
+      dateFormat: 'yy-mm-dd'
     }
     $("#"+_ops.id).find('input[name="'+dates[i]+'"]').datepicker(dateoption);
   }

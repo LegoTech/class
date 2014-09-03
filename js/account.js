@@ -189,10 +189,9 @@ acc.show = function(){
         changeMonth: true,
         changeYear: true,
         dateFormat: 'yy-mm-dd',
-        showAnim: 'blind',
         defaultDate: 0
       }
-      $("#"+_ops.id).find('input[name="'+dates[i]+'"]').datepicker(dateoption);
+      _el.find('input[name="'+dates[i]+'"]').datepicker(dateoption);
     }
 
     var Hoursoption = {
