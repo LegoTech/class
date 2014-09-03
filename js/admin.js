@@ -71,7 +71,7 @@ admin.show_form = function(_ops){
     SetHours:   {desc: '套餐课时数',    slider:true},
     SetMoney:   {desc: '套餐金额',      slider:true}
   }
-  var AuthNames = {0:"xx", 1:"yy"},   //C#获得AuthNames(参数：util.user.isBoss,util.user.isadmin)
+  var AuthNames = {0:"xx", 1:"yy"},   //C#获得AuthNames(需验证操作用户权限)
       CenterNames = util.center.desc
   var selects = {
     AuthId: {
@@ -118,13 +118,15 @@ admin.show_form = function(_ops){
   }
   
   var tmp = ''
-  var sliders = []
   var valuehtml = '', rhtml = ''
   for (var k=0; k<lists.length; k++) {
     tmp = lists[k]
     if ( inputs[tmp] ) {
       if ( defaultv[tmp] ) {
         valuehtml = ' value="' + defaultv[tmp] + '"'
+        if ( tmp==='AuthId' && !util.user.isboss ) {
+          inputs[tmp].disable = true
+        }
       }else{
         valuehtml = ""
       }
@@ -132,11 +134,12 @@ admin.show_form = function(_ops){
                   <label class="control-label" for="' + _ops.id + '_' + tmp + '_input">' + inputs[tmp].desc + '</label>\
                   <div class="controls">\
                     <input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
-                    '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disable?' disabled':'') + '>\
+                    '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disable?' disabled':'') +
+                     (inputs[tmp].slider?' readonly style="border:0; color:#f6931f; font-weight:bold;"':'') + '>\
                     <span class="help-inline"></span>\
                   </div>\
                 </div>'
-      if ( inputs[tmp].slider ) {sliders.push(tmp)}
+      if ( inputs[tmp].slider ) { rhtml += '<div id="slider-'+tmp+'-min"></div>' }
       continue;
     }    
     if ( selects[tmp] ) {
@@ -155,40 +158,50 @@ admin.show_form = function(_ops){
     }
   }
 
-  var chtml = '<h3 id="myModalLabel">' + title + '</h3>\
+  var chtml = '<h3>' + title + '</h3>\
                 <form class="form-horizontal">'+ rhtml +'</form>\
                 <a class="btn btn-primary savechange">保存</a>'
   _el.empty().html(chtml)
 
   $('input, textarea').placeholder();
-  for ( var i=0; i<sliders.length; i++ ) {
-    $("#"+_ops.id).find('input[name="'+autos[i]+'"]').autocomplete({
-      source: that.autoarr[autos[i]]
-    });
-  }
+  $('#slider-SetHours-min').slider({
+      range: "min",
+      value: 10,
+      min: 5,
+      step: 1,
+      max: 50,
+      slide: function( event, ui ) {
+        _el.find('input[name="SetHours"]').val( "$" + ui.value );
+      }
+  });
+  _el.find('input[name="SetHours"]').val( "$" + $( "#slider-SetHours-min" ).slider( "value" ) );
+  $('#slider-SetMoney-min').slider({
+      range: "min",
+      value: 1000,
+      min: 50,
+      max: 10000,
+      slide: function( event, ui ) {
+        _el.find('input[name="SetMoney"]').val( "$" + ui.value );
+      }
+  });
+  _el.find('input[name="SetMoney"]').val( "$" + $( "#slider-SetMoney-min" ).slider( "value" ) );
 
   _el.find('a.savechange').click(function(){
     var inputs = _el.find('input')
     var selects = _el.find('select')
-    if ( !inputs.length && !selects.length ) {
-      _el.modal('hide')
-      return ;
-    }
-    var noerror = that.valid({inputs:inputs, selects:selects})
+    var noerror = util.valid({inputs:inputs, selects:selects})
     var defaultv = {}
     noerror && (defaultv = noerror)
     var valuestring = JSON.stringify(defaultv)
     var haserror = false
     var inputtmp
-    noerror && ( haserror = eval("(" + test() + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
+    noerror && ( haserror = eval("(" + 'false' + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
     if ( noerror && !haserror ) {
       _el.find('form').effect('drop', {}, 500, function(){
-        _el.modal('hide')
-        setTimeout(function(){
-          if ( _ops.clickback && (typeof _ops.clickback === 'function') ){
-            return _ops.clickback(_ops)
-          }
-        },2000)
+        _el.hide()
+        if ( _ops.clickback && (typeof _ops.clickback === 'function') ){
+          return _ops.clickback(_ops)
+        }
       })     
     }else{
       for ( key in haserror ) {
@@ -199,7 +212,7 @@ admin.show_form = function(_ops){
         if ( !inputtmp.length ) {
           continue;
         }
-        that.show_help({$th:inputtmp, desc:haserror[key], iserror:true})
+        util.show_help({$th:inputtmp, desc:haserror[key], iserror:true})
       }
       _el.find('form').effect('bounce', {}, 300)
     }
