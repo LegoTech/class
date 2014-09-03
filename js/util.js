@@ -343,10 +343,10 @@ util.show_modal = function(_ops){
       title = '修改课程信息'
       switch ( parseInt(defaultv.Status) ) {
         case 0:             //未进行
-          lists = ['ClassId', 'ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime']
+          lists = ['ClassId', 'ClassName', "TeacherId", 'WeekTime', 'Time', 'Hours', 'StartTime', 'EndTime']
           disablelists = ['ClassId']
         break; case 1:      //进行中
-          lists = ['ClassName', "TeacherId", 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']
+          lists = ['ClassName', "TeacherId", 'WeekTime', 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']
           disablelists = ['ClassId', 'StartTime']
         break; case 2:      //已结束
           content = '课程已结束，不能修改课程信息'

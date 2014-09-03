@@ -315,3 +315,8 @@ body#account #charging, body#account #consuming{
   margin-left: 40px;
 }
 
+/*admin*/
+#set_form .ui-slider{
+  position: relative;
+  top: -10px;
+}

@@ -171,20 +171,21 @@ admin.show_form = function(_ops){
       step: 1,
       max: 50,
       slide: function( event, ui ) {
-        _el.find('input[name="SetHours"]').val( "$" + ui.value );
+        _el.find('input[name="SetHours"]').val( ui.value );
       }
   });
-  _el.find('input[name="SetHours"]').val( "$" + $( "#slider-SetHours-min" ).slider( "value" ) );
+  _el.find('input[name="SetHours"]').val( $( "#slider-SetHours-min" ).slider( "value" ) );
   $('#slider-SetMoney-min').slider({
       range: "min",
       value: 1000,
       min: 50,
+      step: 50,
       max: 10000,
       slide: function( event, ui ) {
-        _el.find('input[name="SetMoney"]').val( "$" + ui.value );
+        _el.find('input[name="SetMoney"]').val( "￥" + ui.value );
       }
   });
-  _el.find('input[name="SetMoney"]').val( "$" + $( "#slider-SetMoney-min" ).slider( "value" ) );
+  _el.find('input[name="SetMoney"]').val( "￥" + $( "#slider-SetMoney-min" ).slider( "value" ) );
 
   _el.find('a.savechange').click(function(){
     var inputs = _el.find('input')
