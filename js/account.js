@@ -36,6 +36,7 @@ acc.show = function(){
     SetCount:   {desc: '选择套餐数',    spinner:true},
     ChargingHours:{desc: '充值金额',    disabled:true},
     ChargingMoney:{desc: '充值课时',    disabled:true},
+    TicketId:   {desc: '票据号'},
     Hours:      {desc: '课时数',        spinner:true},
     StartTime:  {desc: '开始时间',      disabled:true},
     EndTime:    {desc: '结束时间',      disabled:true},
@@ -101,7 +102,7 @@ acc.show = function(){
             Money: 12
           }
         }
-        lists = ['StuName', 'ClassSet', 'SetCount', 'ChargingMoney', 'ChargingHours']
+        lists = ['StuName', 'ClassSet', 'SetCount', 'ChargingMoney', 'ChargingHours', 'TicketId']
         defaultv = {
           StuId: that.infos.StuId,
           StuName: that.infos.StuName,
@@ -229,6 +230,12 @@ acc.show = function(){
         util.show_help({$th:_el.find('input'), iserror:false})
       }else{
         var SetCount = _el.find('input[name="SetCount"]').val()
+        var TicketId = _el.find('input[name="TicketId"]').val()
+        if ( !TicketId ) {
+          util.show_help({$th:_el.find('input[name="TicketId"]'), desc:'请填写票据号', iserror:true})
+          _el.find('form').effect('bounce', {}, 1000, function(){});
+          return;
+        }
         util.show_help({$th:_el.find('input[name="ClassId"]'), iserror:false})
       }
       //调C#函数提交
