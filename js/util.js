@@ -373,9 +373,20 @@ util.show_modal = function(_ops){
       var checkboxhtml = ''
       if ( tmp === 'WeekTime' ) {
         var enumWeek = ['其他', '周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        var WeekTimeCode = defaultv.WeekTime.split('::')[1]
+        if ( WeekTimeCode ) {
+          WeekTimeCode = WeekTimeCode.split('')
+          for ( var n=0; n<WeekTimeCode.length; n++) {
+            WeekTimeCode[n] = parseInt(WeekTimeCode[n])
+          }
+          defaultv.WeekTime = null
+        }else{
+          WeekTimeCode = [0]
+        }
         for ( var q=0; q<enumWeek.length; q++) {
           checkboxhtml += '<label class="checkbox inline">\
-                              <input type="checkbox" value='+q+'> ' +
+                              <input type="checkbox" value="'+q+'" '+
+                              ($.inArray(q, WeekTimeCode)?'checked':'')+'> ' +
                           enumWeek[q] + '</label>'
         }
         checkboxhtml += '<br/>'
@@ -475,7 +486,7 @@ util.show_modal = function(_ops){
     var valuestring = JSON.stringify(defaultv)
     var haserror = false
     var inputtmp
-    noerror && ( haserror = eval("(" + test() + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false
+    noerror && ( haserror = eval("(" + test() + ")") )   //C#提交valuestring，返回错误列表{key:desc}或者false.WeekTime如果是1~7数字连起来，以::开头,否则直接返回描述。修改课程时从后台取信息也使用这个格式给我
     if ( noerror && !haserror ) {
       _el.find('form').effect('drop', {}, 500, function(){
         _el.modal('hide')
@@ -552,7 +563,10 @@ util.valid = function(_ops){
       if ( $th.attr('type')==='checkbox' ) {
         return;
       }else if ( $th.attr('name')==='WeekTime' ) {
-        if ( weektime!=='0' ) return;
+        if ( weektime!=='0' ) {
+          weektime = '::'+weektime;
+          return;
+        }
       }
       if ( !val ) {
           that.show_help({$th:$th, desc:'不能为空', iserror:true})
