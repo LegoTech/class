@@ -283,18 +283,20 @@ util.show_modal = function(_ops){
   //autocomplete, date, spinner为bool
   var inputs = {
     CardNo:     {desc: '学员卡号'},
-    StuId:      {desc: '学生编号'},
+    StuId:      {desc: '学生ID',        hidden: true},
     StuName:    {desc: '学生姓名',      autocomplete: true},
     School:     {desc: '学校'},
-    ClassId:    {desc: '课程编号'},
+    ClassId:    {desc: '课程ID',        hidden: true},
+    ClassNo:    {desc: '课程编号'},
     ClassName:  {desc: '课程名',        autocomplete: true},
-    Birth:      {desc: '生日',          date:true},
+    Birth:      {desc: '生日',          date: true},
     Address:    {desc: '地址'},
     Parents:    {desc: '家长'},
     Phone:      {desc: '电话'},
     WeekTime:   {desc: '每周上课'},
-    Time:       {desc: '上课时间',      place: 'eg:16:00~18:00'},
-    Hours:      {desc: '课时数',        spinner:true},
+    Time:       {desc: '上课时间',      timepicker:true},
+    PerHours:   {desc: '每次课时数',    spinner:true},
+    Hours:      {desc: '总课时数',      spinner:true},
     StartTime:  {desc: '开始时间',      date:true},
     EndTime:    {desc: '结束时间',      date:true},
     OriPassword:{desc: '原始密码',      type:'password'},
@@ -303,7 +305,7 @@ util.show_modal = function(_ops){
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
       Status = {0:"开始", 1:"结束" },
-      ClassSetName = {0:"xx", 1:"yy"}
+      ClassTypeName = {0:"xx", 1:"yy"}
   var selects = {
     TeacherId: {
         desc: '教师姓名',
@@ -313,9 +315,9 @@ util.show_modal = function(_ops){
         desc: '状态',
         options: Status
     },
-    ClassSetId: {
-        desc: '套餐',
-        options: ClassSetName
+    ClassType: {
+        desc: '课程类型',
+        options: ClassTypeName
     }
   }
   var title = '', lists = [], disablelists = [], defaultv = {}, content = ''
@@ -325,16 +327,17 @@ util.show_modal = function(_ops){
       lists = ['OriPassword', 'NewPassword', 'RePassword']
     break; case 'add_students_modal':
       title = '添加学员'
-      lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
+      lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone']
     break; case 'add_classes_modal':
       title = '添加课程'
-      lists = ['ClassName', "TeacherId", 'WeekTime', 'Time', 'Hours', 'StartTime', 'EndTime']
+      lists = ['ClassName', 'ClassNo', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime'],
+      disablelists = ['Time']
     break; case 'update_students_modal':
       if ( _ops.valueid ) {
         defaultv = {}   //C#查数据
       }
       title = '修改学员信息'
-      lists = ['StuId', 'CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'ClassSetId']
+      lists = ['StuId', 'CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone']
       disablelists = ['StuId']
     break; case 'update_classes_modal':
       if ( _ops.valueid ) {
@@ -343,11 +346,11 @@ util.show_modal = function(_ops){
       title = '修改课程信息'
       switch ( parseInt(defaultv.Status) ) {
         case 0:             //未进行
-          lists = ['ClassId', 'ClassName', "TeacherId", 'WeekTime', 'Time', 'Hours', 'StartTime', 'EndTime']
-          disablelists = ['ClassId']
+          lists = ['ClassId', 'ClassName', 'ClassNo', "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
+          disablelists = ['ClassId', 'Time']
         break; case 1:      //进行中
-          lists = ['ClassName', "TeacherId", 'WeekTime', 'Time', 'Hours', 'StartTime', 'EndTime', 'ClassId']
-          disablelists = ['ClassId', 'StartTime']
+          lists = ['ClassName', 'ClassNo',  "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime', 'ClassId']
+          disablelists = ['ClassId', 'StartTime', 'Time']
         break; case 2:      //已结束
           content = '课程已结束，不能修改课程信息'
         break; default:
@@ -360,8 +363,8 @@ util.show_modal = function(_ops){
   }
   
   var tmp = ''
-  var autos = [], dates = [], spinners = []
-  var valuehtml = '', rhtml = ''
+  var autos = [], dates = [], spinners = [], timepickers = []
+  var valuehtml = '', rhtml = '', timehtml = ''
   for (var k=0; k<lists.length; k++) {
     tmp = lists[k]
     if ( inputs[tmp] ) {
@@ -373,36 +376,46 @@ util.show_modal = function(_ops){
       var checkboxhtml = ''
       if ( tmp === 'WeekTime' ) {
         var enumWeek = ['其他', '周一', '周二', '周三', '周四', '周五', '周六', '周日']
-        var WeekTimeCode = defaultv.WeekTime.split('::')[1]
-        if ( WeekTimeCode ) {
-          WeekTimeCode = WeekTimeCode.split('')
-          for ( var n=0; n<WeekTimeCode.length; n++) {
-            WeekTimeCode[n] = parseInt(WeekTimeCode[n])
+        var WeekTimeCode = []
+        if (defaultv.WeekTime) {
+          WeekTimeCode = defaultv.WeekTime.split('::')[1]
+          if ( WeekTimeCode ) {
+            WeekTimeCode = WeekTimeCode.split(',')
+            for ( var n=0; n<WeekTimeCode.length; n++) {
+              WeekTimeCode[n] = parseInt(WeekTimeCode[n])
+            }
+            defaultv.WeekTime = null
+          }else{
+            WeekTimeCode = [0]
           }
-          defaultv.WeekTime = null
-        }else{
-          WeekTimeCode = [0]
-        }
+        }   
         for ( var q=0; q<enumWeek.length; q++) {
           checkboxhtml += '<label class="checkbox inline">\
                               <input type="checkbox" value="'+q+'" '+
-                              ($.inArray(q, WeekTimeCode)?'checked':'')+'> ' +
+                              ($.inArray(q, WeekTimeCode)>-1?'checked':'')+'> ' +
                           enumWeek[q] + '</label>'
         }
         checkboxhtml += '<br/>'
       }
-      rhtml += '<div class="control-group">\
+      if ( inputs[tmp].timepicker ) {
+        timehtml = '<div id="'+tmp+'_timepicker">从 <span class="hour" data-type="from"></span>时<span class="minute" data-type="from"></span>分\
+                    <br/>到 <span class="hour" data-type="to"></span>时<span class="minute" data-type="to"></span>分</div>'
+      }else{
+        timehtml = ''
+      }
+      rhtml += '<div class="control-group"' + (inputs[tmp].hidden?'style="display:none"':'') + '>\
                   <label class="control-label" for="' + _ops.id + '_' + tmp + '_input">' + inputs[tmp].desc + '</label>\
                   <div class="controls">'+
                     checkboxhtml +
                     '<input id="' + _ops.id + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
-                    '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + ($.inArray(tmp, disablelists)>-1?' disabled':'') + '>\
-                    <span class="help-inline"></span>\
-                  </div>\
+                    '" placeholder="' + (inputs[tmp].place ? inputs[tmp].place : inputs[tmp].desc) + '"' + valuehtml + ($.inArray(tmp, disablelists)>-1?' disabled':'') + '>\
+                    <span class="help-inline"></span>' + timehtml +
+                  '</div>\
                 </div>'
       if ( inputs[tmp].autocomplete ) {autos.push(tmp)}
       if ( inputs[tmp].date ) {dates.push(tmp)}
       if ( inputs[tmp].spinner ) {spinners.push(tmp)}
+      if ( inputs[tmp].timepicker ) {timepickers.push(tmp)}
       continue;
     }    
     if ( selects[tmp] ) {
@@ -457,6 +470,49 @@ util.show_modal = function(_ops){
     }
     $("#"+_ops.id).find('input[name="'+spinners[i]+'"]').spinner(spinneroption);
   }
+  for ( i=0; i<timepickers.length; i++ ) {
+    var hourval=8, minuteval=0
+    var houroption = {
+      min: 6,
+      max: 23,
+      range: "min",
+      value: hourval
+    }
+    var tmpname = timepickers[i]
+    houroption.slide = function(event, ui){
+      var type = $(ui.handle).attr("data-type")
+      var _ops = {}
+      _ops.jqfinder = 'input[name="'+tmpname+'"]'
+      if (type === 'from'){
+        _ops.hfrom = ui.value
+      }else{
+        _ops.hto = ui.value
+      }
+      that.timepicker_input(_ops)
+    }
+    var minuteoption = {
+      min: 0,
+      max: 59,
+      range: "min",
+      value: minuteval
+    }
+    minuteoption.slide = function(event, ui){
+      var type = $(ui.handle).attr("data-type")
+      var _ops = {}
+      _ops.jqfinder = 'input[name="'+tmpname+'"]'
+      if (type === 'from'){
+        _ops.mfrom = ui.value
+      }else{
+        _ops.mto = ui.value
+      }
+      that.timepicker_input(_ops)
+      return true;
+    }
+    $("#"+timepickers[i]+"_timepicker").find('span.hour').slider(houroption);
+    $("#"+timepickers[i]+"_timepicker").find('span.minute').slider(minuteoption);
+    var timepickerval = that.time_format(hourval)+':'+that.time_format(minuteval)+'-'+that.time_format(hourval)+':'+that.time_format(minuteval) ;
+    $("#"+_ops.id).find('input[name="'+timepickers[i]+'"]').val(timepickerval)
+  }
   _el.find('input[name="WeekTime"]').hide()
   _el.find(':checkbox').click(function(){
     var _th = $(this)
@@ -510,6 +566,35 @@ util.show_modal = function(_ops){
       _el.find('form').effect('bounce', {}, 300)
     }
   });
+}
+
+/*_ops{
+  jqfinder:'',
+  hfrom:1,
+  mfrom:0,
+  hto:2,
+  mto:0
+}
+*/
+util.timepicker_input = function(_ops){
+  var value = $(_ops.jqfinder).val()
+  var times = value.split('-')
+  var hfrom, hto, mfrom, mto
+  hfrom = typeof(_ops.hfrom)!=='undefined' ? this.time_format(_ops.hfrom) : times[0].split(':')[0]
+  mfrom = typeof(_ops.mfrom)!=='undefined' ? this.time_format(_ops.mfrom) : times[0].split(':')[1]
+  hto = typeof(_ops.hto)!=='undefined' ? this.time_format(_ops.hto) : times[1].split(':')[0]
+  mto = typeof(_ops.mto)!=='undefined' ? this.time_format(_ops.mto) : times[1].split(':')[1]
+  value =  hfrom+':'+mfrom+'-'+hto+':'+mto
+  $(_ops.jqfinder).val(value)
+}
+
+util.time_format = function(data){
+  var n = parseInt(data)
+  if (n < 10) { 
+    return '0'+n ; 
+  }else{
+    return String(n);
+  }
 }
 
 function test(){

@@ -258,6 +258,13 @@ body{
   color: #b94a48;
 }
 
+.modal-body span.hour,
+.modal-body span.minute{
+  width: 100px;
+  display: inline-block;
+  margin: 5px 9px -3px;
+}
+
 /*attendence calender*/
 /*#attendence_result .ui-datepicker{
   width: 98%;

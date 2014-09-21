@@ -51,11 +51,12 @@ info.show_search = function(_ops){
   //默认type为text，不为text另外说明，默认placeholder为desc
   var inputs = {
     CardNo: {desc: '学员卡号'},
-    StuId: {desc: '学员编号'},
-    StuName: {desc: '学生姓名',autocomplete: true},
+    StuId: {desc: '学员ID',     hidden: true},
+    StuName: {desc: '学生姓名', autocomplete: true},
     School: {desc: '学校'},
-    ClassId: {desc: '课程编号'},
-    ClassName: {desc: '课程名',autocomplete: true}
+    ClassId: {desc: '课程ID',   hidden: true},
+    ClassNo: {desc: '课程编号'},
+    ClassName: {desc: '课程名', autocomplete: true}
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
       Status = {0:"开始", 1:"结束" }
@@ -80,7 +81,7 @@ info.show_search = function(_ops){
       }else{
         valuehtml = ""
       }
-      rhtml += '<div class="input-prepend">\
+      rhtml += '<div class="input-prepend"' + (inputs[tmp].hidden?'style="display:none"':'') + '>\
                   <span class="add-on add-on-info">' + inputs[tmp].desc + '</span>\
                   <input name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
                   '" placeholder="' + inputs[tmp].desc + '"' + valuehtml +'>\
@@ -116,12 +117,12 @@ info.show_search = function(_ops){
 info.show = function(){
   var that = this
 	var lists = {
-        students: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassName"],
-        classes: ["ClassId", "ClassName", "CardNo", "StuId", "StuName", "TeacherId", "Status"],
+        students: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassNo", "ClassName"],
+        classes: ["ClassId", "ClassNo", "ClassName", "CardNo", "StuId", "StuName", "TeacherId", "Status"],
         charging: ["CardNo", "StuId", "StuName"],
-        attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassName"],
+        attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassNo", "ClassName"],
         selectstudents: ["CardNo", "StuId", "StuName", "School"],
-        selectclasses: ["ClassId", "ClassName", "TeacherId", "Status"]
+        selectclasses: ["ClassId", "ClassNo", "ClassName", "TeacherId", "Status"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
   if ( $.inArray(that._hash, ['students', 'classes'])>-1 ) {
@@ -221,7 +222,7 @@ function forcs_back(_opstring){
   }
   var tdata = [],
       operate = {}
-  var trlength, selectop
+  var trlength, selectop, idvalue
   for (var i=0; i<trlength; i++) {
     tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
   }
@@ -238,7 +239,8 @@ function forcs_back(_opstring){
   if ( $.inArray(that._hash, ['students', 'classes', 'charging'])>-1 ) {
     trlength = _ops.tbody.length
     for (var i=0; i<trlength; i++) {
-      tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
+      idvalue = _ops.tbody[i].pop()
+      tdata.push(' data-type="trmenu" data-value="'+idvalue+'"')
     }
     util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
     if ( _ops.page ) {

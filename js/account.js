@@ -88,6 +88,7 @@ acc.show = function(){
             ClassId: iclasses[j].ClassId,
             StartTime: iclasses[j].StartTime,
             EndTime: iclasses[j].EndTime,
+            Time: iclasses[j].Time,
             Hours: that.lastconsuming.Hours
           }
         }else{
