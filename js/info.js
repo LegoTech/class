@@ -12,6 +12,10 @@ info.pages = {
   attendence: {
     title: "上课情况"
   },
+  timetable: {
+    title: "课程安排",
+    auth: []
+  },
   selectclasses: {
     title: "学生选课",
     hidden: true
@@ -51,10 +55,10 @@ info.show_search = function(_ops){
   //默认type为text，不为text另外说明，默认placeholder为desc
   var inputs = {
     CardNo: {desc: '学员卡号'},
-    StuId: {desc: '学员ID',     hidden: true},
+    StuId: {desc: '学员ID',},
     StuName: {desc: '学生姓名', autocomplete: true},
     School: {desc: '学校'},
-    ClassId: {desc: '课程ID',   hidden: true},
+    ClassId: {desc: '课程ID',},
     ClassNo: {desc: '课程编号'},
     ClassName: {desc: '课程名', autocomplete: true}
   }
@@ -122,10 +126,11 @@ info.show = function(){
         charging: ["CardNo", "StuId", "StuName"],
         attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassNo", "ClassName"],
         selectstudents: ["CardNo", "StuId", "StuName", "School"],
-        selectclasses: ["ClassId", "ClassNo", "ClassName", "TeacherId", "Status"]
+        selectclasses: ["ClassId", "ClassNo", "ClassName", "TeacherId", "Status"],
+        timetable: []
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
-  if ( $.inArray(that._hash, ['students', 'classes'])>-1 ) {
+  if ( $.inArray(that._hash, ['students', 'classes', 'timetable'])>-1 ) {
     rhtml = '<p style="margin-top: 5px;">\
                 <a href="#add_' + that._hash + '_modal" data-toggle="modal"><i class="icon-plus-sign opacity-5"></i>\
                  添加' + that.pages[that._hash].title + '</a>\
@@ -138,6 +143,7 @@ info.show = function(){
   $('#'+that._hash).empty().html(rhtml)
   util.show_modal({id:'add_students_modal', clickback:info.show})
   util.show_modal({id:'add_classes_modal', clickback:info.show})
+  util.show_modal({id:'add_timetable_modal', clickback:info.show})
 	info.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
   forcs_back()
@@ -231,12 +237,14 @@ function forcs_back(_opstring){
       operate = {classes: "查看参加课程", charging: "查看充值信息", attendence: "查看上课情况", AccCharging: "充值", AccConsuming: "签到",
                 update: "修改学员信息", selectclasses: "学员选课"}
     break; case 'classes':
-      operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", selectstudents: "课程报名"}
+      operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", selectstudents: "课程报名", addtimetable: "添加到课程安排"}
     break; case 'charging':
       operate = {students: "查看学员信息", AccCharging: "充值", AccConsuming: "签到"}
+    break; case 'timetable':
+      operate = {update: "修改本次上课情况", "delete": "删除本次课程"}
     break;
   }
-  if ( $.inArray(that._hash, ['students', 'classes', 'charging'])>-1 ) {
+  if ( $.inArray(that._hash, ['students', 'classes', 'charging', 'timetable'])>-1 ) {
     trlength = _ops.tbody.length
     for (var i=0; i<trlength; i++) {
       idvalue = _ops.tbody[i].pop()
@@ -351,6 +359,8 @@ $(document).on('click', function(e){
             defaultvkey = 'StuId'
           break; case 'classes':
             defaultvkey = 'ClassId'
+          break; case 'timetable':
+            defaultvkey = 'TimetableId'
           break;
         }
         if ( $.inArray(op, ['students', 'classes', 'charging', 'attendence', 'selectclasses', 'selectstudents'])>-1 ) {
@@ -370,6 +380,11 @@ $(document).on('click', function(e){
               window.location.href = 'account.html?' + defaultvkey + '=' + value + '#charging'
             break; case 'AccConsuming':
               window.location.href = 'account.html?' + defaultvkey + '=' + value + '#consuming'
+            break; case 'delete':
+              //调用C#，从本周课程中删除该条目
+            break; case 'addtimetable':
+              util.show_modal({id:'add_timetable_modal', valueid:value, clickback:info.show})
+              $('#add_timetable_modal').modal('show')
             break;
           }
         }

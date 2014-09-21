@@ -295,13 +295,15 @@ util.show_modal = function(_ops){
     Phone:      {desc: '电话'},
     WeekTime:   {desc: '每周上课'},
     Time:       {desc: '上课时间',      timepicker:true},
-    PerHours:   {desc: '每次课时数',    spinner:true},
+    PerHours:   {desc: '单次课时数',    spinner:true},
     Hours:      {desc: '总课时数',      spinner:true},
     StartTime:  {desc: '开始时间',      date:true},
     EndTime:    {desc: '结束时间',      date:true},
     OriPassword:{desc: '原始密码',      type:'password'},
     NewPassword:{desc: '新密码',        type:'password'},
-    RePassword: {desc: '确认密码',      type:'password'}
+    RePassword: {desc: '确认密码',      type:'password'},
+    "Date":     {desc: '上课日期',      date: true},
+    TimetableId:{desc: '课程表ID',      hidden: true}
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
       Status = {0:"开始", 1:"结束" },
@@ -330,8 +332,28 @@ util.show_modal = function(_ops){
       lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone']
     break; case 'add_classes_modal':
       title = '添加课程'
-      lists = ['ClassName', 'ClassNo', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime'],
+      lists = ['ClassName', 'ClassNo', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
       disablelists = ['Time']
+    break; case 'add_timetable_modal':
+      title = '添加课程安排'
+      if ( _ops.valueid ) {
+        defaultv = {}   //C#查数据
+        switch ( parseInt(defaultv.Status) ) {
+          case 0:             //未进行。注意！这个Status要根据是否一个星期内开始修正！！
+            content = '课程尚未开始，不能添加课程安排'
+          break; case 1:      //进行中
+            lists = ['ClassNo', 'TeacherId', 'Time', 'PerHours', 'Date']
+            disablelists = ['Time']
+          break; case 2:      //已结束
+            content = '课程已结束，不能添加课程安排'
+          break; default:
+            return;
+          break;
+        }
+      }else{
+        lists = ['ClassNo', 'TeacherId', 'Time', 'PerHours', 'Date']
+        disablelists = ['Time']
+      }
     break; case 'update_students_modal':
       if ( _ops.valueid ) {
         defaultv = {}   //C#查数据
@@ -341,7 +363,7 @@ util.show_modal = function(_ops){
       disablelists = ['StuId']
     break; case 'update_classes_modal':
       if ( _ops.valueid ) {
-        defaultv = {}   //C#查数据
+        defaultv = {}   //C#查数据。此处id为classesID或classesNo？！
       }
       title = '修改课程信息'
       switch ( parseInt(defaultv.Status) ) {
@@ -357,6 +379,13 @@ util.show_modal = function(_ops){
           return;
         break;
       }
+    break; case 'update_timetable_modal':
+      if ( _ops.valueid ) {
+        defaultv = {}   //C#查数据。此处id为timetableID
+      }
+      title = '修改课程安排'
+      lists = ['ClassNo', 'TeacherId', 'Time', 'PerHours', 'Date', 'TimetableId'],
+      disablelists = ['Time', 'TimetableId'] 
     break; default:
       return;
     break;
@@ -398,7 +427,7 @@ util.show_modal = function(_ops){
         checkboxhtml += '<br/>'
       }
       if ( inputs[tmp].timepicker ) {
-        timehtml = '<div id="'+tmp+'_timepicker">从 <span class="hour" data-type="from"></span>时<span class="minute" data-type="from"></span>分\
+        timehtml = '<div id="'+_ops.id+'_'+tmp+'_timepicker">从 <span class="hour" data-type="from"></span>时<span class="minute" data-type="from"></span>分\
                     <br/>到 <span class="hour" data-type="to"></span>时<span class="minute" data-type="to"></span>分</div>'
       }else{
         timehtml = ''
@@ -479,10 +508,11 @@ util.show_modal = function(_ops){
       value: hourval
     }
     var tmpname = timepickers[i]
+    var tmpjqfinder = '#'+_ops.id+' '+'input[name="'+timepickers[i]+'"]'
     houroption.slide = function(event, ui){
       var type = $(ui.handle).attr("data-type")
       var _ops = {}
-      _ops.jqfinder = 'input[name="'+tmpname+'"]'
+      _ops.jqfinder =  tmpjqfinder
       if (type === 'from'){
         _ops.hfrom = ui.value
       }else{
@@ -499,7 +529,7 @@ util.show_modal = function(_ops){
     minuteoption.slide = function(event, ui){
       var type = $(ui.handle).attr("data-type")
       var _ops = {}
-      _ops.jqfinder = 'input[name="'+tmpname+'"]'
+      _ops.jqfinder =  tmpjqfinder
       if (type === 'from'){
         _ops.mfrom = ui.value
       }else{
@@ -508,8 +538,8 @@ util.show_modal = function(_ops){
       that.timepicker_input(_ops)
       return true;
     }
-    $("#"+timepickers[i]+"_timepicker").find('span.hour').slider(houroption);
-    $("#"+timepickers[i]+"_timepicker").find('span.minute').slider(minuteoption);
+    $("#"+_ops.id+"_"+timepickers[i]+"_timepicker").find('span.hour').slider(houroption);
+    $("#"+_ops.id+"_"+timepickers[i]+"_timepicker").find('span.minute').slider(minuteoption);
     var timepickerval = that.time_format(hourval)+':'+that.time_format(minuteval)+'-'+that.time_format(hourval)+':'+that.time_format(minuteval) ;
     $("#"+_ops.id).find('input[name="'+timepickers[i]+'"]').val(timepickerval)
   }
@@ -686,12 +716,12 @@ util.valid = function(_ops){
             that.show_help({$th:$th, desc:'号码错误', iserror:true})
             error_num++; iserror = true
           }
-        break; case 'StuId': case 'CardNo': case 'ClassId':
+        break; case 'StuId': case 'CardNo': case 'ClassId': case 'TimetableId':
           if(!number_pattern.test(val)){
             that.show_help({$th:$th, desc:'只能为数字', iserror:true})
             error_num++; iserror = true
           }
-        break; case 'Birth': case 'StartTime': case 'EndTime':
+        break; case 'Birth': case 'StartTime': case 'EndTime': case 'Date':
           if(!date_pattern.test(val)){
             that.show_help({$th:$th, desc:'日期格式应为yyyy-mm-dd', iserror:true})
             error_num++; iserror = true

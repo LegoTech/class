@@ -7,10 +7,7 @@ admin.pages = {
   },
 	authority: {
 		title: "用户权限"
-	},
-  set: {
-    title: "套餐信息"
-  }
+	}
 }
 admin._hash = ""
 admin.hashchange = function(){
@@ -64,12 +61,9 @@ admin.show_form = function(_ops){
   var inputs = {
     cCenterId:  {desc: '中心编号',      disable:true},
     Id:         {desc: '编号',          disable:true},
-    SetId:      {desc: '套餐编号',      disable:true},
     Name:       {desc: '姓名'},
     CenterName: {desc: '中心名'},
-    CenterAddress: {desc: '中心地址'},
-    SetHours:   {desc: '套餐课时数',    slider:true},
-    SetMoney:   {desc: '套餐金额',      slider:true}
+    CenterAddress: {desc: '中心地址'}
   }
   var AuthNames = {0:"xx", 1:"yy"},   //C#获得AuthNames(需验证操作用户权限)
       CenterNames = util.center.desc
@@ -102,15 +96,6 @@ admin.show_form = function(_ops){
       }else{
         title = '添加用户'
         lists = ['Name', 'AuthId', 'CenterId']
-      }
-    break;  case 'set_form':
-      if ( _ops.valueid ) {
-        title = '修改套餐信息'
-        lists = ['SetId', 'SetHours', 'SetMoney', 'CenterId']
-        defaultv = {}   //C#查数据
-      }else{
-        title = '添加套餐'
-        lists = ['SetHours', 'SetMoney', 'CenterId']
       }
     break; default:
       return;
@@ -164,28 +149,6 @@ admin.show_form = function(_ops){
   _el.empty().html(chtml)
 
   $('input, textarea').placeholder();
-  $('#slider-SetHours-min').slider({
-      range: "min",
-      value: 10,
-      min: 5,
-      step: 1,
-      max: 50,
-      slide: function( event, ui ) {
-        _el.find('input[name="SetHours"]').val( ui.value );
-      }
-  });
-  _el.find('input[name="SetHours"]').val( $( "#slider-SetHours-min" ).slider( "value" ) );
-  $('#slider-SetMoney-min').slider({
-      range: "min",
-      value: 1000,
-      min: 50,
-      step: 50,
-      max: 10000,
-      slide: function( event, ui ) {
-        _el.find('input[name="SetMoney"]').val( "￥" + ui.value );
-      }
-  });
-  _el.find('input[name="SetMoney"]').val( "￥" + $( "#slider-SetMoney-min" ).slider( "value" ) );
 
   _el.find('a.savechange').click(function(){
     var inputs = _el.find('input')
