@@ -32,15 +32,13 @@ acc.show = function(){
   var rhtml = ''
   var inputs = {
     StuName:    {desc: '学生姓名',      disabled:true},
-    ClassSet:   {desc: '您的套餐为',    disabled:true},
-    SetCount:   {desc: '选择套餐数',    spinner:true},
-    ChargingHours:{desc: '充值金额',    disabled:true},
-    ChargingMoney:{desc: '充值课时',    disabled:true},
+    ChargingHours:{desc: '充值金额'},
+    ChargingMoney:{desc: '充值课时'},
     TicketId:   {desc: '票据号'},
-    Hours:      {desc: '课时数',        spinner:true},
+    Hours:      {desc: '课时数',        disabled:true},
     StartTime:  {desc: '开始时间',      disabled:true},
     EndTime:    {desc: '结束时间',      disabled:true},
-    Time:       {desc: '上课时间',      date:true} 
+    Time:       {desc: '上课时间',      disabled:true} 
   }
   var ClassNames = {0:"xx", 1:"yy"}   //C#获得教师id和name,状态值
   var selects = {
@@ -53,14 +51,14 @@ acc.show = function(){
   var defaultv = {}, iclasses = [], haslastclass = false
   var dates = []
   if ( !that._search && $.isEmptyObject(that.infos) ) {
-    rhtml = '<h3>'+that.pages[that._hash].title+'请刷卡</h3>'
+  /*  rhtml = '<h3>'+that.pages[that._hash].title+'请刷卡</h3>'
   }else if ( $.isEmptyObject(that.infos) ){
     //调C#函数，将that._search内容传给后台，后台再调forcs_getinfo
     that._search = ''
     return;
   }else if ( that.infos.error ) {
     rhtml = '<h3>'+that.infos.error+'请重新刷卡</h3>'
-  }else{
+  }else{*/
     switch ( that._hash ) {
       case 'consuming':
         that.infos = {
@@ -70,7 +68,9 @@ acc.show = function(){
             {ClassId:1,
             ClassName:"算数",
             StartTime:"13-01-31",
-            EndTime:"13-02-21"
+            EndTime:"13-02-21",
+            Time: "13-02-11",
+            Hours: 1.5
             }
           ]
         }
@@ -89,7 +89,7 @@ acc.show = function(){
             StartTime: iclasses[j].StartTime,
             EndTime: iclasses[j].EndTime,
             Time: iclasses[j].Time,
-            Hours: that.lastconsuming.Hours
+            Hours: iclasses[j].Hours
           }
         }else{
           defaultv = {StuName: that.infos.StuName}
@@ -97,20 +97,12 @@ acc.show = function(){
       break; case 'charging':
         that.infos = {
           StuId:1,
-          StuName: "小分",
-          ClassSet: {
-            Hours: 1.5,
-            Money: 12
-          }
+          StuName: "小分"
         }
         lists = ['StuName', 'ClassSet', 'SetCount', 'ChargingMoney', 'ChargingHours', 'TicketId']
         defaultv = {
           StuId: that.infos.StuId,
-          StuName: that.infos.StuName,
-          SetCount: 1,
-          ClassSet: that.infos.ClassSet.Money + '元 / ' + that.infos.ClassSet.Hours + '课时',
-          ChargingMoney: that.infos.ClassSet.Money + '元',
-          ChargingHours: that.infos.ClassSet.Hours + '课时'
+          StuName: that.infos.StuName
         }
       break;
     }
@@ -172,8 +164,10 @@ acc.show = function(){
       } 
       _el.find('input[name="StartTime"]').val(iclasses[j].StartTime)
       _el.find('input[name="EndTime"]').val(iclasses[j].EndTime)
+      _el.find('input[name="Time"]').val(iclasses[j].Time)
+      _el.find('input[name="Hours"]').val(iclasses[j].Hours)
     });
-
+    /*
     function spinnerchange(){
       var count = parseInt($(this).val())
       _el.find('input[name="ChargingMoney"]').val((parseFloat(that.infos.ClassSet.Money)*count) + '元')
@@ -201,45 +195,60 @@ acc.show = function(){
       step: 0.5,
       value: defaultv.Hours
     }
-    _el.find('input[name="Hours"]').spinner(Hoursoption);
+    _el.find('input[name="Hours"]').spinner(Hoursoption);*/
 
     _el.find('a.submit').on('click', function(e){
       var that = acc
       var _el = $('#'+that._hash)
+      var _ta = $(this)
       var StuId = parseInt($(this).siblings('form').attr('data-value'))
       var sendvalues = {}
+      var error = false, returnerror = false
       if ( acc._hash === 'consuming' ) {
         var ClassId = _el.find('select[name="ClassId"]').val()
         sendvalues.ClassId = ClassId
         _ta.parents('form').find('input').each(function(index, element){
           if ( $(element).val() ) {
             sendvalues[element.name] = $(element).val()
+            util.show_help({$th:$(element), iserror:false})
           }
         });
         if ( !ClassId ) {
           util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
-          _el.find('form').effect('bounce', {}, 1000, function(){});
-          return;
+          error = true
         }
         if ( !Time ) {
           util.show_help({$th:_el.find('input[name="Time"]'), desc:'请选择上课时间', iserror:true})
+          error = true  
+        }
+        if ( error ){
           _el.find('form').effect('bounce', {}, 1000, function(){});
           return;
         }
         $.extend(that.lastconsuming, sendvalues)
-        util.show_help({$th:_el.find('select[name="ClassId"]'), iserror:false})
-        util.show_help({$th:_el.find('input'), iserror:false})
       }else{
-        var SetCount = _el.find('input[name="SetCount"]').val()
-        var TicketId = _el.find('input[name="TicketId"]').val()
-        if ( !TicketId ) {
-          util.show_help({$th:_el.find('input[name="TicketId"]'), desc:'请填写票据号', iserror:true})
+        _ta.parents('form').find('input').each(function(index, element){
+          if ( $(element).val() ) {
+            sendvalues[element.name] = $(element).val()
+            util.show_help({$th:$(element), iserror:false})
+          }else{
+            util.show_help({$th:$(element), desc:'不能为空', iserror:true})
+            error = true
+          }
+        });
+        if ( error ){
           _el.find('form').effect('bounce', {}, 1000, function(){});
           return;
         }
-        util.show_help({$th:_el.find('input[name="ClassId"]'), iserror:false})
       }
       //调C#函数提交
+      if (returnerror) {  //C#返回值赋给returnerror。如果没有错返回false。有错返回{填错数据名：错误原因}
+        for (var key in returnerror) {
+          util.show_help({$th:_el.find('input[name="'+key+'"]'), desc:returnerror[key], iserror:true})
+        }
+        _el.find('form').effect('bounce', {}, 1000, function(){});
+        return;
+      }
       $(this).parents('form').effect('drop', {}, 1000, function(){
         window.location.href = 'account.html#'+that._hash
         that.infos = {}
