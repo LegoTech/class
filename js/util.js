@@ -273,6 +273,7 @@ util.show_pagination = function(_ops){
 /*_ops:{
   id:'',               //容器
   valueid: 1,            //如果是更新，读取数据
+  valueno: "",          //课程编号for课程安排
   clickback: function     //（可选）
 }
 */
@@ -322,6 +323,12 @@ util.show_modal = function(_ops){
         options: ClassTypeName
     }
   }
+  var btns = {
+    Compelete: {
+        desc: '补全课程信息',
+        "class" : 'modal_compelete'
+    }
+  }
   var title = '', lists = [], disablelists = [], defaultv = {}, content = ''
   switch ( _ops.id ) {
     case 'user_modal':
@@ -336,13 +343,13 @@ util.show_modal = function(_ops){
       disablelists = ['Time']
     break; case 'add_timetable_modal':
       title = '添加课程安排'
-      if ( _ops.valueid ) {
-        defaultv = {}   //C#查数据
+      if ( _ops.valueid || _ops.valueno ) {
+        defaultv = {}   //C#查数据。参数是_ops.valueid,_ops.valueno 对应课程id和课程编号。两者有一不为空
         switch ( parseInt(defaultv.Status) ) {
           case 0:             //未进行。注意！这个Status要根据是否一个星期内开始修正！！
             content = '课程尚未开始，不能添加课程安排'
           break; case 1:      //进行中
-            lists = ['ClassNo', 'TeacherId', 'Time', 'PerHours', 'Date']
+            lists = ['ClassNo', 'Compelete', 'TeacherId', 'Time', 'PerHours', 'Date']
             disablelists = ['Time']
           break; case 2:      //已结束
             content = '课程已结束，不能添加课程安排'
@@ -351,7 +358,7 @@ util.show_modal = function(_ops){
           break;
         }
       }else{
-        lists = ['ClassNo', 'TeacherId', 'Time', 'PerHours', 'Date']
+        lists = ['ClassNo', 'Compelete', 'TeacherId', 'Time', 'PerHours', 'Date']
         disablelists = ['Time']
       }
     break; case 'update_students_modal':
@@ -460,6 +467,12 @@ util.show_modal = function(_ops){
         }      
       }
       rhtml += '</select><span class="help-inline"></span></div></div>'
+    }
+    if ( btns[tmp] ) {
+      rhtml += '<div class="control-group">\
+                  <div class="controls">\
+                    <a class="btn btn-primary ' + btns[tmp]["class"] + '">' + btns[tmp].desc + '</a>\
+                  </div></div>'
     }
   }
   if ( content )  {rhtml = content}
@@ -595,6 +608,11 @@ util.show_modal = function(_ops){
       }
       _el.find('form').effect('bounce', {}, 300)
     }
+  });
+
+  _el.find('a.modal_compelete').click(function(){
+    var no = _el.find('input[name="ClassNo"]').val()
+    util.show_modal({id:'add_timetable_modal', valueno:no, clickback:info.show})
   });
 }
 
