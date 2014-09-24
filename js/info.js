@@ -247,7 +247,7 @@ function forcs_back(_opstring){
   if ( $.inArray(that._hash, ['students', 'classes', 'charging', 'timetable'])>-1 ) {
     trlength = _ops.tbody.length
     for (var i=0; i<trlength; i++) {
-      idvalue = _ops.tbody[i].pop()
+      idvalue = _ops.tbody[i].shift()
       tdata.push(' data-type="trmenu" data-value="'+idvalue+'"')
     }
     util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
@@ -272,7 +272,8 @@ function forcs_back(_opstring){
         _ops.tbody[i].push('<a href="#" class="btn btn-success btn-mini" data-type="select" data-value="'+_ops.tbody[i][0]+
                             '"><i class="icon-plus-sign icon-white"></i> 参与</a><span class="shelp"></span>')
         _ops.tbody[i].unshift('<span class="label">未选</span>')
-      }   
+      }  
+      _ops.tbody[i].shift() 
     }
     util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
     if ( _ops.page ) {
