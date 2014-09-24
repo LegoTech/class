@@ -297,7 +297,7 @@ function forcs_refresh(){
 $(function() {
 // Handler for .ready() called.
 document.oncontextmenu=function(){return false;};
-util.get_user_center()
+util.check_auth("info")
 info.hashchange()
 util.show_navbar({id:"navbar", page:"info"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:info.pages, 

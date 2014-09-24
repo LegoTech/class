@@ -6,26 +6,28 @@ util = {
         },
         charging: {
             title: "充值",
-            url: "account.html#charging"
+            url: "account.html#charging",
+            auth: ["operator"]
         },
         consuming: {
             title: "签到",
-            url: "account.html#consuming"
+            url: "account.html#consuming",
+            auth: ["operator"]
         },
         stat: {
             title: "统计",
-            url: "stat.html"
+            url: "stat.html",
+            auth: ["master", "boss"]
         },
         admin: {
             title: "管理",
             url: "admin.html",
-            admin: true
+            auth: ["master", "boss"]
         }
     },
     user:{
         name: "Username",
-        isadmin: true,
-        isboss: false
+        auth: "boss"
     },
     center:{
         cur: 0,
@@ -50,6 +52,26 @@ util.stopDefault = function(e){
 
 util.get_user_center = function(){
   //C#获取user信息,center信息
+}
+
+util.check_auth = function(pagekey){
+  var that = this
+  if (!that.user.auth) {
+    that.get_user_center()
+  }
+  if (!that.user.auth) {
+    $(document.body).html("<h1>出错了！读取不到用户权限</h1>")
+    setTimeout(that.back_info(), 50000)
+  }
+  if ( that.pages[pagekey].auth && $.inArray(that.user.auth, that.pages[pagekey].auth)===-1 ){
+    $(document.body).html("<h1>你进入了错误的位置</h1>")
+    setTimeout(that.back_info(), 50000)
+  }
+  return true;
+}
+
+util.back_info = function(){
+  window.location.href = "info.html"
 }
 
 util.get_autoarr = function(){
@@ -108,7 +130,7 @@ util.show_navbar = function(_ops){
             '</ul>\
             <ul class="nav">'
     for ( key in that.pages ) {
-        if ( that.pages[key].admin && !that.user.isadmin )  {continue;}
+        if ( that.pages[key].auth && $.inArray(that.user.auth, that.pages[key].auth)===-1 )  {continue;}
         if ( key === _ops.page ) {
             rhtml += '<li class="active">'
             document.title = that.pages[key].title

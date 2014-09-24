@@ -275,7 +275,7 @@ $(function() {
 var that = acc
 that._hash = location.hash.replace(/\#|\!/g, '')
 that._search = location.search.replace(/\?/g, '')
-util.get_user_center()
+util.check_auth("charging")
 that.hashchange()
 if ( !that._hash ) {
   util.set_hash('consuming')

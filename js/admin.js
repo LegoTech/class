@@ -145,7 +145,8 @@ admin.show_form = function(_ops){
 
   var chtml = '<h3>' + title + '</h3>\
                 <form class="form-horizontal">'+ rhtml +'</form>\
-                <a class="btn btn-primary savechange">保存</a>'
+                <a class="btn btn-primary savechange">保存</a> \
+                <span class="muted"> 新创建用户的初始密码为hello，请及时修改！</span>'
   _el.empty().html(chtml)
 
   $('input, textarea').placeholder();
@@ -191,7 +192,7 @@ $(function() {
 // Handler for .ready() called.
 
 var that = admin
-util.get_user_center()
+util.check_auth("admin")
 that.hashchange()
 util.show_navbar({id:"navbar", page:"admin"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:that.pages, 
