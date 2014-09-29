@@ -125,6 +125,7 @@ info.show = function(){
   if ( $.inArray(util.user.auth, that.pages[that._hash].auth)===-1 ) {
     $('#'+that._hash).empty().html('你进入了错误的位置')
     setTimeout(util.back_info(), 50000)
+    return;
   }
 	var lists = {
         students: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassNo", "ClassName"],
@@ -135,7 +136,7 @@ info.show = function(){
         timetable: []
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
-  if ( $.inArray(that._hash, ['students', 'classes', 'timetable'])>-1 ) {
+  if ( $.inArray(that._hash, ['students', 'classes', 'timetable'])>-1 && util.user.auth === "operator" ) {
     rhtml = '<p style="margin-top: 5px;">\
                 <a href="#add_' + that._hash + '_modal" data-toggle="modal"><i class="icon-plus-sign opacity-5"></i>\
                  添加' + that.pages[that._hash].title + '</a>\
@@ -146,9 +147,11 @@ info.show = function(){
     rhtml = '<h2 class="select-title">'+ that.pages[that._hash].title +'<small></small></h2>' + rhtml
   }
   $('#'+that._hash).empty().html(rhtml)
-  util.show_modal({id:'add_students_modal', clickback:info.show})
-  util.show_modal({id:'add_classes_modal', clickback:info.show})
-  util.show_modal({id:'add_timetable_modal', clickback:info.show})
+  if ( util.user.auth === "operator" ) {
+    util.show_modal({id:'add_students_modal', clickback:info.show})
+    util.show_modal({id:'add_classes_modal', clickback:info.show})
+    util.show_modal({id:'add_timetable_modal', clickback:info.show})
+  }
 	info.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
   forcs_back()
@@ -239,14 +242,36 @@ function forcs_back(_opstring){
   }
   switch ( that._hash ) {
     case 'students':
-      operate = {classes: "查看参加课程", charging: "查看充值信息", AccCharging: "充值", AccConsuming: "签到",
-                update: "修改学员信息", selectclasses: "学员选课"}
+      switch ( util.user.auth ) {
+        case 'operator':
+          operate = {classes: "查看参加课程", charging: "查看充值信息", AccCharging: "充值", AccConsuming: "签到",
+                  update: "修改学员信息", selectclasses: "学员选课"}
+        break; case 'teacher': case 'master': case 'boss':
+          operate = {classes: "查看参加课程", charging: "查看充值信息"}
+        break;
+      } 
     break; case 'classes':
-      operate = {students: "查看学员信息", update: "修改课程信息", selectstudents: "课程报名", addtimetable: "添加到课程安排"}
+      switch ( util.user.auth ) {
+        case 'operator':
+          operate = {students: "查看学员信息", update: "修改课程信息", selectstudents: "课程报名", addtimetable: "添加到课程安排"}
+        break; case 'teacher': case 'master': case 'boss':
+          operate = {students: "查看学员信息"}
+        break;
+      }       
     break; case 'charging':
-      operate = {students: "查看学员信息", AccCharging: "充值", AccConsuming: "签到"}
+      switch ( util.user.auth ) {
+        case 'operator':
+          operate = {students: "查看学员信息", AccCharging: "充值", AccConsuming: "签到"}
+        break; case 'master': case 'boss':
+          operate = {students: "查看学员信息"}
+        break;
+      } 
     break; case 'timetable':
-      operate = {update: "修改本次上课情况", "delete": "删除本次课程"}
+      switch ( util.user.auth ) {
+        case 'operator':
+          operate = {update: "修改本次上课情况", "delete": "删除本次课程"}
+        break; 
+      }  
     break;
   }
   if ( $.inArray(that._hash, ['students', 'classes', 'charging', 'timetable'])>-1 ) {

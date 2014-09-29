@@ -3,10 +3,11 @@ admin._hash = ""
 admin.pages = {
   center: {
     title: "中心信息",
-    bossadd: true
+    auth: ["boss"]
   },
 	authority: {
-		title: "用户权限"
+		title: "用户权限",
+    auth: ["boss", "master", "operator"]
 	}
 }
 admin._hash = ""
