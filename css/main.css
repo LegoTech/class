@@ -265,23 +265,6 @@ body{
   margin: 5px 9px -3px;
 }
 
-/*attendence calender*/
-/*#attendence_result .ui-datepicker{
-  width: 98%;
-}*/
-#attendence div.ui-datepicker-header{
-  display: none;
-}
-/*
-#attendence_result .ui-datepicker td a{
-  height: 60px;
-  position: relative;
-}
-#attendence_result .ui-datepicker td{
-  width: 13%
-}*/
-
-
 /*account*/
 #accountfilter{
 

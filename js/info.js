@@ -1,28 +1,30 @@
 info = {}
 info.pages = {
 	students: {
-		title: "学员信息"
+		title: "学员信息",
+    auth: ["operator", "master", "teacher", "boss"]
 	},
 	classes: {
-		title: "课程信息"
+		title: "课程信息",
+    auth: ["operator", "master", "teacher", "boss"]
 	},
   charging: {
-    title: "充值信息"
-  },
-  attendence: {
-    title: "上课情况"
+    title: "充值信息",
+    auth: ["operator", "master", "boss"]
   },
   timetable: {
     title: "课程安排",
-    auth: []
+    auth: ["teacher", "operator", "boss"]
   },
   selectclasses: {
     title: "学生选课",
-    hidden: true
+    hidden: true,
+    auth: ["operator"]
   },
   selectstudents: {
     title: "课程报名",
-    hidden: true
+    hidden: true,
+    auth: ["operator"]
   },
 }
 info._hash = ""
@@ -119,12 +121,15 @@ info.show_search = function(_ops){
 }
 
 info.show = function(){
-  var that = this
+  var that = info
+  if ( $.inArray(util.user.auth, that.pages[that._hash].auth)===-1 ) {
+    $('#'+that._hash).empty().html('你进入了错误的位置')
+    setTimeout(util.back_info(), 50000)
+  }
 	var lists = {
         students: ["CardNo", "StuId", "StuName", "School", "TeacherId", "ClassId", "ClassNo", "ClassName"],
         classes: ["ClassId", "ClassNo", "ClassName", "CardNo", "StuId", "StuName", "TeacherId", "Status"],
         charging: ["CardNo", "StuId", "StuName"],
-        attendence: ["CardNo", "StuId", "StuName", "ClassId", "ClassNo", "ClassName"],
         selectstudents: ["CardNo", "StuId", "StuName", "School"],
         selectclasses: ["ClassId", "ClassNo", "ClassName", "TeacherId", "Status"],
         timetable: []
@@ -234,10 +239,10 @@ function forcs_back(_opstring){
   }
   switch ( that._hash ) {
     case 'students':
-      operate = {classes: "查看参加课程", charging: "查看充值信息", attendence: "查看上课情况", AccCharging: "充值", AccConsuming: "签到",
+      operate = {classes: "查看参加课程", charging: "查看充值信息", AccCharging: "充值", AccConsuming: "签到",
                 update: "修改学员信息", selectclasses: "学员选课"}
     break; case 'classes':
-      operate = {students: "查看学员信息", attendence: "查看上课情况", update: "修改课程信息", selectstudents: "课程报名", addtimetable: "添加到课程安排"}
+      operate = {students: "查看学员信息", update: "修改课程信息", selectstudents: "课程报名", addtimetable: "添加到课程安排"}
     break; case 'charging':
       operate = {students: "查看学员信息", AccCharging: "充值", AccConsuming: "签到"}
     break; case 'timetable':
@@ -280,8 +285,6 @@ function forcs_back(_opstring){
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }
-  }else if ( that._hash==='attendence' ) {
-    info.show_calender({id:that._hash+'_result'});
   }
 }
 
@@ -364,7 +367,7 @@ $(document).on('click', function(e){
             defaultvkey = 'TimetableId'
           break;
         }
-        if ( $.inArray(op, ['students', 'classes', 'charging', 'attendence', 'selectclasses', 'selectstudents'])>-1 ) {
+        if ( $.inArray(op, ['students', 'classes', 'charging', 'selectclasses', 'selectstudents'])>-1 ) {
           that.defaultv = {}
           defaultvkey && (that.defaultv[defaultvkey] = value)
           $('#'+op).html() && (doornot = true)
