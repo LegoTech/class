@@ -3,11 +3,13 @@ admin._hash = ""
 admin.pages = {
   center: {
     title: "中心信息",
-    auth: ["boss"]
+    auth: ["boss", "master"],
+    addauth: ["boss"]
   },
 	authority: {
 		title: "用户权限",
-    auth: ["boss", "master", "operator"]
+    auth: ["boss", "master", "operator"],
+    addauth: ["boss", "master", "operator"]
 	}
 }
 admin._hash = ""
@@ -45,7 +47,7 @@ admin.show = function(){
   }
   _ops.thead.push('操作')
   util.show_table({id:that._hash+'_table', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
-  if ( !that.pages[that._hash].bossadd || util.user.isboss ) $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i> 添加'+that.pages[that._hash].title+'</a></p>')
+  if ( !that.pages[that._hash].addauth || $.inArray(util.user.auth, that.pages[that._hash].addauth)>-1 ) $('#'+that._hash+'_table').prepend('<p style="margin-top: 5px;"><a data-type="add" href="#"><i class="icon-plus-sign opacity-5"></i> 添加'+that.pages[that._hash].title+'</a></p>')
 }
 
 /*_ops:{
@@ -72,13 +74,15 @@ admin.show_form = function(_ops){
     AuthId: {
         desc: '权限类型',
         options: AuthNames
-    },
+    }
+  }
+  var checkbox = {
     CenterId: {
         desc: '中心',
         options: CenterNames
     }
   }
-  var title = '', lists = [], defaultv = {}
+  var title = '', lists = [], defaultv = {}, chtml = ''
   switch ( _ops.id ) {
     case 'center_form':
       if ( _ops.valueid ) {
@@ -97,6 +101,7 @@ admin.show_form = function(_ops){
       }else{
         title = '添加用户'
         lists = ['Name', 'AuthId', 'CenterId']
+        chtml = '<span class="muted"> 新创建用户的初始密码为hello，请及时修改！</span>'
       }
     break; default:
       return;
@@ -142,12 +147,27 @@ admin.show_form = function(_ops){
       }
       rhtml += '</select><span class="help-inline"></span></div></div>'
     }
+    if ( checkbox[tmp] ) {
+      rhtml += '<div class="control-group">\
+                  <label class="control-label">' + checkbox[tmp].desc + '</label>\
+                  <div class="controls">'
+      for ( key in checkbox[tmp]["options"] ) {
+        rhtml += '<label class="checkbox">'
+        if ( defaultv[tmp] && defaultv[tmp].indexOf(key+',')>-1 ) {
+          rhtml += '<input type="checkbox" value="' +key+ '" checked="checked" name="'+tmp+'"> '+checkbox[tmp]["options"][key]
+        }else{
+          rhtml += '<input type="checkbox" value="' +key+ '" name="'+tmp+'"> '+checkbox[tmp]["options"][key]
+        }
+        rhtml += '<span class="help-inline"></span></label>'  
+      }
+      rhtml += '</div></div>'
+    }
   }
 
-  var chtml = '<h3>' + title + '</h3>\
-                <form class="form-horizontal">'+ rhtml +'</form>\
-                <a class="btn btn-primary savechange">保存</a> \
-                <span class="muted"> 新创建用户的初始密码为hello，请及时修改！</span>'
+
+  chtml = '<h3>' + title + '</h3>\
+          <form class="form-horizontal">'+ rhtml +'</form>\
+          <a class="btn btn-primary savechange">保存</a>' + chtml
   _el.empty().html(chtml)
 
   $('input, textarea').placeholder();

@@ -31,7 +31,7 @@ util = {
     },
     center:{
         cur: 0,
-        desc: {0: "xx店"}
+        desc: {0: "xx店", 1:"yy"}
     },
     autoarr:{
         StuName: [],
@@ -449,7 +449,7 @@ util.show_modal = function(_ops){
         }   
         for ( var q=0; q<enumWeek.length; q++) {
           checkboxhtml += '<label class="checkbox inline">\
-                              <input type="checkbox" value="'+q+'" '+
+                              <input type="checkbox" value="'+q+'" name="checkweektime"'+
                               ($.inArray(q, WeekTimeCode)>-1?'checked':'')+'> ' +
                           enumWeek[q] + '</label>'
         }
@@ -707,9 +707,12 @@ util.valid = function(_ops){
     var defaultv = {}
     var $th, val, 
         npwd = _ops.inputs.filter('[name="NewPassword"]').val(),
-        weektime = ''
-    _ops.inputs.filter(':checked').each(function(){
+        weektime = '', CenterId = ''
+    _ops.inputs.filter('[name="checkweektime"]:checked').each(function(){
       weektime += $(this).val()
+    });
+    _ops.inputs.filter('[name="CenterId"]:checked').each(function(){
+      CenterId += $(this).val() + ','
     });
     _ops.inputs.each(function(index, element){
       iserror = false
@@ -720,6 +723,7 @@ util.valid = function(_ops){
       }else if ( $th.attr('name')==='WeekTime' ) {
         if ( weektime!=='0' ) {
           weektime = '::'+weektime;
+          that.show_help({$th:$th, iserror:false})
           return;
         }
       }
@@ -787,6 +791,16 @@ util.valid = function(_ops){
       that.show_help({$th:$th, iserror:false})
       defaultv[element.name] = val
     });
+    if ( _ops.inputs.filter('[name="CenterId"]') ){
+      $th = $(_ops.inputs.filter('[name="CenterId"]')[0])
+      if ( CenterId.length===0 ) {
+        that.show_help({$th:$th, desc:'请选择中心', iserror:true})
+        error_num++;
+      }else{
+        defaultv.CenterId = CenterId
+        that.show_help({$th:$th, iserror:false})
+      }
+    }
     if ( error_num ) return false;
     return defaultv
 }
