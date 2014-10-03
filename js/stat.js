@@ -3,16 +3,16 @@ stat._hash = ""
 stat.defaultv = {}
 stat.pages = {
   center: {
-    title: "本店上课统计"
+    title: "本店统计"
   },
   students: {
-    title: "学生上课统计"
+    title: "学生统计"
   },
 	classes: {
-		title: "课程上课统计"
+		title: "课程统计"
 	},
   teachers: {
-    title: "教师上课统计"
+    title: "教师统计"
   }
 }
 stat.hashchange = function(){
@@ -136,7 +136,36 @@ stat.show = function(){
   forcs_back()
 }
 
+/*_ops:{    
+//两者选一。学生、课程、教师有查询条件或本店统计时返回detail，学生、课程、教师无查询条件时返回abstract。
+如果detail返回多条，每页明细少一点
+  detail:[],  
+  abstract:{}
+}
+*/
+function forcs_back(_opstring){
+  var _ops = {detail:[{   
+    id: 14,
+    name: '小芬',  //可省略
+    desc: '学校：家里蹲大学 卡号：10293',      //可省略
+    sum: {
+      time: 192,
+      money: 200
+    },
+    thead: [],
+    tbody: [[], []],
+    page:{}       //可选
+  }]}    //eval方法解_opstring
+  var rhtml = ''
+  if (_ops.detail && _ops.detail.length) {
+
+  }else{
+
+  }
+}
+
 /*_ops:{
+  id:,
   thead: [],
   tbody: [[], []],  //要求表每一行第一位必须是id。
   page:{            //（可选）
@@ -145,7 +174,7 @@ stat.show = function(){
   }
 }
 */
-function forcs_back(_opstring){
+function forcs_pageback(_opstring){
   var that = stat;
   //var _ops = eval ("(" + _opstring + ")")
   _ops = {
@@ -217,7 +246,7 @@ $(document).on('click', function(e){
         });
         that.show()
       break; case 'page':
-        //调C#函数获取值，C#调forcs_back进行下一步操作
+        //调C#函数获取值，C#调forcs_pageback进行下一步操作
       break;
     }
 });

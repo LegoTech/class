@@ -605,7 +605,9 @@ util.show_modal = function(_ops){
       $("#"+_ops.id).find('input[name="'+timepickers[i]+'"]').val(timepickerval)
     } 
   }
-  _el.find('input[name="WeekTime"]').hide()
+  if (_el.find('[name="checkweektime"]:checked').val()!=='0'){
+    _el.find('input[name="WeekTime"]').hide()
+  }
   _el.find(':checkbox').click(function(){
     var _th = $(this)
     if ( _th.val()==='0' && _th.attr("checked") ) {

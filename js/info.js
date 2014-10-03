@@ -212,7 +212,8 @@ info.show_calender = function(_ops){
   page:{            //（可选）
     cur: 1,
     count: 11
-  }
+  },
+  errorinfo: ""     //(可选)
 }
 */
 function forcs_back(_opstring){
@@ -311,6 +312,7 @@ function forcs_back(_opstring){
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }
+    if (_ops.errorinfo) { $('#'+that._hash+'_result').prepend('<h4>'+_ops.errorinfo+'</h4>') }
   }
 }
 
