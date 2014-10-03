@@ -36,9 +36,9 @@ acc.show = function(){
     ChargingMoney:{desc: '充值金额'},
     TicketId:   {desc: '票据号'},
     Hours:      {desc: '课时数',        disabled:true},
-    StartTime:  {desc: '开始时间',      disabled:true},
-    EndTime:    {desc: '结束时间',      disabled:true},
-    Time:       {desc: '上课时间',      disabled:true} 
+    StartTime:  {desc: '开始日期',      disabled:true},
+    EndTime:    {desc: '结束日期',      disabled:true},
+    Time:       {desc: '上课日期',      date:true} 
   }
   var ClassNames = {0:"xx", 1:"yy"}   //C#获得教师id和name,状态值
   var selects = {
@@ -69,7 +69,6 @@ acc.show = function(){
             ClassName:"算数",
             StartTime:"13-01-31",
             EndTime:"13-02-21",
-            Time: "13-02-11",
             Hours: 1.5
             }
           ]
@@ -92,7 +91,6 @@ acc.show = function(){
             ClassId: iclasses[j].ClassId,
             StartTime: iclasses[j].StartTime,
             EndTime: iclasses[j].EndTime,
-            Time: iclasses[j].Time,
             Hours: iclasses[j].Hours
           }
         }else{
@@ -135,7 +133,8 @@ acc.show = function(){
       if ( selects[tmp] ) {
         rhtml += '<div class="control-group">\
                     <label class="control-label" for="' + that._hash + '_' + tmp + '_select">' + selects[tmp].desc + '</label>\
-                    <div class="controls">'
+                    <div class="controls">\
+                      <select name="' + tmp + '" id="' + that._hash + '_' + tmp + '_select"><option value="">' + selects[tmp].desc + '</option>'
         for ( key in selects[tmp]["options"] ) {
           if ( defaultv[tmp] === key ) {
             rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'
@@ -165,24 +164,13 @@ acc.show = function(){
       for ( var j=0; j<iclasses.length; j++ ) {
         if ( iclasses[j].ClassId==ClassId ) {break;}
       } 
-      _el.find('input[name="StartTime"]').val(iclasses[j].StartTime)
-      _el.find('input[name="EndTime"]').val(iclasses[j].EndTime)
-      _el.find('input[name="Time"]').val(iclasses[j].Time)
-      _el.find('input[name="Hours"]').val(iclasses[j].Hours)
+      if (j<iclasses.length) {
+        _el.find('input[name="StartTime"]').val(iclasses[j].StartTime)
+        _el.find('input[name="EndTime"]').val(iclasses[j].EndTime)
+        _el.find('input[name="Hours"]').val(iclasses[j].Hours)
+      }
     });
-    /*
-    function spinnerchange(){
-      var count = parseInt($(this).val())
-      _el.find('input[name="ChargingMoney"]').val((parseFloat(that.infos.ClassSet.Money)*count) + '元')
-      _el.find('input[name="ChargingHours"]').val((parseFloat(that.infos.ClassSet.Hours)*count) + '课时')
-    }
-    var spinneroption = {
-      min: 1,
-      step: 1,
-      change: spinnerchange,
-      stop: spinnerchange
-    }
-    _el.find('input[name="SetCount"]').spinner(spinneroption);
+
     for ( i=0; i<dates.length; i++ ) {
       var dateoption = {
         changeMonth: true,
@@ -192,13 +180,6 @@ acc.show = function(){
       }
       _el.find('input[name="'+dates[i]+'"]').datepicker(dateoption);
     }
-
-    var Hoursoption = {
-      min: 0.5,
-      step: 0.5,
-      value: defaultv.Hours
-    }
-    _el.find('input[name="Hours"]').spinner(Hoursoption);*/
 
     _el.find('a.submit').on('click', function(e){
       var that = acc
@@ -220,8 +201,8 @@ acc.show = function(){
           util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
           error = true
         }
-        if ( !Time ) {
-          util.show_help({$th:_el.find('input[name="Time"]'), desc:'请选择上课时间', iserror:true})
+        if ( sendvalues.Time ) {
+          util.show_help({$th:_el.find('input[name="Time"]'), desc:'请选择上课日期', iserror:true})
           error = true  
         }
         if ( error ){
