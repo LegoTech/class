@@ -125,6 +125,7 @@ acc.show = function(){
                     <div class="controls">\
                       <input id="' + that._hash + '_' + tmp + '_input" name="' + tmp + '" type="' + (inputs[tmp].type||'text') +
                       '" placeholder="' + inputs[tmp].desc + '"' + valuehtml + (inputs[tmp].disabled?' disabled':'') + '>\
+                      <span class="help-inline"></span>\
                     </div>\
                   </div>'
         if ( inputs[tmp].date ) {dates.push(tmp)}
