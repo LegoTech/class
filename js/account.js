@@ -201,7 +201,7 @@ acc.show = function(){
           util.show_help({$th:_el.find('select[name="ClassId"]'), desc:'请选择课程', iserror:true})
           error = true
         }
-        if ( sendvalues.Time ) {
+        if ( !sendvalues.Time ) {
           util.show_help({$th:_el.find('input[name="Time"]'), desc:'请选择上课日期', iserror:true})
           error = true  
         }

@@ -136,14 +136,31 @@ stat.show = function(){
 /*_ops:{
   id:,                               //容器id
   categories: ['小芬', '小菲菲'],   //课程或学生或教师
-  moneydata: [-1000, -2000],    //钱数(负数)
+  moneydata: [1000, 2000],    //钱数
   maxmoney: 2000,            //最大钱数
   hourdata: [13.4, 23],      //小时数
   maxhour: 23                 //最大小时数
 }
 */
 stat.show_chart = function(_ops){
-  var 
+  var moneyunit = _ops.maxmoney/_ops.maxhour, munit = ''
+  if (1<moneyunit && moneyunit<10){
+    moneyunit = 10
+    munit = '十'
+  }else if(10<moneyunit && moneyunit<100){
+    moneyunit = 100
+    munit = '百'
+  }else if(100<moneyunit && moneyunit<1000){
+    moneyunit = 1000
+    munit = '千'
+  }else if(1000<moneyunit && moneyunit<10000){
+    moneyunit = 10000
+    munit = '万'
+  }
+  var moneydata = _ops.moneydata 
+  for (var i=0; i<moneydata.length; i++) {
+    moneydata[i] = (0-moneydata[i])/moneyunit
+  }
   $('#'+_ops.id).highcharts({
     chart: {
         type: 'bar'
@@ -164,14 +181,14 @@ stat.show_chart = function(_ops){
         labels: {
             formatter: function(){
                 if (this.value<0){
-                  return (0-this.value)/ + '￥';
+                  return (0-this.value) + munit+'元';
                 }else{
                   return this.value + '小时';
                 }
             }
         },
-        min: -1,
-        max: 1
+        min: (0-_ops.maxmoney)/moneyunit,
+        max: _ops.maxhour
     },
     
     plotOptions: {
@@ -182,14 +199,17 @@ stat.show_chart = function(_ops){
     
     tooltip: {
         formatter: function(){
-            return '<b>'+ this.series.name +', age '+ this.point.category +'</b><br>'+
-                'Population: '+ Highcharts.numberFormat(Math.abs(this.point.y), 1);
+            if (this.point.y<0){
+              return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat((0-this.point.y)*moneyunit, 1)+'元';
+            }else{
+              return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat(this.point.y, 1)+'小时';
+            }
         }
     },
     
     series: [{
         name: '总金额',
-        data: _ops.moneydata
+        data: moneydata
     }, {
         name: '总课时',
         data: _ops.hourdata
@@ -237,7 +257,7 @@ function forcs_back(_opstring){
     errorinfo:""    //可选
   }],abstract:{
     categories: ['小芬', '小菲菲'],   //课程或学生或教师
-    moneydata: [-1000.223111, -2000],    //钱数（负数）
+    moneydata: [1000.223111, 2000],    //钱数
     maxmoney: 2000,            //最大钱数
     hourdata: [13.4231, 23],      //小时数
     maxhour: 23                 //最大小时数
