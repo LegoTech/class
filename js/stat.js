@@ -129,7 +129,7 @@ stat.show = function(){
     that.defaultv.From = tmpdate.format("yyyy-MM-dd");
   }
   that.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
-  //调C#函数获取值，C#调forcs_back进行下一步操作
+  //调C#函数获取值，C#调forcs_back进行下一步操作, 传入that._hash, defaultv
   forcs_back()
 }
 
@@ -247,7 +247,7 @@ stat.show_chart = function(_ops){
 }
 
 /*_ops:{    
-//本店细则时返回detail，学生、课程、教师返回abstract。
+//_hash=center时返回detail，学生、课程、教师返回abstract。
 如果detail返回多条，每页明细少一点
   detail:[],  
   abstract:{}
