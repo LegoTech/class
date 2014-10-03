@@ -2,6 +2,9 @@ stat = {}
 stat._hash = ""
 stat.defaultv = {}
 stat.pages = {
+  center: {
+    title: "本店上课统计"
+  },
   students: {
     title: "学生上课统计"
   },
@@ -36,15 +39,6 @@ _ops:{
 stat.show_search = function(_ops){
   if ( !_ops.id || !_ops.lists.length ) return;
   _ops.defaultv = _ops.defaultv || {} 
-  var tmpdate = new Date()
-  if (!_ops.defaultv.To) {
-    _ops.defaultv.To = tmpdate.format("yyyy-MM-dd");
-  }
-  if (!_ops.defaultv.From) {
-    tmpdate = tmpdate - 7*24*60*60*1000
-    tmpdate = new Date(tmpdate)
-    _ops.defaultv.From = tmpdate.format("yyyy-MM-dd");
-  }
   
   var rhtml = ''
   //默认type为text，不为text另外说明，默认placeholder为desc
@@ -123,10 +117,20 @@ stat.show = function(){
   var lists = {
         students: ["CardNo", "StuId", "StuName", "From", "To"],
         classes: ["ClassId", "ClassNo", "ClassName", "From", "To"],
-        teachers: ["TeacherId", "From", "To"]
+        teachers: ["TeacherId", "From", "To"],
+        center: ["From", "To"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
   $('#'+that._hash).empty().html(rhtml)
+  var tmpdate = new Date()
+  if (!that.defaultv.To) {
+    that.defaultv.To = tmpdate.format("yyyy-MM-dd");
+  }
+  if (!that.defaultv.From) {
+    tmpdate = tmpdate - 7*24*60*60*1000
+    tmpdate = new Date(tmpdate)
+    that.defaultv.From = tmpdate.format("yyyy-MM-dd");
+  }
   that.show_search({id:that._hash+"_form", lists:lists[that._hash], defaultv:that.defaultv})
   //调C#函数获取值，C#调forcs_back进行下一步操作
   forcs_back()
@@ -163,7 +167,7 @@ function forcs_back(_opstring){
       idvalue = _ops.tbody[i].shift()
       tdata.push(' data-type="trmenu" data-value="'+idvalue+'"')
     }
-    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], operate:operate, callback:that.show_menu });
+    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], callback:that.show_menu });
     if ( _ops.page ) {
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
@@ -212,6 +216,8 @@ $(document).on('click', function(e){
           }
         });
         that.show()
+      break; case 'page':
+        //调C#函数获取值，C#调forcs_back进行下一步操作
       break;
     }
 });

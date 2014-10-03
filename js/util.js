@@ -600,8 +600,10 @@ util.show_modal = function(_ops){
     }
     $("#"+_ops.id+"_"+timepickers[i]+"_timepicker").find('span.hour').slider(houroption);
     $("#"+_ops.id+"_"+timepickers[i]+"_timepicker").find('span.minute').slider(minuteoption);
-    var timepickerval = that.time_format(hourval)+':'+that.time_format(minuteval)+'-'+that.time_format(hourval)+':'+that.time_format(minuteval) ;
-    $("#"+_ops.id).find('input[name="'+timepickers[i]+'"]').val(timepickerval)
+    if ( !$("#"+_ops.id).find('input[name="'+timepickers[i]+'"]').val().length ){
+      var timepickerval = that.time_format(hourval)+':'+that.time_format(minuteval)+'-'+that.time_format(hourval)+':'+that.time_format(minuteval) ;
+      $("#"+_ops.id).find('input[name="'+timepickers[i]+'"]').val(timepickerval)
+    } 
   }
   _el.find('input[name="WeekTime"]').hide()
   _el.find(':checkbox').click(function(){
