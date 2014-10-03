@@ -3,16 +3,16 @@ stat._hash = ""
 stat.defaultv = {}
 stat.pages = {
   center: {
-    title: "本店统计"
+    title: "上课情况细则"
   },
   students: {
-    title: "学生统计"
+    title: "学生概览"
   },
 	classes: {
-		title: "课程统计"
+		title: "课程概览"
 	},
   teachers: {
-    title: "教师统计"
+    title: "教师概览"
   }
 }
 stat.hashchange = function(){
@@ -45,9 +45,7 @@ stat.show_search = function(_ops){
     CardNo: {desc: '学员卡号'},
     StuId: {desc: '学员ID',},
     StuName: {desc: '学生姓名', autocomplete: true},
-    ClassId: {desc: '课程ID',},
     ClassNo: {desc: '课程编号'},
-    ClassName: {desc: '课程名', autocomplete: true},
     From: {desc: '起始时间', date: true},
     To: {desc: '终止时间', date: true}
   }
@@ -114,10 +112,10 @@ stat.show_search = function(_ops){
 stat.show = function(){
   var that = stat
   var lists = {
-        students: ["CardNo", "StuId", "StuName", "From", "To"],
-        classes: ["ClassId", "ClassNo", "ClassName", "From", "To"],
-        teachers: ["TeacherId", "From", "To"],
-        center: ["From", "To"]
+        students: ["From", "To"],
+        classes: [ "From", "To"],
+        teachers: ["From", "To"],
+        center: ["CardNo", "StuId", "StuName", "ClassNo", "TeacherId", "From", "To"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
   $('#'+that._hash).empty().html(rhtml)
@@ -135,8 +133,19 @@ stat.show = function(){
   forcs_back()
 }
 
+/*_ops:{
+  id:,                               //容器id
+  categories: ['小芬', '小菲菲'],   //课程或学生或教师
+  moneydata: [-1000, -2000],    //钱数(负数)
+  hourdata: [13.4, 23]      //小时数
+}
+*/
+stat.show_chart = function(){
+  
+}
+
 /*_ops:{    
-//两者选一。学生、课程、教师有查询条件或本店统计时返回detail，学生、课程、教师无查询条件时返回abstract。
+//本店细则时返回detail，学生、课程、教师返回abstract。
 如果detail返回多条，每页明细少一点
   detail:[],  
   abstract:{}
@@ -144,10 +153,7 @@ stat.show = function(){
 */
 function forcs_back(_opstring){
   var that = stat
-  var _ops = {/*detail:[{   
-    id: 14,
-    name: '小芬',  //可省略
-    desc: '学校：家里蹲大学  卡号：10293',      //可省略
+  var _ops = {/*detail:[{
     sum: {
       time: 192,
       money: 2000000.01
@@ -160,9 +166,11 @@ function forcs_back(_opstring){
     },      //可选
     errorinfo:""    //可选
   },{   
-    id: 12,
-    name: '小fayfay',  //可省略
-    desc: '学校：家里蹲大学  卡号：10293',      //可省略
+    condition: {          //可省略
+      id: 12,
+      name: '小芬',  
+      desc: '学校：家里蹲大学  卡号：10293'
+    },
     sum: {
       time: 192,
       money: 2000000.01
@@ -174,28 +182,27 @@ function forcs_back(_opstring){
       count: 11
     },      //可选
     errorinfo:""    //可选
-  }],*/abstract:{}}    //eval方法解_opstring
+  }],*/abstract:{
+    categories: ['小芬', '小菲菲'],   //课程或学生或教师
+    moneydata: [-1000, -2000],    //钱数(负数)
+    hourdata: [13.4, 23]      //小时数
+  }}    //eval方法解_opstring
   var rhtml = ''
   var detail = _ops.detail
   var abs = _ops.abstract
-  if (detail && detail.length) {
-    var i = 0, l = detail.length, d = {}, options = {}, text = '搜索'
-    switch ( that._hash ){
-      case 'students':
-        text = '选定该同学'
-      break; case 'classes':
-        text = '选定该课程'
-      break;
-    }
+  if (that._hash === 'center') {
+    var i = 0, l = detail.length, d = {}, options = {}
+    var con = {}
     for (;i<l;i++){
       d = detail[i]
+      con = d.condition
       rhtml += '\
         <div class="statunit">\
           <div class="row">\
-            <div class="span4">'+             
-              (d.name?'<h3>'+d.name+'</h3>':'') +
-              (d.desc?'<p>'+d.desc+'</p>':'') +
-              (l>1?'<a class="btn btn-success" data-type="searchById" data-value="'+d.id+'">'+text+'</a>':'') +
+            <div class="span4" style="position: relative;">'+             
+              ( (con&&con.name)?'<h3>'+con.name+'</h3>':'') +
+              ( (con&&con.desc)?'<p>'+con.desc+'</p>':'') +
+              ( (l>1 && con)?'<a class="btn btn-success" data-type="searchById" data-value="'+con.id+'">选定该学生</a>':'') +
             '</div>\
             <div class="span4 sum"><span class="strong">'+ util.numformat(d.sum.time) +'</span>小时\
               <p class="muted">总课时</p>\
@@ -204,20 +211,25 @@ function forcs_back(_opstring){
               <p class="muted">总金额</p>\
             </div>\
           </div><hr/>\
-          <div id="'+ that._hash+'_result_'+d.id +'"></div>\
+          <div id="'+ that._hash+'_result_'+( (l>1 && con)?con.id:'') +'"></div>\
         </div>'  
     }
     $('#'+that._hash+'_result').html(rhtml)
     for (i=0;i<l;i++){
-      d = detail[i]
+      d = detail[i]      
       options = {}
       $.extend(options, d)
-      options.id = that._hash+'_result_'+d.id
+      if (d.condition && d.condition.id) {
+        options.id = that._hash+'_result_'+d.condition.id
+      }else{
+        options.id = that._hash+'_result_'
+      }
       options = JSON.stringify(options)
       forcs_pageback(options)
     }
   }else{
-
+    var options = {}
+    that.show_chart()
   }
 }
 
@@ -303,13 +315,7 @@ $(document).on('click', function(e){
         eleid = _ancestor[0].id
         //调C#函数获取值，C#调forcs_pageback进行下一步操作, value是第几页，valueid是id，eleid是容器id
       break; case 'searchById':
-        switch ( that._hash ) {
-          case 'students':
-            that.defaultv.StuId = value
-          break; case 'classes':
-            that.defaultv.ClassId = value
-          break;
-        }
+        if (value) {that.defaultv.StuId = value}
         //调C#函数获取值，C#调forcs_back进行下一步操作
       break;
     }

@@ -346,14 +346,20 @@ body#account #charging, body#account #consuming{
 }
 
 .statunit span.strong{
-  font-size: 50px;
+  font-size: 42px;
   color: #0088cc;
 }
 
 .statunit div.sum{
-  padding-top: 40px;
+  padding-top: 20px;
 }
 
 .statunit h3, .statunit p{
   margin-bottom: 0;
+}
+
+.statunit a.btn{
+  position: absolute;
+  left: 174px;
+  top: 15px;
 }

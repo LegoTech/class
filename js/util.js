@@ -350,6 +350,7 @@ util.show_modal = function(_ops){
     ClassId:    {desc: '课程ID',        hidden: true},
     ClassNo:    {desc: '课程编号'},
     ClassName:  {desc: '课程名',        autocomplete: true},
+    ClassType:  {desc: '课程类型'},
     Birth:      {desc: '生日',          date: true},
     Address:    {desc: '地址'},
     Parents:    {desc: '家长'},
@@ -377,11 +378,11 @@ util.show_modal = function(_ops){
     Status: {
         desc: '状态',
         options: Status
-    },
+    }/*,
     ClassType: {
         desc: '课程类型',
         options: ClassTypeName
-    }
+    }*/
   }
   var btns = {
     Compelete: {
@@ -399,7 +400,7 @@ util.show_modal = function(_ops){
       lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone']
     break; case 'add_classes_modal':
       title = '添加课程'
-      lists = ['ClassName', 'ClassNo', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
+      lists = ['ClassName', 'ClassNo', 'ClassType', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
       disablelists = ['Time']
     break; case 'add_timetable_modal':
       title = '添加课程安排'
@@ -435,10 +436,10 @@ util.show_modal = function(_ops){
       title = '修改课程信息'
       switch ( parseInt(defaultv.Status) ) {
         case 0:             //未进行
-          lists = ['ClassId', 'ClassName', 'ClassNo', "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
+          lists = ['ClassId', 'ClassName', 'ClassType', 'ClassNo', "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
           disablelists = ['ClassId', 'Time']
         break; case 1:      //进行中
-          lists = ['ClassName', 'ClassNo',  "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime', 'ClassId']
+          lists = ['ClassName', 'ClassNo', 'ClassType', "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime', 'ClassId']
           disablelists = ['ClassId', 'StartTime', 'Time']
         break; case 2:      //已结束
           content = '课程已结束，不能修改课程信息'

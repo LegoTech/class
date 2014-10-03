@@ -74,6 +74,10 @@ acc.show = function(){
             }
           ]
         }
+        selects.ClassId.options = {}
+        for (var i=0; i<that.infos.classes.length; i++){
+          selects.ClassId.options[that.infos.classes[i].ClassId] = ClassName
+        }
         lists = ['StuName', 'ClassId', 'StartTime', 'EndTime', 'Time', 'Hours']
         iclasses = that.infos.classes
         if ( that.lastconsuming ) {
