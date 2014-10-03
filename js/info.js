@@ -312,7 +312,7 @@ function forcs_back(_opstring){
       $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
       util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }
-    if (_ops.errorinfo) { $('#'+that._hash+'_result').prepend('<div class="hero-unit"><h4>'+_ops.errorinfo+'</h4></div>') }
+    if (_ops.errorinfo) { $('#'+that._hash+'_result').prepend('<div class="alert alert-error"><h4>'+_ops.errorinfo+'</h4></div>') }
   }
 }
 

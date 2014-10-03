@@ -112,7 +112,7 @@ stat.show_search = function(_ops){
 stat.show = function(){
   var that = stat
   var lists = {
-        students: ["From", "To"],
+        students: ["ClassNo", "From", "To"],
         classes: [ "From", "To"],
         teachers: ["From", "To"],
         center: ["CardNo", "StuId", "StuName", "ClassNo", "TeacherId", "From", "To"]
@@ -289,7 +289,8 @@ function forcs_back(_opstring){
     moneydata: [1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000],    //钱数
     maxmoney: 2000,            //最大钱数
     hourdata: [13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23],      //小时数
-    maxhour: 23                 //最大小时数
+    maxhour: 23,                 //最大小时数
+    errorinfo:"选择的时间范围过长。只展示20条信息"    //可选
   }}    //eval方法解_opstring
   var rhtml = ''
   var detail = _ops.detail
@@ -337,6 +338,7 @@ function forcs_back(_opstring){
     options.id = that._hash+'_result'
     $('#'+that._hash+'_result').addClass('highchartscontainer')
     that.show_chart(options)
+    if (options.errorinfo) { $('#'+that._hash+'_result').prepend('<div class="alert alert-error"><h4>'+options.errorinfo+'</h4></div>') }
   }
 }
 
@@ -370,7 +372,7 @@ function forcs_pageback(_opstring){
       $('#'+_ops.id).append('<div id="'+_ops.id+'_page" data-valueid="'+_ops.id.split('_result_')[1]+'"></div>')
       util.show_pagination({id:_ops.id+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }
-    if (_ops.errorinfo) { $('#'+_ops.id).prepend('<div class="hero-unit"><h4>'+_ops.errorinfo+'</h4></div>') }
+    if (_ops.errorinfo) { $('#'+_ops.id).prepend('<div class="alert alert-error"><h4>'+_ops.errorinfo+'</h4></div>') }
   }
 }
 
