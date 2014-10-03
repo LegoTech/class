@@ -363,3 +363,7 @@ body#account #charging, body#account #consuming{
   left: 174px;
   top: 15px;
 }
+
+.highchartscontainer{
+  overflow: hidden;
+}

@@ -76,7 +76,7 @@ acc.show = function(){
         }
         selects.ClassId.options = {}
         for (var i=0; i<that.infos.classes.length; i++){
-          selects.ClassId.options[that.infos.classes[i].ClassId] = ClassName
+          selects.ClassId.options[that.infos.classes[i].ClassId] = that.infos.classes[i].ClassName
         }
         lists = ['StuName', 'ClassId', 'StartTime', 'EndTime', 'Time', 'Hours']
         iclasses = that.infos.classes
@@ -135,8 +135,7 @@ acc.show = function(){
       if ( selects[tmp] ) {
         rhtml += '<div class="control-group">\
                     <label class="control-label" for="' + that._hash + '_' + tmp + '_select">' + selects[tmp].desc + '</label>\
-                    <div class="controls">\
-                      <select name="' + tmp + '" id="' + that._hash + '_' + tmp + '_select"><option value="">' + selects[tmp].desc + '</option>'
+                    <div class="controls">'
         for ( key in selects[tmp]["options"] ) {
           if ( defaultv[tmp] === key ) {
             rhtml += '<option value="' + key + '" selected="selected">' + selects[tmp]["options"][key] + '</option>'

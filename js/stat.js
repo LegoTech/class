@@ -137,10 +137,13 @@ stat.show = function(){
   id:,                               //容器id
   categories: ['小芬', '小菲菲'],   //课程或学生或教师
   moneydata: [-1000, -2000],    //钱数(负数)
-  hourdata: [13.4, 23]      //小时数
+  maxmoney: 2000,            //最大钱数
+  hourdata: [13.4, 23],      //小时数
+  maxhour: 23                 //最大小时数
 }
 */
-stat.show_chart = function(){
+stat.show_chart = function(_ops){
+  var 
   $('#'+_ops.id).highcharts({
     chart: {
         type: 'bar'
@@ -151,7 +154,7 @@ stat.show_chart = function(){
     }, { // mirror axis on right side
         opposite: true,
         reversed: false,
-        categories: categories,
+        categories: _ops.categories,
         linkedTo: 0
     }],
     yAxis: {
@@ -160,11 +163,15 @@ stat.show_chart = function(){
         },
         labels: {
             formatter: function(){
-                return (Math.abs(this.value) / 1000000) + 'M';
+                if (this.value<0){
+                  return (0-this.value)/ + '￥';
+                }else{
+                  return this.value + '小时';
+                }
             }
         },
-        min: -10000,
-        max: 10000
+        min: -1,
+        max: 1
     },
     
     plotOptions: {
@@ -176,7 +183,7 @@ stat.show_chart = function(){
     tooltip: {
         formatter: function(){
             return '<b>'+ this.series.name +', age '+ this.point.category +'</b><br>'+
-                'Population: '+ Highcharts.numberFormat(Math.abs(this.point.y), 0);
+                'Population: '+ Highcharts.numberFormat(Math.abs(this.point.y), 1);
         }
     },
     
@@ -199,7 +206,7 @@ stat.show_chart = function(){
 */
 function forcs_back(_opstring){
   var that = stat
-  var _ops = {/*detail:[{
+  var _ops = {detail:[{
     sum: {
       time: 192,
       money: 2000000.01
@@ -228,10 +235,12 @@ function forcs_back(_opstring){
       count: 11
     },      //可选
     errorinfo:""    //可选
-  }],*/abstract:{
+  }],abstract:{
     categories: ['小芬', '小菲菲'],   //课程或学生或教师
-    moneydata: [-1000, -2000],    //钱数(负数)
-    hourdata: [13.4, 23]      //小时数
+    moneydata: [-1000.223111, -2000],    //钱数（负数）
+    maxmoney: 2000,            //最大钱数
+    hourdata: [13.4231, 23],      //小时数
+    maxhour: 23                 //最大小时数
   }}    //eval方法解_opstring
   var rhtml = ''
   var detail = _ops.detail
@@ -277,7 +286,8 @@ function forcs_back(_opstring){
     var options = {}
     $.extend(options, _ops.abstract)
     options.id = that._hash+'_result'
-    that.show_chart()
+    $('#'+that._hash+'_result').addClass('highchartscontainer')
+    that.show_chart(options)
   }
 }
 
