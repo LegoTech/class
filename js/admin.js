@@ -12,7 +12,6 @@ admin.pages = {
     addauth: ["boss", "master", "operator"]
 	}
 }
-admin._hash = ""
 admin.hashchange = function(){
     var that = this
     if( 'onhashchange' in window ) {

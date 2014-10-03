@@ -175,7 +175,7 @@ info.show_menu = function(_ops){
     $('ul.rightmenu').remove()    
     var that = info
     var value = _ta.attr('data-value')
-    if ( !value ) return;
+    if ( !value || $.isEmptyObject(_ops.operate) ) return;
     var rhtml = '<ul class="dropdown-menu rightmenu" style="positon:absolute;display:block;left:' +
                 e.pageX + 'px;top:' + e.pageY + 'px;">'
     for ( key in _ops.operate ) {
