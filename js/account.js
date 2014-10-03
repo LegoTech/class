@@ -32,8 +32,8 @@ acc.show = function(){
   var rhtml = ''
   var inputs = {
     StuName:    {desc: '学生姓名',      disabled:true},
-    ChargingHours:{desc: '充值金额'},
-    ChargingMoney:{desc: '充值课时'},
+    ChargingHours:{desc: '充值课时'},
+    ChargingMoney:{desc: '充值金额'},
     TicketId:   {desc: '票据号'},
     Hours:      {desc: '课时数',        disabled:true},
     StartTime:  {desc: '开始时间',      disabled:true},

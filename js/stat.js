@@ -141,7 +141,53 @@ stat.show = function(){
 }
 */
 stat.show_chart = function(){
-  
+  $('#'+_ops.id).highcharts({
+    chart: {
+        type: 'bar'
+    },
+    xAxis: [{
+        categories: _ops.categories,
+        reversed: false
+    }, { // mirror axis on right side
+        opposite: true,
+        reversed: false,
+        categories: categories,
+        linkedTo: 0
+    }],
+    yAxis: {
+        title: {
+            text: null
+        },
+        labels: {
+            formatter: function(){
+                return (Math.abs(this.value) / 1000000) + 'M';
+            }
+        },
+        min: -10000,
+        max: 10000
+    },
+    
+    plotOptions: {
+        series: {
+            stacking: 'normal'
+        }
+    },
+    
+    tooltip: {
+        formatter: function(){
+            return '<b>'+ this.series.name +', age '+ this.point.category +'</b><br>'+
+                'Population: '+ Highcharts.numberFormat(Math.abs(this.point.y), 0);
+        }
+    },
+    
+    series: [{
+        name: '总金额',
+        data: _ops.moneydata
+    }, {
+        name: '总课时',
+        data: _ops.hourdata
+    }]
+  });
 }
 
 /*_ops:{    
@@ -229,6 +275,8 @@ function forcs_back(_opstring){
     }
   }else{
     var options = {}
+    $.extend(options, _ops.abstract)
+    options.id = that._hash+'_result'
     that.show_chart()
   }
 }
