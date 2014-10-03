@@ -144,63 +144,107 @@ stat.show = function(){
 }
 */
 function forcs_back(_opstring){
+  var that = stat
   var _ops = {detail:[{   
     id: 14,
     name: '小芬',  //可省略
     desc: '学校：家里蹲大学 卡号：10293',      //可省略
     sum: {
       time: 192,
-      money: 200
+      money: 2000000.01
     },
-    thead: [],
-    tbody: [[], []],
-    page:{}       //可选
+    thead: ['是否选定', 'id', 'name', '操作'],
+    tbody: [[1,'dd', 1], [2,'22', 0]],
+    page:{            //（可选）
+      cur: 1,
+      count: 11
+    },      //可选
+    errorinfo:""    //可选
+  },{   
+    id: 12,
+    name: '小fayfay',  //可省略
+    desc: '学校：家里蹲大学 卡号：10293',      //可省略
+    sum: {
+      time: 192,
+      money: 2000000.01
+    },
+    thead: ['是否选定', 'id', 'name', '操作'],
+    tbody: [[1,'dd', 1], [2,'22', 0]],
+    page:{            //（可选）
+      cur: 1,
+      count: 11
+    },      //可选
+    errorinfo:""    //可选
   }]}    //eval方法解_opstring
   var rhtml = ''
-  if (_ops.detail && _ops.detail.length) {
-
+  var detail = _ops.detail
+  if (detail && detail.length) {
+    var i = 0, l = detail.length, d = {}, options = {}
+    for (;i<l;i++){
+      d = detail[i]
+      rhtml += '\
+        <div class="statunit">\
+          <div>\
+            <div>'+
+              (d.name?'<h3>'+d.name+'</h3>':'') +
+              (d.desc?'<p>'+d.desc+'</p>':'') +
+              (l>1?'<a class="btn" data-type="searchById" data-value="'+d.id+'">搜索</a>':'') +
+            '</div>\
+            <div><span>'+ util.numformat(d.sum.time) +'</span>h\
+              <p class="muted">总课时</p>\
+            </div>\
+            <div><span>'+ util.numformat(d.sum.money) +'</span>￥\
+              <p class="muted">总金额</p>\
+            </div>\
+          </div>\
+          <div id="'+ that._hash+'_result_'+d.id +'"></div>\
+        </div>'  
+    }
+    $('#'+that._hash+'_result').html(rhtml)
+    for (i=0;i<l;i++){
+      d = detail[i]
+      options = {}
+      $.extend(options, d)
+      options.id = that._hash+'_result_'+d.id
+      options = JSON.stringify(options)
+      forcs_pageback(options)
+    }
   }else{
 
   }
 }
 
 /*_ops:{
-  id:,
+  id:,              //容器id
   thead: [],
   tbody: [[], []],  //要求表每一行第一位必须是id。
   page:{            //（可选）
     cur: 1,
     count: 11
-  }
+  },
+  errorinfo:""
 }
 */
 function forcs_pageback(_opstring){
   var that = stat;
-  //var _ops = eval ("(" + _opstring + ")")
-  _ops = {
-    thead: ['是否选定', 'id', 'name', '操作'],
-    tbody: [[1,'dd', 1], [2,'22', 0]],
-    page:{            //（可选）
-      cur: 1,
-      count: 11
-    }
-  }
+  var _ops = eval ("(" + _opstring + ")")
   var tdata = []
   var trlength, selectop, idvalue
   for (var i=0; i<trlength; i++) {
     tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
   }
-  if ( $.inArray(that._hash, ['students', 'classes', 'teachers'])>-1 ) {
+  if ( $.inArray(that._hash, ['students', 'classes', 'teachers', 'center'])>-1 ) {
     trlength = _ops.tbody.length
     for (var i=0; i<trlength; i++) {
       idvalue = _ops.tbody[i].shift()
       tdata.push(' data-type="trmenu" data-value="'+idvalue+'"')
     }
-    util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], callback:that.show_menu });
+    util.show_table({id:_ops.id, thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], callback:that.show_menu });
     if ( _ops.page ) {
-      $('#'+that._hash+'_result').append('<div id="'+that._hash+'_page"></div>')
-      util.show_pagination({id:that._hash+'_page', cur:_ops.page.cur, count:_ops.page.count});
-    }   
+      $('#'+_ops.id).append('<div id="'+_ops.id+'_page"></div>')
+      util.show_pagination({id:_ops.id+'_page', cur:_ops.page.cur, count:_ops.page.count});
+    }
+    if (_ops.errorinfo) { $('#'+_ops.id).prepend('<div class="hero-unit"><h4>'+_ops.errorinfo+'</h4></div>') }
   }
 }
 
@@ -247,6 +291,7 @@ $(document).on('click', function(e){
         that.show()
       break; case 'page':
         //调C#函数获取值，C#调forcs_pageback进行下一步操作
+      break; case 'searchById':
       break;
     }
 });

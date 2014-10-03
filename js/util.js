@@ -64,6 +64,19 @@ Date.prototype.format = function(fmt)
   return fmt;   
 } 
 
+util.numformat = function(s, n){   
+   n = (n > 0 && n <= 20 ? n : 3);   
+   s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";   
+   var l = s.split(".")[0].split("").reverse(),   
+   r = s.split(".")[1];   
+   t = "";   
+   for(i = 0; i < l.length; i ++ )   
+   {   
+      t += l[i] + ((i + 1) % 3 == 0 && (i + 1) != l.length ? "," : "");   
+   }   
+   return t.split("").reverse().join("") + "." + r;   
+} 
+
 util.stopDefault = function(e){ 
     //阻止默认浏览器动作(W3C) 
     if ( e && e.preventDefault ) {
@@ -463,7 +476,7 @@ util.show_modal = function(_ops){
         if (defaultv.WeekTime) {
           WeekTimeCode = defaultv.WeekTime.split('::')[1]
           if ( WeekTimeCode ) {
-            WeekTimeCode = WeekTimeCode.split(',')
+            WeekTimeCode = WeekTimeCode.split('')
             for ( var n=0; n<WeekTimeCode.length; n++) {
               WeekTimeCode[n] = parseInt(WeekTimeCode[n])
             }
