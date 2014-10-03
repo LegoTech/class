@@ -27,7 +27,7 @@ util = {
     },
     user:{
         name: "Username",
-        auth: "operator"
+        auth: "boss"
     },
     center:{
         cur: 0,
@@ -66,7 +66,7 @@ Date.prototype.format = function(fmt)
 
 util.numformat = function(s, n){   
    n = (n > 0 && n <= 20 ? n : 3);   
-   s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(n) + "";   
+   s = parseFloat((s + "").replace(/[^\d\.-]/g, "")).toFixed(1) + "";   
    var l = s.split(".")[0].split("").reverse(),   
    r = s.split(".")[1];   
    t = "";   

@@ -21,7 +21,6 @@ stat.hashchange = function(){
         window.onhashchange = function(){
             that._hash = location.hash.replace(/\#|\!/g, '')
             if ( !$('#'+that._hash).html() ) {
-            	console.log("update "+that._hash)
               that.show()
             }
             return that._hash
@@ -145,10 +144,10 @@ stat.show = function(){
 */
 function forcs_back(_opstring){
   var that = stat
-  var _ops = {detail:[{   
+  var _ops = {/*detail:[{   
     id: 14,
     name: '小芬',  //可省略
-    desc: '学校：家里蹲大学 卡号：10293',      //可省略
+    desc: '学校：家里蹲大学  卡号：10293',      //可省略
     sum: {
       time: 192,
       money: 2000000.01
@@ -163,7 +162,7 @@ function forcs_back(_opstring){
   },{   
     id: 12,
     name: '小fayfay',  //可省略
-    desc: '学校：家里蹲大学 卡号：10293',      //可省略
+    desc: '学校：家里蹲大学  卡号：10293',      //可省略
     sum: {
       time: 192,
       money: 2000000.01
@@ -175,28 +174,36 @@ function forcs_back(_opstring){
       count: 11
     },      //可选
     errorinfo:""    //可选
-  }]}    //eval方法解_opstring
+  }],*/abstract:{}}    //eval方法解_opstring
   var rhtml = ''
   var detail = _ops.detail
+  var abs = _ops.abstract
   if (detail && detail.length) {
-    var i = 0, l = detail.length, d = {}, options = {}
+    var i = 0, l = detail.length, d = {}, options = {}, text = '搜索'
+    switch ( that._hash ){
+      case 'students':
+        text = '选定该同学'
+      break; case 'classes':
+        text = '选定该课程'
+      break;
+    }
     for (;i<l;i++){
       d = detail[i]
       rhtml += '\
         <div class="statunit">\
-          <div>\
-            <div>'+
+          <div class="row">\
+            <div class="span4">'+             
               (d.name?'<h3>'+d.name+'</h3>':'') +
               (d.desc?'<p>'+d.desc+'</p>':'') +
-              (l>1?'<a class="btn" data-type="searchById" data-value="'+d.id+'">搜索</a>':'') +
+              (l>1?'<a class="btn btn-success" data-type="searchById" data-value="'+d.id+'">'+text+'</a>':'') +
             '</div>\
-            <div><span>'+ util.numformat(d.sum.time) +'</span>h\
+            <div class="span4 sum"><span class="strong">'+ util.numformat(d.sum.time) +'</span>小时\
               <p class="muted">总课时</p>\
             </div>\
-            <div><span>'+ util.numformat(d.sum.money) +'</span>￥\
+            <div class="span4 sum"><span class="strong">'+ util.numformat(d.sum.money) +'</span>￥\
               <p class="muted">总金额</p>\
             </div>\
-          </div>\
+          </div><hr/>\
           <div id="'+ that._hash+'_result_'+d.id +'"></div>\
         </div>'  
     }
@@ -241,7 +248,7 @@ function forcs_pageback(_opstring){
     }
     util.show_table({id:_ops.id, thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], callback:that.show_menu });
     if ( _ops.page ) {
-      $('#'+_ops.id).append('<div id="'+_ops.id+'_page"></div>')
+      $('#'+_ops.id).append('<div id="'+_ops.id+'_page" data-valueid="'+_ops.id.split('_result_')[1]+'"></div>')
       util.show_pagination({id:_ops.id+'_page', cur:_ops.page.cur, count:_ops.page.count});
     }
     if (_ops.errorinfo) { $('#'+_ops.id).prepend('<div class="hero-unit"><h4>'+_ops.errorinfo+'</h4></div>') }
@@ -276,6 +283,7 @@ $(document).on('click', function(e){
     if ( !type ) { return; }
     util.stopDefault(e)
     var value = _ta.attr('data-value')
+    var valueid, eleid, _ancestor  //page
     switch ( type ) {
       case 'search':
         _ta.parents('form').find(':input').each(function(index, element){
@@ -290,8 +298,19 @@ $(document).on('click', function(e){
         });
         that.show()
       break; case 'page':
-        //调C#函数获取值，C#调forcs_pageback进行下一步操作
+        _ancestor = _ta.parents('[data-valueid]')
+        valueid = _ancestor.attr('data-valueid')
+        eleid = _ancestor[0].id
+        //调C#函数获取值，C#调forcs_pageback进行下一步操作, value是第几页，valueid是id，eleid是容器id
       break; case 'searchById':
+        switch ( that._hash ) {
+          case 'students':
+            that.defaultv.StuId = value
+          break; case 'classes':
+            that.defaultv.ClassId = value
+          break;
+        }
+        //调C#函数获取值，C#调forcs_back进行下一步操作
       break;
     }
 });
