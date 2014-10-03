@@ -171,7 +171,7 @@ acc.show = function(){
       }
     });
 
-    for ( i=0; i<dates.length; i++ ) {
+    for ( var i=0; i<dates.length; i++ ) {
       var dateoption = {
         changeMonth: true,
         changeYear: true,

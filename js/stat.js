@@ -157,13 +157,19 @@ stat.show_chart = function(_ops){
     moneyunit = 10000
     munit = '万'
   }
-  var moneydata = _ops.moneydata 
-  for (var i=0; i<moneydata.length; i++) {
+  var moneydata = _ops.moneydata
+  var l = moneydata.length 
+  for (var i=0; i<l; i++) {
     moneydata[i] = (0-moneydata[i])/moneyunit
   }
   $('#'+_ops.id).highcharts({
     chart: {
-        type: 'bar'
+        type: 'bar',
+        height: (l*40)
+    },
+    title: {
+        text: null,
+        margin: 0
     },
     xAxis: [{
         categories: _ops.categories,
@@ -209,10 +215,33 @@ stat.show_chart = function(_ops){
     
     series: [{
         name: '总金额',
-        data: moneydata
+        data: moneydata,
+        dataLabels: {
+            enabled: true,
+            color: '#FFFFFF',
+            align: 'left',
+            style: {
+                fontSize: '13px',
+                fontFamily: 'Verdana, sans-serif'
+            },
+            formatter: function(){
+                return Highcharts.numberFormat((0-this.y)*moneyunit, 1)+'元';
+            }
+        }
     }, {
         name: '总课时',
-        data: _ops.hourdata
+        data: _ops.hourdata,
+        dataLabels: {
+            enabled: true,
+            color: '#FFFFFF',
+            align: 'right',
+            style: {
+                fontSize: '13px',
+                fontFamily: 'Verdana, sans-serif'
+            },formatter: function(){
+                return Highcharts.numberFormat(this.y, 1)+'小时';
+            }
+        }
     }]
   });
 }
@@ -256,10 +285,10 @@ function forcs_back(_opstring){
     },      //可选
     errorinfo:""    //可选
   }],abstract:{
-    categories: ['小芬', '小菲菲'],   //课程或学生或教师
-    moneydata: [1000.223111, 2000],    //钱数
+    categories: ['小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲'],   //课程或学生或教师
+    moneydata: [1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000],    //钱数
     maxmoney: 2000,            //最大钱数
-    hourdata: [13.4231, 23],      //小时数
+    hourdata: [13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23],      //小时数
     maxhour: 23                 //最大小时数
   }}    //eval方法解_opstring
   var rhtml = ''
