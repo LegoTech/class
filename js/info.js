@@ -297,13 +297,14 @@ function forcs_back(_opstring){
       if ( parseInt(selectop)===1 ) {
         _ops.tbody[i].push('<a href="#" class="btn btn-mini" data-type="cancle" data-value="'+_ops.tbody[i][0]+
                             '"><i class="icon-remove-sign"></i> 退出</a><span class="shelp"></span>')
+        _ops.tbody[i].shift() 
         _ops.tbody[i].unshift('<span class="label label-success">已选</span>')
       }else{
         _ops.tbody[i].push('<a href="#" class="btn btn-success btn-mini" data-type="select" data-value="'+_ops.tbody[i][0]+
                             '"><i class="icon-plus-sign icon-white"></i> 参与</a><span class="shelp"></span>')
+        _ops.tbody[i].shift() 
         _ops.tbody[i].unshift('<span class="label">未选</span>')
       }  
-      _ops.tbody[i].shift() 
     }
     util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
     if ( _ops.page ) {
