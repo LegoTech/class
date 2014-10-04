@@ -362,11 +362,6 @@ function forcs_pageback(_opstring){
     tdata.push(' data-type="trmenu" data-value="'+_ops.tbody[i][0]+'"')
   }
   if ( $.inArray(that._hash, ['students', 'classes', 'teachers', 'center'])>-1 ) {
-    trlength = _ops.tbody.length
-    for (var i=0; i<trlength; i++) {
-      idvalue = _ops.tbody[i].shift()
-      tdata.push(' data-type="trmenu" data-value="'+idvalue+'"')
-    }
     util.show_table({id:_ops.id, thead:_ops.thead, tdata:tdata, tbody:_ops.tbody, sort:[], callback:that.show_menu });
     if ( _ops.page ) {
       $('#'+_ops.id).append('<div id="'+_ops.id+'_page" data-valueid="'+_ops.id.split('_result_')[1]+'"></div>')
@@ -380,6 +375,10 @@ function forcs_refresh(){
   window.location.href = "stat.html"
 }
 
+stat.claer_defaultv = function(){
+  that.defaultv = {}  
+}
+
 $(function() {
 // Handler for .ready() called.
 
@@ -388,7 +387,7 @@ util.check_auth("stat")
 that.hashchange()
 util.show_navbar({id:"navbar", page:"stat"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:that.pages, 
-			prename:'<i class="icon-chevron-right"></i>', dosethash:true})
+			prename:'<i class="icon-chevron-right"></i>', dosethash:true, clickback:info.claer_defaultv})
 
 });
 
@@ -407,6 +406,7 @@ $(document).on('click', function(e){
     var valueid, eleid, _ancestor  //page
     switch ( type ) {
       case 'search':
+        that.defaultv = {}
         _ta.parents('form').find(':input').each(function(index, element){
           if ( $(element).val() ) {
             that.defaultv[element.name] = $(element).val()
