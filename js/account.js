@@ -18,6 +18,7 @@ acc.hashchange = function(){
             $('#'+that._hash).hide()
             that._hash = location.hash.replace(/\#|\!/g, '')
             $('#'+that._hash).show()
+            //调C#告知进入that._hash页面（充值或消费）
             util.show_navbar({id:"navbar", page:that._hash})
             if ( !$('#'+that._hash).html() ) {
               that.show()

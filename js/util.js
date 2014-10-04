@@ -27,7 +27,7 @@ util = {
     },
     user:{
         name: "Username",
-        auth: "boss"
+        auth: "operator"
     },
     center:{
         cur: 0,
@@ -93,6 +93,7 @@ util.get_user_center = function(){
 }
 
 util.check_auth = function(pagekey){
+  //调用C#告知进入pagekey页面。注意：account是充值消费共用页面。
   var that = this
   if (!that.user.auth) {
     that.get_user_center()
@@ -679,6 +680,39 @@ util.show_modal = function(_ops){
     var no = _el.find('input[name="ClassNo"]').val()
     util.show_modal({id:'add_timetable_modal', valueno:no, clickback:info.show})
   });
+
+  _el.on('shown', function () {
+    console.log(this.id)
+    if ( $.inArray(this.id, ['add_students_modal', 'update_students_modal'])===-1 ) {return true;}
+    //调用C#，打开读卡器，监听到读卡后调用forcs_cardno
+    var options = {
+      id:this.id,
+      val: 1233445
+    }
+    forcs_cardno(JSON.stringify(options))
+  })
+
+  _el.on('hidden', function () {
+    if ( $.inArray(this.id, ['add_students_modal', 'update_students_modal'])===-1 ) {return true;}
+    //调用C#，关闭读卡器
+  })
+}
+
+/*_ops:{
+  id: ,
+  val:,
+  errror: ''
+}
+*/
+function forcs_cardno(_opstring){
+  var _ops = eval("(" + _opstring + ")")
+  if (_ops.error) {
+    alert(_ops.error)
+    return;
+  }
+  if ( $('#'+_ops.id).find('form').find('input[name="CardNo"]').length && _ops.val ){
+    $('#'+_ops.id).find('form').find('input[name="CardNo"]').val(_ops.val)
+  }
 }
 
 /*_ops{
