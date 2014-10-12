@@ -348,6 +348,7 @@ util.show_modal = function(_ops){
     StuId:      {desc: '学生ID',        hidden: true},
     StuName:    {desc: '学生姓名',      autocomplete: true},
     School:     {desc: '学校'},
+    Email:      {desc: 'E-mail'},
     ClassId:    {desc: '课程ID',        hidden: true},
     ClassNo:    {desc: '课程编号'},
     ClassName:  {desc: '课程名',        autocomplete: true},
@@ -398,7 +399,7 @@ util.show_modal = function(_ops){
       lists = ['OriPassword', 'NewPassword', 'RePassword']
     break; case 'add_students_modal':
       title = '添加学员'
-      lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone']
+      lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'Email']
     break; case 'add_classes_modal':
       title = '添加课程'
       lists = ['ClassName', 'ClassNo', 'ClassType', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
@@ -428,7 +429,7 @@ util.show_modal = function(_ops){
         defaultv = {}   //C#查数据
       }
       title = '修改学员信息'
-      lists = ['StuId', 'CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone']
+      lists = ['StuId', 'CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'Email']
       disablelists = ['StuId']
     break; case 'update_classes_modal':
       if ( _ops.valueid ) {
@@ -602,7 +603,7 @@ util.show_modal = function(_ops){
       value: minuteval
     }
     minuteoption.slide = function(event, ui){
-      var type = $(ui.handle).attr("data-type")
+      var type = $(ui.handle).parents('span').attr("data-type")
       var _ops = {}
       _ops.jqfinder =  tmpjqfinder
       if (type === 'from'){
