@@ -352,7 +352,7 @@ util.show_modal = function(_ops){
     ClassId:    {desc: '课程ID',        hidden: true},
     ClassNo:    {desc: '课程编号'},
     ClassName:  {desc: '课程名',        autocomplete: true},
-    ClassType:  {desc: '课程类型'},
+    ClassRoom:  {desc: '教室'},
     Birth:      {desc: '生日',          date: true},
     Address:    {desc: '地址'},
     Parents:    {desc: '家长'},
@@ -371,7 +371,7 @@ util.show_modal = function(_ops){
   }
   var TeacherNames = {0:"xx", 1:"yy"},   //C#获得教师id和name,状态值
       Status = {0:"开始", 1:"结束" },
-      ClassTypeName = {0:"xx", 1:"yy"}
+      ClassTypeName = {0:"xx", 1:"yy"}  //C#课程类型
   var selects = {
     TeacherId: {
         desc: '教师姓名',
@@ -380,11 +380,11 @@ util.show_modal = function(_ops){
     Status: {
         desc: '状态',
         options: Status
-    }/*,
+    },
     ClassType: {
         desc: '课程类型',
         options: ClassTypeName
-    }*/
+    }
   }
   var btns = {
     Compelete: {
@@ -402,7 +402,7 @@ util.show_modal = function(_ops){
       lists = ['CardNo', 'StuName', 'Birth', "School", 'Address', 'Parents', 'Phone', 'Email']
     break; case 'add_classes_modal':
       title = '添加课程'
-      lists = ['ClassName', 'ClassNo', 'ClassType', 'TeacherId', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
+      lists = ['ClassName', 'ClassNo', 'ClassType', 'TeacherId', 'ClassRoom', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
       disablelists = ['Time']
     break; case 'add_timetable_modal':
       title = '添加课程安排'
@@ -412,7 +412,7 @@ util.show_modal = function(_ops){
           case 0:             //未进行。注意！这个Status要根据是否一个星期内开始修正！！
             content = '课程尚未开始，不能添加课程安排'
           break; case 1:      //进行中
-            lists = ['ClassNo', 'Compelete', 'TeacherId', 'Time', 'PerHours', 'Date']
+            lists = ['ClassNo', 'Compelete', 'TeacherId', 'ClassRoom', 'Time', 'PerHours', 'Date']
             disablelists = ['Time']
           break; case 2:      //已结束
             content = '课程已结束，不能添加课程安排'
@@ -421,7 +421,7 @@ util.show_modal = function(_ops){
           break;
         }
       }else{
-        lists = ['ClassNo', 'Compelete', 'TeacherId', 'Time', 'PerHours', 'Date']
+        lists = ['ClassNo', 'Compelete', 'TeacherId', 'ClassRoom', 'Time', 'PerHours', 'Date']
         disablelists = ['Time']
       }
     break; case 'update_students_modal':
@@ -438,10 +438,10 @@ util.show_modal = function(_ops){
       title = '修改课程信息'
       switch ( parseInt(defaultv.Status) ) {
         case 0:             //未进行
-          lists = ['ClassId', 'ClassName', 'ClassType', 'ClassNo', "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
+          lists = ['ClassId', 'ClassName', 'ClassType', 'ClassNo', "TeacherId", 'ClassRoom', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime']
           disablelists = ['ClassId', 'Time']
         break; case 1:      //进行中
-          lists = ['ClassName', 'ClassNo', 'ClassType', "TeacherId", 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime', 'ClassId']
+          lists = ['ClassName', 'ClassNo', 'ClassType', "TeacherId", 'ClassRoom', 'WeekTime', 'Time', 'PerHours', 'Hours', 'StartTime', 'EndTime', 'ClassId']
           disablelists = ['ClassId', 'StartTime', 'Time']
         break; case 2:      //已结束
           content = '课程已结束，不能修改课程信息'
@@ -454,7 +454,7 @@ util.show_modal = function(_ops){
         defaultv = {}   //C#查数据。此处id为timetableID
       }
       title = '修改课程安排'
-      lists = ['ClassNo', 'TeacherId', 'Time', 'PerHours', 'Date', 'TimetableId'],
+      lists = ['ClassNo', 'TeacherId', 'ClassRoom', 'Time', 'PerHours', 'Date', 'TimetableId'],
       disablelists = ['Time', 'TimetableId'] 
     break; default:
       return;

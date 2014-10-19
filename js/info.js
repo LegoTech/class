@@ -172,7 +172,8 @@ info.show_menu = function(_ops){
       _ta = _ta.parents('[data-type]')
     }
     util.stopDefault(e)
-    $('ul.rightmenu').remove()    
+    $('ul.rightmenu').remove()
+    if (e.which===3) return;  
     var that = info
     var value = _ta.attr('data-value')
     if ( !value || $.isEmptyObject(_ops.operate) ) return;
@@ -295,16 +296,15 @@ function forcs_back(_opstring){
     trlength = _ops.tbody.length
     for (var i=0; i<trlength; i++) {
       selectop = _ops.tbody[i].pop()
+      idvalue = _ops.tbody[i].shift()
       if ( parseInt(selectop)===1 ) {
-        _ops.tbody[i].push('<a href="#" class="btn btn-mini" data-type="cancle" data-value="'+_ops.tbody[i][0]+
-                            '"><i class="icon-remove-sign"></i> 退出</a><span class="shelp"></span>')
-        _ops.tbody[i].shift() 
         _ops.tbody[i].unshift('<span class="label label-success">已选</span>')
+        _ops.tbody[i].unshift('<a href="#" class="btn btn-mini" data-type="cancle" data-value="'+idvalue+
+                            '"><i class="icon-remove-sign"></i> 退出</a><span class="shelp"></span>')
       }else{
-        _ops.tbody[i].push('<a href="#" class="btn btn-success btn-mini" data-type="select" data-value="'+_ops.tbody[i][0]+
-                            '"><i class="icon-plus-sign icon-white"></i> 参与</a><span class="shelp"></span>')
-        _ops.tbody[i].shift() 
         _ops.tbody[i].unshift('<span class="label">未选</span>')
+        _ops.tbody[i].unshift('<a href="#" class="btn btn-success btn-mini" data-type="select" data-value="'+idvalue+
+                            '"><i class="icon-plus-sign icon-white"></i> 参与</a><span class="shelp"></span>')
       }  
     }
     util.show_table({id:that._hash+'_result', thead:_ops.thead, tdata:[], tbody:_ops.tbody, sort:[]});
