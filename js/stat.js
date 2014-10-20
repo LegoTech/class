@@ -114,7 +114,7 @@ stat.show = function(){
   var lists = {
         students: ["ClassNo", "From", "To"],
         classes: [ "From", "To"],
-        teachers: ["From", "To"],
+        teachers: ["TeacherId", "From", "To"],
         center: ["CardNo", "StuId", "StuName", "ClassNo", "TeacherId", "From", "To"]
   }
   var rhtml = '<form id="'+that._hash+'_form" class="form-inline"></form><hr/><div id="'+that._hash+'_result"></div>'
@@ -143,19 +143,24 @@ stat.show = function(){
 }
 */
 stat.show_chart = function(_ops){
+  var that = stat;
   var moneyunit = _ops.maxmoney/_ops.maxhour, munit = ''
-  if (1<moneyunit && moneyunit<10){
-    moneyunit = 10
-    munit = '十'
-  }else if(10<moneyunit && moneyunit<100){
-    moneyunit = 100
-    munit = '百'
-  }else if(100<moneyunit && moneyunit<1000){
-    moneyunit = 1000
-    munit = '千'
-  }else if(1000<moneyunit && moneyunit<10000){
-    moneyunit = 10000
-    munit = '万'
+  if (that._hash==='teachers'){
+    moneyunit = 1
+  }else{
+    if (1<moneyunit && moneyunit<10){
+      moneyunit = 10
+      munit = '十'
+    }else if(10<moneyunit && moneyunit<100){
+      moneyunit = 100
+      munit = '百'
+    }else if(100<moneyunit && moneyunit<1000){
+      moneyunit = 1000
+      munit = '千'
+    }else if(1000<moneyunit && moneyunit<10000){
+      moneyunit = 10000
+      munit = '万'
+    }
   }
   var moneydata = _ops.moneydata
   var l = moneydata.length 
@@ -187,7 +192,7 @@ stat.show_chart = function(_ops){
         labels: {
             formatter: function(){
                 if (this.value<0){
-                  return (0-this.value) + munit+'元';
+                  return (0-this.value) + munit+ ( (that._hash==='teachers') ? '%' : '元' );
                 }else{
                   return this.value + '小时';
                 }
@@ -199,14 +204,28 @@ stat.show_chart = function(_ops){
     
     plotOptions: {
         series: {
-            stacking: 'normal'
+            stacking: 'normal',
+            events: {
+              click: function(e){
+                if (that._hash!=='teachers') return true;
+                that.defaultv = {}
+                $('#teachers_form').find(':input').each(function(index, element){
+                  if ( $(element).val() ) {
+                    that.defaultv[element.name] = $(element).val()
+                  }
+                });
+                that.defaultv.TeacherName = e.point.category;
+                console.log(that.defaultv)
+                that.show()
+              }
+            }
         }
     },
     
     tooltip: {
         formatter: function(){
             if (this.point.y<0){
-              return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat((0-this.point.y)*moneyunit, 1)+'元';
+              return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat((0-this.point.y)*moneyunit, 1)+ ( (that._hash==='teachers') ? '%' : '元' );
             }else{
               return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat(this.point.y, 1)+'小时';
             }
@@ -214,7 +233,7 @@ stat.show_chart = function(_ops){
     },
     
     series: [{
-        name: '总金额',
+        name: ( (that._hash==='teachers') ? '学生出勤率' : '总金额' ),
         data: moneydata,
         dataLabels: {
             enabled: true,
@@ -225,7 +244,7 @@ stat.show_chart = function(_ops){
                 fontFamily: 'Verdana, sans-serif'
             },
             formatter: function(){
-                return Highcharts.numberFormat((0-this.y)*moneyunit, 1)+'元';
+                return Highcharts.numberFormat((0-this.y)*moneyunit, 1)+( (that._hash==='teachers') ? '%' : '元' );
             }
         }
     }, {
@@ -255,10 +274,10 @@ stat.show_chart = function(_ops){
 */
 function forcs_back(_opstring){
   var that = stat
-  var _ops = {detail:[{
+  var _ops = {/*detail:[{
     sum: {
       time: 192,
-      money: 2000000.01
+      attendance: 90.01
     },
     thead: ['是否选定', 'id', 'name', '操作'],
     tbody: [[1,'dd', 1], [2,'22', 0]],
@@ -284,10 +303,10 @@ function forcs_back(_opstring){
       count: 11
     },      //可选
     errorinfo:""    //可选
-  }],abstract:{
+  }],*/abstract:{
     categories: ['小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲'],   //课程或学生或教师
-    moneydata: [1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000, 1000.223111, 2000],    //钱数
-    maxmoney: 2000,            //最大钱数
+    moneydata: [90.223111, 20, 10.223111, 20, 10.223111, 20, 80.223111, 20, 90.223111, 98, 10.223111, 20, 10.223111, 20, 10.223111, 20, 10.223111, 20, 10.223111, 20],    //钱数
+    maxmoney: 98,            //最大钱数
     hourdata: [13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23],      //小时数
     maxhour: 23,                 //最大小时数
     errorinfo:"选择的时间范围过长。只展示20条信息"    //可选
@@ -295,12 +314,34 @@ function forcs_back(_opstring){
   var rhtml = ''
   var detail = _ops.detail
   var abs = _ops.abstract
-  if (that._hash === 'center') {
+  if (_ops.detail) {
     var i = 0, l = detail.length, d = {}, options = {}
     var con = {}
+    var sumhtml = ''
+    var sumdesc = {
+      "time" : {
+        unit : "小时",
+        desc : "总课时"
+      },
+      "money" : {
+        unit : "￥",
+        desc : "总金额"
+      },
+      "attendance" : {
+        unit : "%",
+        desc : "学生出勤率"
+      }
+    }
     for (;i<l;i++){
       d = detail[i]
       con = d.condition
+      sumhtml = ''
+      for (var key in sumdesc) {
+        if (!d.sum[key]) continue;
+        sumhtml += '<div class="span4 sum"><span class="strong">'+ util.numformat(d.sum[key]) +'</span>'+sumdesc[key].unit+'\
+                      <p class="muted">'+sumdesc[key].desc+'</p>\
+                    </div>'
+      }
       rhtml += '\
         <div class="statunit">\
           <div class="row">\
@@ -308,14 +349,8 @@ function forcs_back(_opstring){
               ( (con&&con.name)?'<h3>'+con.name+'</h3>':'') +
               ( (con&&con.desc)?'<p>'+con.desc+'</p>':'') +
               ( (l>1 && con)?'<a class="btn btn-success" data-type="searchById" data-value="'+con.id+'">选定该学生</a>':'') +
-            '</div>\
-            <div class="span4 sum"><span class="strong">'+ util.numformat(d.sum.time) +'</span>小时\
-              <p class="muted">总课时</p>\
-            </div>\
-            <div class="span4 sum"><span class="strong">'+ util.numformat(d.sum.money) +'</span>￥\
-              <p class="muted">总金额</p>\
-            </div>\
-          </div><hr/>\
+            '</div>' + sumhtml +
+          '</div><hr/>\
           <div id="'+ that._hash+'_result_'+( (l>1 && con)?con.id:'') +'"></div>\
         </div>'  
     }
@@ -376,7 +411,7 @@ function forcs_refresh(){
 }
 
 stat.claer_defaultv = function(){
-  that.defaultv = {}  
+  stat.defaultv = {}  
 }
 
 $(function() {
@@ -387,7 +422,7 @@ util.check_auth("stat")
 that.hashchange()
 util.show_navbar({id:"navbar", page:"stat"})
 util.show_tab({tid:"myTab", cid:"myTabContent", pages:that.pages, 
-			prename:'<i class="icon-chevron-right"></i>', dosethash:true, clickback:info.claer_defaultv})
+			prename:'<i class="icon-chevron-right"></i>', dosethash:true, clickback:stat.claer_defaultv})
 
 });
 

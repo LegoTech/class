@@ -27,7 +27,7 @@ util = {
     },
     user:{
         name: "Username",
-        auth: "operator"
+        auth: "boss"
     },
     center:{
         cur: 0,
