@@ -170,7 +170,10 @@ stat.show_chart = function(_ops){
   $('#'+_ops.id).highcharts({
     chart: {
         type: 'bar',
-        height: (l*40)
+        height: (l*38)+100
+    },
+    credits: {
+      enabled: false
     },
     title: {
         text: null,
