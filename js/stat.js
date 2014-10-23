@@ -138,16 +138,23 @@ stat.show = function(){
   categories: ['小芬', '小菲菲'],   //课程或学生或教师
   moneydata: [1000, 2000],    //钱数
   maxmoney: 2000,            //最大钱数
-  hourdata: [13.4, 23],      //小时数
-  maxhour: 23                 //最大小时数
+  hourdata: [13.4, 23],      //课时数
+  maxhour: 23                 //最大课时数
 }
 */
 stat.show_chart = function(_ops){
   var that = stat;
   var moneyunit = _ops.maxmoney/_ops.maxhour, munit = ''
+  var hourunit = _ops.maxhour/_ops.maxmoney
   if (that._hash==='teachers'){
     moneyunit = 1
+    if (hourunit<1){
+      hourunit = 0.1
+    }else if(10<moneyunit && moneyunit<100){
+      hourunit = 100
+    }
   }else{
+    hourunit = 1
     if (1<moneyunit && moneyunit<10){
       moneyunit = 10
       munit = '十'
@@ -167,12 +174,20 @@ stat.show_chart = function(_ops){
   for (var i=0; i<l; i++) {
     moneydata[i] = (0-moneydata[i])/moneyunit
   }
+  var hourdata = _ops.hourdata
+  l = hourdata.length 
+  for (i=0; i<l; i++) {
+    hourdata[i] = hourdata[i]/hourunit
+  }
   $('#'+_ops.id).highcharts({
     chart: {
         type: 'bar',
         height: (l*38)+100
     },
     credits: {
+      enabled: false
+    },
+    exporting: {
       enabled: false
     },
     title: {
@@ -197,12 +212,12 @@ stat.show_chart = function(_ops){
                 if (this.value<0){
                   return (0-this.value) + munit+ ( (that._hash==='teachers') ? '%' : '元' );
                 }else{
-                  return this.value + '小时';
+                  return parseInt(this.value*hourunit) + '课时';
                 }
             }
         },
         min: (0-_ops.maxmoney)/moneyunit,
-        max: _ops.maxhour
+        max: _ops.maxhour/hourunit
     },
     
     plotOptions: {
@@ -230,7 +245,7 @@ stat.show_chart = function(_ops){
             if (this.point.y<0){
               return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat((0-this.point.y)*moneyunit, 1)+ ( (that._hash==='teachers') ? '%' : '元' );
             }else{
-              return '<b>'+ this.point.category +'</b><br>' + Highcharts.numberFormat(this.point.y, 1)+'小时';
+              return '<b>'+ this.point.category +'</b><br>' + (Highcharts.numberFormat(this.point.y, 1)*hourunit).toFixed(1)+'课时';
             }
         }
     },
@@ -261,7 +276,7 @@ stat.show_chart = function(_ops){
                 fontSize: '13px',
                 fontFamily: 'Verdana, sans-serif'
             },formatter: function(){
-                return Highcharts.numberFormat(this.y, 1)+'小时';
+                return (Highcharts.numberFormat(this.y, 1)*hourunit).toFixed(1)+'课时';
             }
         }
     }]
@@ -308,10 +323,10 @@ function forcs_back(_opstring){
     errorinfo:""    //可选
   }],*/abstract:{
     categories: ['小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲', '小芬', '小菲菲'],   //课程或学生或教师
-    moneydata: [90.223111, 20, 10.223111, 20, 10.223111, 20, 80.223111, 20, 90.223111, 98, 10.223111, 20, 10.223111, 20, 10.223111, 20, 10.223111, 20, 10.223111, 20],    //钱数
+    moneydata: [90.223111, 20, 10.223111, 20],    //钱数
     maxmoney: 98,            //最大钱数
-    hourdata: [13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23, 13.4231, 23],      //小时数
-    maxhour: 23,                 //最大小时数
+    hourdata: [3.4231, 2, 3.4231, 2, 4],      //课时数
+    maxhour: 4,                 //最大课时数
     errorinfo:"选择的时间范围过长。只展示20条信息"    //可选
   }}    //eval方法解_opstring
   var rhtml = ''
@@ -323,7 +338,7 @@ function forcs_back(_opstring){
     var sumhtml = ''
     var sumdesc = {
       "time" : {
-        unit : "小时",
+        unit : "课时",
         desc : "总课时"
       },
       "money" : {
